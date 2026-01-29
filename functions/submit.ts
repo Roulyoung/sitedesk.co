@@ -46,61 +46,48 @@ export const onRequest: PagesFunction = async (context) => {
       });
     }
 
-    // Send directly via MailChannels (no bindings required)
-    const to = "info@sitedesk.co";
-    const from = "contact@sitedesk.co";
-
     const name = (body?.name ?? "").toString();
     const email = (body?.email ?? "").toString();
     const message = (body?.message ?? "").toString();
+    const honeypot = (body?.company ?? "").toString();
 
-    // Temporary: short-circuit to verify route works. Uncomment mail send below when confirmed.
-    return new Response(
-      JSON.stringify({ message: "Received (mail send disabled for test)", name, email, origin }),
-      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders(origin) } }
-    );
+    // Honeypot
+    if (honeypot) {
+      return new Response(JSON.stringify({ message: "OK" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+      });
+    }
 
-    /*
-    const mailPayload = {
-      personalizations: [
-        {
-          to: [{ email: to }],
-        },
-      ],
-      from: { email: from, name: "Sitedesk Contact" },
-      reply_to: { email, name },
-      subject: `Nieuw bericht van ${name}`,
-      content: [
-        {
-          type: "text/plain",
-          value: `Naam: ${name}\nEmail: ${email}\nBericht:\n${message}`,
-        },
-        {
-          type: "text/html",
-          value: `<p><strong>Naam:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Bericht:</strong><br/>${escapeHtml(message).replace(/\n/g, "<br/>")}</p>`,
-        },
-      ],
-    };
+    if (!name || !email || !message) {
+      return new Response(JSON.stringify({ message: "Validation failed" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+      });
+    }
 
-    const res = await fetch("https://api.mailchannels.net/tx/v1/send", {
+    const upstreamUrl =
+      "https://script.google.com/macros/s/AKfycbxybdi6Eg-aP6YTocsWce3bVm62q6Q6-MJXwUJIqX2YVqWZua1cVbIq8C4eAHhsfR4F1A/exec";
+
+    const upstream = await fetch(upstreamUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(mailPayload),
+      body: JSON.stringify({ name, email, message }),
     });
 
-    if (!res.ok) {
-      const text = await res.text();
+    const text = await upstream.text();
+
+    if (!upstream.ok) {
       return new Response(
-        JSON.stringify({ message: "Delivery failed", detail: text || res.statusText }),
-        { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders(origin) } }
+        text || JSON.stringify({ message: "Delivery failed", detail: upstream.statusText }),
+        { status: upstream.status, headers: { "Content-Type": "application/json", ...corsHeaders(origin) } }
       );
     }
 
-    return new Response(JSON.stringify({ message: "Received" }), {
+    return new Response(text || JSON.stringify({ message: "Received" }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
     });
-    */
   } catch (err) {
     return new Response(JSON.stringify({ message: "Unhandled error", detail: String(err) }), {
       status: 500,
@@ -108,22 +95,3 @@ export const onRequest: PagesFunction = async (context) => {
     });
   }
 };
-
-function escapeHtml(input: string) {
-  return input.replace(/[<>&'"]/g, (c) => {
-    switch (c) {
-      case "<":
-        return "&lt;";
-      case ">":
-        return "&gt;";
-      case "&":
-        return "&amp;";
-      case "'":
-        return "&#39;";
-      case '"':
-        return "&quot;";
-      default:
-        return c;
-    }
-  });
-}
