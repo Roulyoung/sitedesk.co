@@ -47,32 +47,25 @@ export const onRequest: PagesFunction = async (context) => {
     });
   }
 
-  // Direct send via Pages email binding
-  const emailSender = env.SEB || (env as any).EMAIL;
-  if (!emailSender) {
-    return new Response(JSON.stringify({ message: "Email binding missing: add SEB (Email sending) in Functions bindings" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
-    });
-  }
-
   try {
-    await emailSender.send({
-      from: "contact@sitedesk.co",
-      to: ["info@sitedesk.co"],
-      replyTo: body.email,
-      subject: `Nieuw bericht van ${body.name}`,
-      content: [
-        {
-          type: "text/plain",
-          value: `Naam: ${body.name}\nEmail: ${body.email}\nBericht: ${body.message}`,
-        },
-      ],
+    const upstream = await fetch(workerUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
 
-    return new Response(JSON.stringify({ message: "Received" }), {
-      status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+    const text = await upstream.text();
+
+    if (!upstream.ok) {
+      return new Response(text || JSON.stringify({ message: "Upstream error" }), {
+        status: upstream.status,
+        headers: { "Content-Type": upstream.headers.get("Content-Type") || "application/json", ...corsHeaders(origin) },
+      });
+    }
+
+    return new Response(text || JSON.stringify({ message: "OK" }), {
+      status: upstream.status,
+      headers: { "Content-Type": upstream.headers.get("Content-Type") || "application/json", ...corsHeaders(origin) },
     });
   } catch (err) {
     return new Response(JSON.stringify({ message: "Delivery failed", detail: String(err) }), {
