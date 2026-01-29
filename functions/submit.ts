@@ -21,9 +21,9 @@ function corsHeaders(origin: string | null) {
 }
 
 async function sendMail(env: any, data: { name: string; email: string; message: string }) {
-  const emailSender = env.SEB;
+  const emailSender = env.SEB || (env as any).EMAIL;
   if (!emailSender) {
-    throw new Error("Email binding not configured (SEB)");
+    throw new Error("Email binding missing. Add an Email sending binding named 'SEB' (or 'EMAIL') in Pages Settings.");
   }
 
   const to = env.MAIL_TO || "info@sitedesk.co";
