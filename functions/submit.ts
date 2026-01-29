@@ -21,56 +21,60 @@ function corsHeaders(origin: string | null) {
 }
 
 export const onRequest: PagesFunction = async (context) => {
-  const { request, env } = context;
-  const origin = request.headers.get("Origin");
-
-  if (request.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: corsHeaders(origin) });
-  }
-
-  if (request.method !== "POST") {
-    return new Response(JSON.stringify({ message: "Method not allowed" }), {
-      status: 405,
-      headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
-    });
-  }
-
-  let body: any;
   try {
-    body = await request.json();
-  } catch {
-    return new Response(JSON.stringify({ message: "Invalid JSON" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
-    });
-  }
+    const { request } = context;
+    const origin = request.headers.get("Origin");
 
-  // Send directly via MailChannels (no bindings required)
-  const to = "info@sitedesk.co";
-  const from = "contact@sitedesk.co";
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: corsHeaders(origin) });
+    }
 
-  const mailPayload = {
-    personalizations: [
-      {
-        to: [{ email: to }],
-      },
-    ],
-    from: { email: from, name: "Sitedesk Contact" },
-    reply_to: { email: body.email, name: body.name },
-    subject: `Nieuw bericht van ${body.name}`,
-    content: [
-      {
-        type: "text/plain",
-        value: `Naam: ${body.name}\nEmail: ${body.email}\nBericht:\n${body.message}`,
-      },
-      {
-        type: "text/html",
-        value: `<p><strong>Naam:</strong> ${escapeHtml(body.name)}</p><p><strong>Email:</strong> ${escapeHtml(body.email)}</p><p><strong>Bericht:</strong><br/>${escapeHtml(body.message).replace(/\n/g, "<br/>")}</p>`,
-      },
-    ],
-  };
+    if (request.method !== "POST") {
+      return new Response(JSON.stringify({ message: "Method not allowed" }), {
+        status: 405,
+        headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+      });
+    }
 
-  try {
+    let body: any;
+    try {
+      body = await request.json();
+    } catch (err) {
+      return new Response(JSON.stringify({ message: "Invalid JSON", detail: String(err) }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+      });
+    }
+
+    // Send directly via MailChannels (no bindings required)
+    const to = "info@sitedesk.co";
+    const from = "contact@sitedesk.co";
+
+    const name = (body?.name ?? "").toString();
+    const email = (body?.email ?? "").toString();
+    const message = (body?.message ?? "").toString();
+
+    const mailPayload = {
+      personalizations: [
+        {
+          to: [{ email: to }],
+        },
+      ],
+      from: { email: from, name: "Sitedesk Contact" },
+      reply_to: { email, name },
+      subject: `Nieuw bericht van ${name}`,
+      content: [
+        {
+          type: "text/plain",
+          value: `Naam: ${name}\nEmail: ${email}\nBericht:\n${message}`,
+        },
+        {
+          type: "text/html",
+          value: `<p><strong>Naam:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Bericht:</strong><br/>${escapeHtml(message).replace(/\n/g, "<br/>")}</p>`,
+        },
+      ],
+    };
+
     const res = await fetch("https://api.mailchannels.net/tx/v1/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -90,9 +94,9 @@ export const onRequest: PagesFunction = async (context) => {
       headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ message: "Delivery failed", detail: String(err) }), {
-      status: 502,
-      headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+    return new Response(JSON.stringify({ message: "Unhandled error", detail: String(err) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders(null) },
     });
   }
 };
