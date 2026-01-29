@@ -110,10 +110,8 @@ export const onRequest: PagesFunction = async (context) => {
       });
     }
 
-    // Send email via MailChannels (requires MAIL_TO, optional MAIL_FROM)
-    if (env.MAIL_TO || env.MAIL_FROM) {
-      await sendMail(env, { name, email, message });
-    }
+    // Send email via MailChannels (uses defaults if env not set)
+    await sendMail(env, { name, email, message });
 
     return new Response(JSON.stringify({ message: "Received" }), {
       status: 200,
