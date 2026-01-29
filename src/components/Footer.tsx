@@ -45,6 +45,11 @@ const Footer = () => {
                   FAQ
                 </a>
               </li>
+              <li>
+                <a href="#contact" className="hover:text-primary-foreground transition-colors">
+                  Contact
+                </a>
+              </li>
             </ul>
           </div>
 

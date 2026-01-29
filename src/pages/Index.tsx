@@ -6,7 +6,9 @@ import PainPoints from "@/components/PainPoints";
 import Comparison from "@/components/Comparison";
 import FAQ from "@/components/FAQ";
 import CTA from "@/components/CTA";
+import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import FloatingContact from "@/components/FloatingContact";
 
 const Index = () => {
   return (
@@ -19,9 +21,11 @@ const Index = () => {
         <PainPoints />
         <Comparison />
         <FAQ />
+        <Contact />
         <CTA />
       </main>
       <Footer />
+      <FloatingContact />
     </div>
   );
 };

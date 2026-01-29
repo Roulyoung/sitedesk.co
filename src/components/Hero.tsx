@@ -41,9 +41,6 @@ const Hero = () => {
                 Start Vandaag - €1/dag
                 <ArrowRight className="group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button variant="outline" size="xl">
-                Bekijk Templates
-              </Button>
             </div>
 
             {/* Social Proof */}
