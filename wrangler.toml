@@ -1,4 +1,0 @@
-pages_build_output_dir = "dist"
-
-[[send_email]]
-name = "SEB"
