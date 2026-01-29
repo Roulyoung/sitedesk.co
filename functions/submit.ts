@@ -23,7 +23,7 @@ function corsHeaders(origin: string | null) {
 // Shared secret for Apps Script
 const CONTACT_SECRET = "OHUASDFIHUO87AIHUASDF&^^^&%kuhA123"; // set the same value in Apps Script
 const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbxybdi6Eg-aP6YTocsWce3bVm62q6Q6-MJXwUJIqX2YVqWZua1cVbIq8C4eAHhsfR4F1A/exec";
+  "https://script.google.com/macros/s/AKfycbzRTVXJmMi9CB03Ibzki1ub5Nv0rq7hzdWor1ABPcALNlKTrKagrXTlhdIvi7rvT4vxEw/exec";
 
 export const onRequest: PagesFunction = async (context) => {
   try {
