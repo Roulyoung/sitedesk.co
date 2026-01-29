@@ -21,7 +21,7 @@ function corsHeaders(origin: string | null) {
 }
 
 // Shared secret for Apps Script
-const CONTACT_SECRET = "CHANGE_ME_SECRET_TOKEN"; // set the same value in Apps Script
+const CONTACT_SECRET = "OHUASDFIHUO87AIHUASDF&^^^&%kuhA123"; // set the same value in Apps Script
 const APPS_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbxybdi6Eg-aP6YTocsWce3bVm62q6Q6-MJXwUJIqX2YVqWZua1cVbIq8C4eAHhsfR4F1A/exec";
 
