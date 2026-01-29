@@ -4,8 +4,15 @@ const allowedOrigins = new Set([
   "http://localhost:5173",
 ]);
 
+function isAllowedOrigin(origin: string | null) {
+  if (!origin) return null;
+  if (allowedOrigins.has(origin)) return origin;
+  if (origin.endsWith(".pages.dev")) return origin;
+  return null;
+}
+
 function corsHeaders(origin: string | null) {
-  const allowOrigin = origin && allowedOrigins.has(origin) ? origin : "https://sitedesk.co";
+  const allowOrigin = isAllowedOrigin(origin) || "https://sitedesk.co";
   return {
     "Access-Control-Allow-Origin": allowOrigin,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -111,7 +118,14 @@ export const onRequest: PagesFunction = async (context) => {
     }
 
     // Send email via MailChannels (uses defaults if env not set)
-    await sendMail(env, { name, email, message });
+    try {
+      await sendMail(env, { name, email, message });
+    } catch (mailErr) {
+      return new Response(JSON.stringify({ message: "E-mail verzenden mislukt", detail: String(mailErr) }), {
+        status: 502,
+        headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+      });
+    }
 
     return new Response(JSON.stringify({ message: "Received" }), {
       status: 200,
