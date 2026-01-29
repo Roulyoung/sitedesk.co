@@ -22,7 +22,7 @@ const Contact = () => {
     setErrorMessage("");
 
     try {
-      const res = await fetch("https://delicate-forest-100d.rdo90.workers.dev", {
+      const res = await fetch("/submit", {
         method: "POST",
         mode: "cors",
         headers: { "Content-Type": "application/json" },

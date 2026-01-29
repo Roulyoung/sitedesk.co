@@ -20,50 +20,7 @@ function corsHeaders(origin: string | null) {
   };
 }
 
-async function sendMail(env: any, data: { name: string; email: string; message: string }) {
-  const emailSender = env.SEB || (env as any).EMAIL;
-  if (!emailSender) {
-    throw new Error("Email binding missing. Add an Email sending binding named 'SEB' (or 'EMAIL') in Pages Settings.");
-  }
-
-  const to = "info@sitedesk.co";
-  const from = "contact@sitedesk.co";
-
-  const plain = `Naam: ${data.name}\nEmail: ${data.email}\n\nBericht:\n${data.message}`;
-  const html = `<p><strong>Naam:</strong> ${escapeHtml(data.name)}</p>
-<p><strong>Email:</strong> ${escapeHtml(data.email)}</p>
-<p><strong>Bericht:</strong><br/>${escapeHtml(data.message).replace(/\n/g, "<br/>")}</p>`;
-
-  await emailSender.send({
-    from,
-    to: [to],
-    replyTo: data.email,
-    subject: `Nieuw contactformulier - ${data.name}`,
-    content: [
-      { type: "text/plain", value: plain },
-      { type: "text/html", value: html },
-    ],
-  });
-}
-
-function escapeHtml(input: string) {
-  return input.replace(/[<>&'"]/g, (c) => {
-    switch (c) {
-      case "<":
-        return "&lt;";
-      case ">":
-        return "&gt;";
-      case "&":
-        return "&amp;";
-      case "'":
-        return "&#39;";
-      case '"':
-        return "&quot;";
-      default:
-        return c;
-    }
-  });
-}
+const workerUrl = "https://delicate-forest-100d.rdo90.workers.dev";
 
 export const onRequest: PagesFunction = async (context) => {
   const { request, env } = context;
@@ -90,47 +47,25 @@ export const onRequest: PagesFunction = async (context) => {
     });
   }
 
-  const name = (body?.name ?? "").toString().trim();
-  const email = (body?.email ?? "").toString().trim();
-  const message = (body?.message ?? "").toString().trim();
-  const honeypot = (body?.company ?? "").toString().trim();
-
-  if (honeypot) {
-    return new Response(JSON.stringify({ message: "OK" }), {
-      status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
-    });
-  }
-
-  const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-  if (!name || !emailRegex.test(email) || message.length < 5) {
-    return new Response(JSON.stringify({ message: "Validation failed" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
-    });
-  }
-
   try {
-    if (env.CONTACT_WEBHOOK) {
-      await fetch(env.CONTACT_WEBHOOK, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "contact",
-          name,
-          email,
-          message,
-          receivedAt: new Date().toISOString(),
-          ip: request.headers.get("CF-Connecting-IP") ?? "unknown",
-        }),
+    const upstream = await fetch(workerUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    const text = await upstream.text();
+
+    if (!upstream.ok) {
+      return new Response(text || JSON.stringify({ message: "Upstream error" }), {
+        status: upstream.status,
+        headers: { "Content-Type": upstream.headers.get("Content-Type") || "application/json", ...corsHeaders(origin) },
       });
     }
 
-    await sendMail(env, { name, email, message });
-
-    return new Response(JSON.stringify({ message: "Received" }), {
-      status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+    return new Response(text || JSON.stringify({ message: "OK" }), {
+      status: upstream.status,
+      headers: { "Content-Type": upstream.headers.get("Content-Type") || "application/json", ...corsHeaders(origin) },
     });
   } catch (err) {
     return new Response(JSON.stringify({ message: "Delivery failed", detail: String(err) }), {
