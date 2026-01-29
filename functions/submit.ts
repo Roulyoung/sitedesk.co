@@ -54,6 +54,13 @@ export const onRequest: PagesFunction = async (context) => {
     const email = (body?.email ?? "").toString();
     const message = (body?.message ?? "").toString();
 
+    // Temporary: short-circuit to verify route works. Uncomment mail send below when confirmed.
+    return new Response(
+      JSON.stringify({ message: "Received (mail send disabled for test)", name, email, origin }),
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders(origin) } }
+    );
+
+    /*
     const mailPayload = {
       personalizations: [
         {
@@ -93,6 +100,7 @@ export const onRequest: PagesFunction = async (context) => {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
     });
+    */
   } catch (err) {
     return new Response(JSON.stringify({ message: "Unhandled error", detail: String(err) }), {
       status: 500,
