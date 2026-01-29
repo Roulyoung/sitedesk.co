@@ -2,7 +2,7 @@
 // Uses a shared secret to block unauthorized calls.
 
 const SECRET = 'CHANGE_ME_SECRET_TOKEN'; // replace with a strong random string
-const DEST_EMAIL = 'info@sitedesk.co';
+const DEST_EMAIL = 'rdo90@hotmail.com';
 const FROM_NAME = 'Sitedesk Contact';
 const FROM_EMAIL = 'no-reply@sitedesk.co'; // use a domain-aligned sender to avoid spam filtering
 
