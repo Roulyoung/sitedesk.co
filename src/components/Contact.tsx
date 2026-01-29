@@ -1,7 +1,46 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MessageSquare } from "lucide-react";
 
 const Contact = () => {
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    const payload = {
+      name: formData.get("name")?.toString().trim() ?? "",
+      email: formData.get("email")?.toString().trim() ?? "",
+      message: formData.get("message")?.toString().trim() ?? "",
+      company: formData.get("company")?.toString().trim() ?? "",
+    };
+
+    setStatus("sending");
+    setErrorMessage("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.message || "Versturen mislukt. Probeer opnieuw.");
+      }
+
+      setStatus("success");
+      form.reset();
+    } catch (err) {
+      setStatus("error");
+      setErrorMessage(err instanceof Error ? err.message : "Versturen mislukt. Probeer opnieuw.");
+    }
+  };
+
   return (
     <section id="contact" className="py-20 md:py-32 bg-card">
       <div className="container mx-auto grid lg:grid-cols-2 gap-12 items-start">
@@ -32,7 +71,16 @@ const Contact = () => {
           </div>
         </div>
 
-        <form className="bg-background border border-border rounded-2xl p-8 shadow-md space-y-6">
+        <form
+          className="bg-background border border-border rounded-2xl p-8 shadow-md space-y-6"
+          onSubmit={handleSubmit}
+        >
+          {/* Honeypot anti-spam */}
+          <div className="hidden">
+            <label htmlFor="company">Bedrijfsnaam (laat leeg)</label>
+            <input id="company" name="company" type="text" />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2" htmlFor="name">
               Naam
@@ -72,12 +120,16 @@ const Contact = () => {
               placeholder="Vertel kort wat je zoekt, dan reageren wij snel."
             />
           </div>
-          <Button type="submit" variant="hero" size="lg" className="w-full">
-            Verstuur bericht
+          <Button type="submit" variant="hero" size="lg" className="w-full" disabled={status === "sending"}>
+            {status === "sending" ? "Verzenden..." : "Verstuur bericht"}
           </Button>
           <p className="text-xs text-muted-foreground text-center">
             Door te versturen ga je akkoord met een reactie via mail of telefoon. We delen niets met derden.
           </p>
+          <div className="text-sm text-center" aria-live="polite">
+            {status === "success" && <span className="text-success">Bericht ontvangen! We nemen snel contact op.</span>}
+            {status === "error" && <span className="text-destructive">{errorMessage}</span>}
+          </div>
         </form>
       </div>
     </section>
