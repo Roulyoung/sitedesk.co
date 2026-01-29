@@ -26,8 +26,8 @@ async function sendMail(env: any, data: { name: string; email: string; message: 
     throw new Error("Email binding missing. Add an Email sending binding named 'SEB' (or 'EMAIL') in Pages Settings.");
   }
 
-  const to = env.MAIL_TO || "info@sitedesk.co";
-  const from = env.MAIL_FROM || "contact@sitedesk.co";
+  const to = "info@sitedesk.co";
+  const from = "contact@sitedesk.co";
 
   const plain = `Naam: ${data.name}\nEmail: ${data.email}\n\nBericht:\n${data.message}`;
   const html = `<p><strong>Naam:</strong> ${escapeHtml(data.name)}</p>
