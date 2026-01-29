@@ -49,17 +49,17 @@ const Hero = () => {
             {/* Social Proof */}
             <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start animate-fade-up stagger-4">
               <div className="flex -space-x-2">
-                {[1, 2, 3, 4, 5].map((i) => (
+                {["SD", "MK", "JB", "LM", "AN"].map((label) => (
                   <div
-                    key={i}
+                    key={label}
                     className="w-10 h-10 rounded-full bg-secondary border-2 border-card flex items-center justify-center text-xs font-medium text-muted-foreground"
                   >
-                    {String.fromCharCode(64 + i)}
+                    {label}
                   </div>
                 ))}
               </div>
               <div className="text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">500+ ondernemers</span> al ontzorgd
+                <span className="font-semibold text-foreground">Vele ondernemers</span> al ontzorgd
               </div>
             </div>
           </div>

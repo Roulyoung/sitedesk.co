@@ -41,11 +41,6 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="#templates" className="hover:text-primary-foreground transition-colors">
-                  Templates
-                </a>
-              </li>
-              <li>
                 <a href="#faq" className="hover:text-primary-foreground transition-colors">
                   FAQ
                 </a>

@@ -47,7 +47,7 @@ const features = [
   {
     icon: Mail,
     title: "Zakelijke E-mail",
-    description: "Professioneel e-mailadres (info@jouwdomein.nl). Stop met Gmail of Hotmail.",
+    description: "Professioneel e-mailadres (info@jouwdomein.nl), eenvoudig te gebruiken via Gmail of Outlook.",
   },
   {
     icon: BarChart3,
