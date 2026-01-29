@@ -20,6 +20,11 @@ function corsHeaders(origin: string | null) {
   };
 }
 
+// Shared secret for Apps Script
+const CONTACT_SECRET = "CHANGE_ME_SECRET_TOKEN"; // set the same value in Apps Script
+const APPS_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbxybdi6Eg-aP6YTocsWce3bVm62q6Q6-MJXwUJIqX2YVqWZua1cVbIq8C4eAHhsfR4F1A/exec";
+
 export const onRequest: PagesFunction = async (context) => {
   try {
     const { request } = context;
@@ -66,13 +71,10 @@ export const onRequest: PagesFunction = async (context) => {
       });
     }
 
-    const upstreamUrl =
-      "https://script.google.com/macros/s/AKfycbxybdi6Eg-aP6YTocsWce3bVm62q6Q6-MJXwUJIqX2YVqWZua1cVbIq8C4eAHhsfR4F1A/exec";
-
-    const upstream = await fetch(upstreamUrl, {
+    const upstream = await fetch(APPS_SCRIPT_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, message }),
+      body: JSON.stringify({ name, email, message, secret: CONTACT_SECRET }),
     });
 
     const text = await upstream.text();
