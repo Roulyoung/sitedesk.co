@@ -13,6 +13,42 @@ function corsHeaders(origin: string | null) {
   };
 }
 
+async function sendMail(env: any, payload: { name: string; email: string; message: string }) {
+  const to = env.MAIL_TO || "info@sitedesk.co";
+  const from = env.MAIL_FROM || "no-reply@sitedesk.co";
+
+  const body = {
+    personalizations: [{ to: [{ email: to }] }],
+    from: { email: from, name: "Sitedesk Contact" },
+    reply_to: { email: payload.email, name: payload.name },
+    subject: `Nieuw contactformulier - ${payload.name}`,
+    content: [
+      {
+        type: "text/plain",
+        value: `Naam: ${payload.name}\nEmail: ${payload.email}\n\nBericht:\n${payload.message}`,
+      },
+      {
+        type: "text/html",
+        value: `<p><strong>Naam:</strong> ${payload.name}</p><p><strong>Email:</strong> ${payload.email}</p><p><strong>Bericht:</strong><br/>${payload.message
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\n/g, "<br/>")}</p>`,
+      },
+    ],
+  };
+
+  const resp = await fetch("https://api.mailchannels.net/tx/v1/send", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!resp.ok) {
+    const text = await resp.text();
+    throw new Error(`Mail send failed: ${resp.status} ${text}`);
+  }
+}
+
 export const onRequest: PagesFunction = async (context) => {
   const { request, env } = context;
   const origin = request.headers.get("Origin");
@@ -72,6 +108,11 @@ export const onRequest: PagesFunction = async (context) => {
           ip: context.request.headers.get("CF-Connecting-IP") ?? "unknown",
         }),
       });
+    }
+
+    // Send email via MailChannels (requires MAIL_TO, optional MAIL_FROM)
+    if (env.MAIL_TO || env.MAIL_FROM) {
+      await sendMail(env, { name, email, message });
     }
 
     return new Response(JSON.stringify({ message: "Received" }), {
