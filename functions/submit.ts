@@ -20,8 +20,6 @@ function corsHeaders(origin: string | null) {
   };
 }
 
-const workerUrl = "https://delicate-forest-100d.rdo90.workers.dev";
-
 export const onRequest: PagesFunction = async (context) => {
   const { request, env } = context;
   const origin = request.headers.get("Origin");
@@ -47,25 +45,49 @@ export const onRequest: PagesFunction = async (context) => {
     });
   }
 
+  // Send directly via MailChannels (no bindings required)
+  const to = "info@sitedesk.co";
+  const from = "contact@sitedesk.co";
+
+  const mailPayload = {
+    personalizations: [
+      {
+        to: [{ email: to }],
+      },
+    ],
+    from: { email: from, name: "Sitedesk Contact" },
+    reply_to: { email: body.email, name: body.name },
+    subject: `Nieuw bericht van ${body.name}`,
+    content: [
+      {
+        type: "text/plain",
+        value: `Naam: ${body.name}\nEmail: ${body.email}\nBericht:\n${body.message}`,
+      },
+      {
+        type: "text/html",
+        value: `<p><strong>Naam:</strong> ${escapeHtml(body.name)}</p><p><strong>Email:</strong> ${escapeHtml(body.email)}</p><p><strong>Bericht:</strong><br/>${escapeHtml(body.message).replace(/\n/g, "<br/>")}</p>`,
+      },
+    ],
+  };
+
   try {
-    const upstream = await fetch(workerUrl, {
+    const res = await fetch("https://api.mailchannels.net/tx/v1/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify(mailPayload),
     });
 
-    const text = await upstream.text();
-
-    if (!upstream.ok) {
-      return new Response(text || JSON.stringify({ message: "Upstream error" }), {
-        status: upstream.status,
-        headers: { "Content-Type": upstream.headers.get("Content-Type") || "application/json", ...corsHeaders(origin) },
-      });
+    if (!res.ok) {
+      const text = await res.text();
+      return new Response(
+        JSON.stringify({ message: "Delivery failed", detail: text || res.statusText }),
+        { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders(origin) } }
+      );
     }
 
-    return new Response(text || JSON.stringify({ message: "OK" }), {
-      status: upstream.status,
-      headers: { "Content-Type": upstream.headers.get("Content-Type") || "application/json", ...corsHeaders(origin) },
+    return new Response(JSON.stringify({ message: "Received" }), {
+      status: 200,
+      headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
     });
   } catch (err) {
     return new Response(JSON.stringify({ message: "Delivery failed", detail: String(err) }), {
@@ -74,3 +96,22 @@ export const onRequest: PagesFunction = async (context) => {
     });
   }
 };
+
+function escapeHtml(input: string) {
+  return input.replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case "&":
+        return "&amp;";
+      case "'":
+        return "&#39;";
+      case '"':
+        return "&quot;";
+      default:
+        return c;
+    }
+  });
+}
