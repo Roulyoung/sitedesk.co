@@ -43,7 +43,7 @@ const Header = () => {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
             <Button asChild variant="hero" size="default">
-              <a href="#contact">Start voor ƒ,ª1/dag</a>
+              <a href="#contact">Start voor €1/dag</a>
             </Button>
           </div>
 
@@ -72,7 +72,7 @@ const Header = () => {
                 </a>
               ))}
               <Button asChild variant="hero" size="lg" className="mt-4">
-                <a href="#contact">Start voor ƒ,ª1/dag</a>
+                <a href="#contact">Start voor €1/dag</a>
               </Button>
             </nav>
           </div>

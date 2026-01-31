@@ -20,7 +20,7 @@ const Footer = () => {
             </div>
             <p className="text-primary-foreground/70 max-w-sm mb-6">
               Jouw digitale rechterhand. Professionele websites voor ondernemers,
-              volledig beheerd voor slechts ƒ,ª1 per dag.
+              volledig beheerd voor slechts €1 per dag.
             </p>
             <div className="space-y-2 text-sm text-primary-foreground/70">
               <div className="flex items-center gap-2">
