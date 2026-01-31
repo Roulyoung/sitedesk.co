@@ -25,7 +25,7 @@ const Footer = () => {
             <div className="space-y-2 text-sm text-primary-foreground/70">
               <div className="flex items-center gap-2">
                 <Mail size={16} />
-                <span>hallo@sitedesk.co</span>
+                <span>info@sitedesk.co</span>
               </div>
               <div className="flex items-start gap-2">
                 <MapPin size={16} className="mt-0.5" />

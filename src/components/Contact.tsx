@@ -65,8 +65,8 @@ const Contact = () => {
             </div>
             <div className="flex items-center gap-3">
               <Mail className="text-accent" size={18} />
-              <a href="mailto:hallo@sitedesk.co" className="hover:text-foreground transition-colors">
-                hallo@sitedesk.co
+              <a href="mailto:info@sitedesk.co" className="hover:text-foreground transition-colors">
+                info@sitedesk.co
               </a>
             </div>
           </div>
