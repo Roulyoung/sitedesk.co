@@ -70,6 +70,13 @@ const Contact = () => {
               </a>
             </div>
           </div>
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Button asChild variant="secondary">
+              <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
+                WhatsApp ons
+              </a>
+            </Button>
+          </div>
         </div>
 
         <form

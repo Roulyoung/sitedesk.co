@@ -1,4 +1,4 @@
-import { Phone, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 
 const FloatingContact = () => {
   return (
@@ -11,13 +11,6 @@ const FloatingContact = () => {
       >
         <MessageCircle size={18} />
         App ons
-      </a>
-      <a
-        href="tel:+31640326650"
-        className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-lg shadow-primary/30 hover:scale-105 transition-transform"
-      >
-        <Phone size={18} />
-        Bel ons
       </a>
     </div>
   );

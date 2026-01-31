@@ -26,9 +26,11 @@ const PainPoints = () => {
               Je bent ondernemer, geen webmaster. Laat het website-gedoe aan ons over en focus op wat je goed kunt.
             </p>
 
-            <Button variant="hero" size="lg" className="group">
-              Start vandaag nog
-              <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+            <Button asChild variant="hero" size="lg" className="group">
+              <a href="#contact">
+                Start vandaag nog
+                <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+              </a>
             </Button>
           </div>
 

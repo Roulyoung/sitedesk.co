@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -7,21 +7,32 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 gradient-accent rounded-lg flex items-center justify-center">
-                <span className="text-accent-foreground font-bold text-sm">S</span>
+            <div className="flex items-center gap-3 mb-4">
+              <img
+                src="/icon-sitedesk.png"
+                alt="Sitedesk logo"
+                className="w-10 h-10 rounded-lg bg-primary-foreground/10 p-1.5"
+              />
+              <div className="flex items-baseline gap-1">
+                <span className="font-bold text-xl">Sitedesk</span>
+                <span className="text-primary-foreground/60 text-sm">.co</span>
               </div>
-              <span className="font-bold text-xl">Sitedesk</span>
-              <span className="text-primary-foreground/60 text-sm">.co</span>
             </div>
             <p className="text-primary-foreground/70 max-w-sm mb-6">
-              Jouw digitale rechterhand. Professionele websites voor ondernemers, 
-              volledig beheerd voor slechts €1 per dag.
+              Jouw digitale rechterhand. Professionele websites voor ondernemers,
+              volledig beheerd voor slechts ƒ,ª1 per dag.
             </p>
             <div className="space-y-2 text-sm text-primary-foreground/70">
               <div className="flex items-center gap-2">
                 <Mail size={16} />
                 <span>hallo@sitedesk.co</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <MapPin size={16} className="mt-0.5" />
+                <div>
+                  <div>Den Ouden Holding B.V.</div>
+                  <div>Keizerrijk 44, 1012VM Amsterdam, Netherlands</div>
+                </div>
               </div>
             </div>
           </div>

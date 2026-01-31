@@ -18,9 +18,11 @@ const Header = () => {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <a href="#" className="flex items-center gap-2">
-            <div className="w-8 h-8 gradient-accent rounded-lg flex items-center justify-center">
-              <span className="text-accent-foreground font-bold text-sm">S</span>
-            </div>
+            <img
+              src="/icon-sitedesk.png"
+              alt="Sitedesk logo"
+              className="w-9 h-9 rounded-lg object-contain"
+            />
             <span className="font-bold text-xl text-foreground">Sitedesk</span>
             <span className="text-muted-foreground text-sm">.co</span>
           </a>
@@ -40,8 +42,8 @@ const Header = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Button variant="hero" size="default">
-              Start voor €1/dag
+            <Button asChild variant="hero" size="default">
+              <a href="#contact">Start voor ƒ,ª1/dag</a>
             </Button>
           </div>
 
@@ -69,8 +71,8 @@ const Header = () => {
                   {link.label}
                 </a>
               ))}
-              <Button variant="hero" size="lg" className="mt-4">
-                Start voor €1/dag
+              <Button asChild variant="hero" size="lg" className="mt-4">
+                <a href="#contact">Start voor ƒ,ª1/dag</a>
               </Button>
             </nav>
           </div>

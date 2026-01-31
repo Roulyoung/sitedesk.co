@@ -43,9 +43,11 @@ const CTA = () => {
           </div>
 
           {/* CTA Button */}
-          <Button variant="hero" size="xl" className="group">
-            Start Nu - Betaal â‚¬1/dag
-            <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+          <Button asChild variant="hero" size="xl" className="group">
+            <a href="#contact">
+              Start Nu - Betaal €1/dag
+              <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+            </a>
           </Button>
 
           <p className="mt-6 text-sm text-primary-foreground/60">

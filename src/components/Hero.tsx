@@ -37,9 +37,11 @@ const Hero = () => {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-up stagger-3">
-              <Button variant="hero" size="xl" className="group">
-                Start Vandaag - â‚¬1/dag
-                <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+              <Button asChild variant="hero" size="xl" className="group">
+                <a href="#contact">
+                  Start Vandaag - €1/dag
+                  <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                </a>
               </Button>
             </div>
 
