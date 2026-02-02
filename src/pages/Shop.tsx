@@ -77,6 +77,14 @@ const Shop = () => {
               .map((t) => (row[t] || "").toString().trim())
               .filter(Boolean);
             const slug = (row.slug || row.id || "").toString();
+            const image =
+              row.image ||
+              row.image1 ||
+              row.image2 ||
+              row.image3 ||
+              row.image4 ||
+              row.image5 ||
+              "";
             return {
               id: (slug || name || `item-${idx}`).toString(),
               slug,
@@ -84,7 +92,7 @@ const Shop = () => {
               price: priceDisplay,
               price_id: row.price_id || "",
               priceCents,
-              image: row.image || "",
+              image: image || "",
               stripe_link: row.stripe_link || "",
               description: row.description || row.omschrijving || "",
               category: row.category || "",
@@ -244,41 +252,41 @@ const Shop = () => {
             {displayProducts.map((product, idx) => (
               <div
                 key={`${product.name}-${idx}`}
-                className="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col gap-4"
-              >
+              className="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col gap-4"
+            >
+              <Link to={`/product/${product.slug || product.id || ""}`} className="block group">
                 {product.image ? (
-                  <Link to={`/product/${product.slug || product.id || ""}`} className="block group">
-                    <img
-                      src={product.image}
-                      alt={product.name || "Product"}
-                      className="object-cover h-64 w-full rounded-lg transition group-hover:opacity-90"
-                      loading="lazy"
-                    />
-                  </Link>
+                  <img
+                    src={product.image}
+                    alt={product.name || "Product"}
+                    className="object-cover h-64 w-full rounded-lg transition group-hover:opacity-90"
+                    loading="lazy"
+                  />
                 ) : (
                   <div className="h-64 w-full rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm">
                     Geen afbeelding
                   </div>
                 )}
-                <div className="flex-1 flex flex-col gap-2">
-                  <Link to={`/product/${product.slug || product.id || ""}`}>
-                    <h3 className="font-bold text-lg text-foreground line-clamp-2 hover:text-primary transition">
-                      {product.name || "Naam onbekend"}
-                    </h3>
-                  </Link>
-                  <p className="text-primary font-semibold">{product.price}</p>
-                </div>
-                <button
-                  onClick={() => addToCart(product)}
-                  className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-lg hover:opacity-90 transition"
-                >
-                  In winkelmand
-                  <ArrowRight size={16} />
-                </button>
+              </Link>
+              <div className="flex-1 flex flex-col gap-2">
+                <Link to={`/product/${product.slug || product.id || ""}`}>
+                  <h3 className="font-bold text-lg text-foreground line-clamp-2 hover:text-primary transition">
+                    {product.name || "Naam onbekend"}
+                  </h3>
+                </Link>
+                <p className="text-primary font-semibold">{product.price}</p>
               </div>
-            ))}
-          </div>
-        )}
+              <button
+                onClick={() => addToCart(product)}
+                className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-lg hover:opacity-90 transition"
+              >
+                In winkelmand
+                <ArrowRight size={16} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
         {/* Cart Summary */}
         <div id="winkelmand" className="mt-12 bg-card border border-border rounded-2xl p-6 shadow-sm">

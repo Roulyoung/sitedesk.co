@@ -12,6 +12,7 @@ type Product = {
   priceCents: number;
   priceDisplay: string;
   image?: string;
+  images?: string[];
   stripe_link?: string;
   price_id?: string;
   slug?: string;
@@ -51,14 +52,26 @@ const ProductPage = () => {
         const rawPrice = row.sale_price || row.sale || row.price || row.prijs || "0";
         const priceCents = parsePriceToCents(String(rawPrice));
         const slug = (row.slug || row.id || name || `item-${idx}`).toString();
-        return {
-          id: slug,
-          slug,
-          name: name.toString(),
-          description: row.description || row.omschrijving || "",
-          priceCents,
-          priceDisplay: formatPrice(priceCents),
-          image: row.image || "",
+            const image =
+              row.image ||
+              row.image1 ||
+              row.image2 ||
+              row.image3 ||
+              row.image4 ||
+              row.image5 ||
+              "";
+            const images = [row.image1, row.image2, row.image3, row.image4, row.image5]
+              .map((v: string) => v?.toString())
+              .filter(Boolean);
+            return {
+              id: slug,
+              slug,
+              name: name.toString(),
+              description: row.description || row.omschrijving || "",
+              priceCents,
+              priceDisplay: formatPrice(priceCents),
+              image: image || "",
+              images,
               stripe_link: row.stripe_link || "",
               price_id: row.price_id || "",
             } as Product;
@@ -188,6 +201,20 @@ const ProductPage = () => {
                 {error && <p className="text-sm text-destructive">{error}</p>}
               </div>
             </div>
+            {product.images && product.images.length > 0 && (
+              <div className="border-t border-border bg-gray-50 px-6 py-4">
+                <div className="flex gap-3 overflow-x-auto">
+                  {product.images.map((img, i) => (
+                    <img
+                      key={i}
+                      src={img}
+                      alt={`${product.name} thumb ${i + 1}`}
+                      className="h-20 w-20 object-cover rounded-lg border border-border"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </section>
       </main>
