@@ -3,6 +3,7 @@ import { ArrowRight, Loader2, Plus, Minus } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
+import { Link } from "react-router-dom";
 
 type Product = {
   name: string;
@@ -12,6 +13,7 @@ type Product = {
   price_id?: string;
   priceCents?: number;
   id?: string;
+  slug?: string;
   description?: string;
   category?: string;
   tags?: string[];
@@ -74,8 +76,10 @@ const Shop = () => {
             const tags = ["tag1", "tag2", "tag3", "tag4", "tag5"]
               .map((t) => (row[t] || "").toString().trim())
               .filter(Boolean);
+            const slug = (row.slug || row.id || "").toString();
             return {
-              id: (row.id || row.slug || name || `item-${idx}`).toString(),
+              id: (slug || name || `item-${idx}`).toString(),
+              slug,
               name: name.toString(),
               price: priceDisplay,
               price_id: row.price_id || "",
@@ -104,7 +108,7 @@ const Shop = () => {
         ...p,
         price: normalizePrice(p.price || "0"),
         priceCents: parsePriceToCents(p.price || "0"),
-        id: p.id || p.name || "product",
+        id: p.id || p.slug || p.name || "product",
       })),
     [products],
   );
@@ -169,7 +173,6 @@ const Shop = () => {
       return;
     }
 
-    // If ALL items have stripe_link, we can just send the first link (not ideal multi). Otherwise use Worker.
     const nonLinkItems = cart.filter((item) => !item.stripe_link);
     const linkItems = cart.filter((item) => item.stripe_link);
 
@@ -211,137 +214,141 @@ const Shop = () => {
     <div className="min-h-screen">
       <Header />
       <main className="container mx-auto py-20 md:py-28">
-      <div className="text-center mb-12">
-        <p className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium">
-          <ArrowRight size={16} />
-          Shop
-        </p>
-        <h1 className="text-4xl md:text-5xl font-bold text-foreground mt-4">
-          Shop onze producten
-        </h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto mt-4">
-          Kies uit de beschikbare producten en bestel direct via onze Stripe links.
-        </p>
-      </div>
-
-      {loading && (
-        <div className="flex justify-center py-16">
-          <Loader2 className="animate-spin text-primary" size={40} />
+        <div className="text-center mb-12">
+          <p className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium">
+            <ArrowRight size={16} />
+            Shop
+          </p>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mt-4">
+            Shop onze producten
+          </h1>
+          <p className="text-muted-foreground max-w-2xl mx-auto mt-4">
+            Kies uit de beschikbare producten en bestel direct via onze Stripe links.
+          </p>
         </div>
-      )}
 
-      {error && (
-        <div className="text-center text-destructive bg-destructive/10 border border-destructive/30 rounded-lg p-4 max-w-xl mx-auto">
-          {error}
-        </div>
-      )}
-
-      {!loading && !error && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayProducts.map((product, idx) => (
-            <div
-              key={`${product.name}-${idx}`}
-              className="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col gap-4"
-            >
-              {product.image ? (
-                <img
-                  src={product.image}
-                  alt={product.name || "Product"}
-                  className="object-cover h-64 w-full rounded-lg"
-                  loading="lazy"
-                />
-              ) : (
-                <div className="h-64 w-full rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm">
-                  Geen afbeelding
-                </div>
-              )}
-              <div className="flex-1 flex flex-col gap-2">
-                <h3 className="font-bold text-lg text-foreground line-clamp-2">
-                  {product.name || "Naam onbekend"}
-                </h3>
-                <p className="text-primary font-semibold">{product.price}</p>
-              </div>
-              <button
-                onClick={() => addToCart(product)}
-                className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-lg hover:opacity-90 transition"
-              >
-                In winkelmand
-                <ArrowRight size={16} />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Cart Summary */}
-      <div id="winkelmand" className="mt-12 bg-card border border-border rounded-2xl p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-foreground">Winkelmand</h3>
-          <span className="text-sm text-muted-foreground">
-            {cart.length} item{cart.length === 1 ? "" : "s"}
-          </span>
-        </div>
-        {cart.length === 0 ? (
-          <p className="text-muted-foreground">Je mandje is leeg.</p>
-        ) : (
-          <div className="space-y-4">
-            {cart.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between gap-4 border-b border-border pb-3"
-              >
-                <div>
-                  <div className="font-medium text-foreground">{item.name}</div>
-                  <div className="text-sm text-muted-foreground">{item.price}</div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => updateQuantity(item.id, -1)}
-                    className="p-2 rounded-md border border-border hover:bg-muted transition"
-                  >
-                    <Minus size={14} />
-                  </button>
-                  <span className="w-6 text-center">{item.quantity}</span>
-                  <button
-                    onClick={() => updateQuantity(item.id, 1)}
-                    className="p-2 rounded-md border border-border hover:bg-muted transition"
-                  >
-                    <Plus size={14} />
-                  </button>
-                </div>
-              </div>
-            ))}
-
-            <div className="flex items-center justify-between pt-2">
-              <span className="text-muted-foreground">Totaal</span>
-              <span className="font-semibold text-foreground">
-                {currency.format(
-                  cart.reduce((sum, item) => sum + item.priceCents * item.quantity, 0) / 100,
-                )}
-              </span>
-            </div>
-
-            <button
-              onClick={handleCheckout}
-              disabled={checkoutLoadingId === "cart"}
-              className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-lg hover:opacity-90 transition disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {checkoutLoadingId === "cart" ? (
-                <>
-                  <Loader2 className="animate-spin" size={16} />
-                  Bezig met afrekenen...
-                </>
-              ) : (
-                <>
-                  Naar de kassa
-                  <ArrowRight size={16} />
-                </>
-              )}
-            </button>
-            {error && <p className="text-sm text-destructive">{error}</p>}
+        {loading && (
+          <div className="flex justify-center py-16">
+            <Loader2 className="animate-spin text-primary" size={40} />
           </div>
         )}
-      </div>
+
+        {error && (
+          <div className="text-center text-destructive bg-destructive/10 border border-destructive/30 rounded-lg p-4 max-w-xl mx-auto">
+            {error}
+          </div>
+        )}
+
+        {!loading && !error && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {displayProducts.map((product, idx) => (
+              <div
+                key={`${product.name}-${idx}`}
+                className="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col gap-4"
+              >
+                {product.image ? (
+                  <Link to={`/product/${product.slug || product.id || ""}`} className="block group">
+                    <img
+                      src={product.image}
+                      alt={product.name || "Product"}
+                      className="object-cover h-64 w-full rounded-lg transition group-hover:opacity-90"
+                      loading="lazy"
+                    />
+                  </Link>
+                ) : (
+                  <div className="h-64 w-full rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm">
+                    Geen afbeelding
+                  </div>
+                )}
+                <div className="flex-1 flex flex-col gap-2">
+                  <Link to={`/product/${product.slug || product.id || ""}`}>
+                    <h3 className="font-bold text-lg text-foreground line-clamp-2 hover:text-primary transition">
+                      {product.name || "Naam onbekend"}
+                    </h3>
+                  </Link>
+                  <p className="text-primary font-semibold">{product.price}</p>
+                </div>
+                <button
+                  onClick={() => addToCart(product)}
+                  className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-lg hover:opacity-90 transition"
+                >
+                  In winkelmand
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Cart Summary */}
+        <div id="winkelmand" className="mt-12 bg-card border border-border rounded-2xl p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold text-foreground">Winkelmand</h3>
+            <span className="text-sm text-muted-foreground">
+              {cart.length} item{cart.length === 1 ? "" : "s"}
+            </span>
+          </div>
+          {cart.length === 0 ? (
+            <p className="text-muted-foreground">Je mandje is leeg.</p>
+          ) : (
+            <div className="space-y-4">
+              {cart.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between gap-4 border-b border-border pb-3"
+                >
+                  <div>
+                    <div className="font-medium text-foreground">{item.name}</div>
+                    <div className="text-sm text-muted-foreground">{item.price}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => updateQuantity(item.id, -1)}
+                      className="p-2 rounded-md border border-border hover:bg-muted transition"
+                    >
+                      <Minus size={14} />
+                    </button>
+                    <span className="w-6 text-center">{item.quantity}</span>
+                    <button
+                      onClick={() => updateQuantity(item.id, 1)}
+                      className="p-2 rounded-md border border-border hover:bg-muted transition"
+                    >
+                      <Plus size={14} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-muted-foreground">Totaal</span>
+                <span className="font-semibold text-foreground">
+                  {currency.format(
+                    cart.reduce((sum, item) => sum + item.priceCents * item.quantity, 0) / 100,
+                  )}
+                </span>
+              </div>
+
+              <button
+                onClick={handleCheckout}
+                disabled={checkoutLoadingId === "cart"}
+                className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-lg hover:opacity-90 transition disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {checkoutLoadingId === "cart" ? (
+                  <>
+                    <Loader2 className="animate-spin" size={16} />
+                    Bezig met afrekenen...
+                  </>
+                ) : (
+                  <>
+                    Naar de kassa
+                    <ArrowRight size={16} />
+                  </>
+                )}
+              </button>
+              {error && <p className="text-sm text-destructive">{error}</p>}
+            </div>
+          )}
+        </div>
       </main>
       <Footer />
       <FloatingContact />
