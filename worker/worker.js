@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 
-const STRIPE_API_VERSION = "2024-12-18";
+const STRIPE_API_VERSION = "2024-08-16";
 const SHEET_RANGE = "Orders!A:G";
 const PRODUCTS_RANGE_DEFAULT = "Products!A:Z"; // default range for products tab
 

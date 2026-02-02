@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -7,6 +7,7 @@ import { ArrowRight, Loader2 } from "lucide-react";
 
 type Product = {
   id: string;
+  slug?: string;
   name: string;
   description?: string;
   priceCents: number;
@@ -15,17 +16,19 @@ type Product = {
   images?: string[];
   stripe_link?: string;
   price_id?: string;
-  slug?: string;
 };
 
 const PRODUCTS_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/products";
 const CHECKOUT_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/create-checkout-session";
 
-const currency = new Intl.NumberFormat("nl-NL", {
-  style: "currency",
-  currency: "EUR",
-  minimumFractionDigits: 2,
-});
+const formatPrice = (cents: number) =>
+  new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(cents / 100);
+
+const parsePriceToCents = (value: string) => {
+  const numeric = parseFloat(value.replace(/[^\d.,-]/g, "").replace(",", "."));
+  if (!Number.isFinite(numeric) || numeric <= 0) return 0;
+  return Math.round(numeric * 100);
+};
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -40,18 +43,18 @@ const ProductPage = () => {
         if (!res.ok) throw new Error("Kon producten niet laden");
         const text = await res.text();
         const data = JSON.parse(text);
-    const mapped =
-      data?.products?.map((row: any, idx: number) => {
-        const name =
-          row.name ||
-          row.naam ||
+        const mapped: Product[] =
+          data?.products?.map((row: any, idx: number) => {
+            const name =
+              row.name ||
+              row.naam ||
               row.omschrijving ||
               row.description ||
               row.slug ||
               `Product ${idx + 1}`;
-        const rawPrice = row.sale_price || row.sale || row.price || row.prijs || "0";
-        const priceCents = parsePriceToCents(String(rawPrice));
-        const slug = (row.slug || row.id || name || `item-${idx}`).toString();
+            const rawPrice = row.sale_price || row.sale || row.price || row.prijs || "0";
+            const priceCents = parsePriceToCents(String(rawPrice));
+            const slug = (row.slug || row.id || name || `item-${idx}`).toString();
             const image =
               row.image ||
               row.image1 ||
@@ -74,7 +77,7 @@ const ProductPage = () => {
               images,
               stripe_link: row.stripe_link || "",
               price_id: row.price_id || "",
-            } as Product;
+            };
           }) || [];
         setProducts(mapped);
       } catch (err) {
@@ -93,7 +96,6 @@ const ProductPage = () => {
 
   const handleCheckout = async () => {
     if (!product) return;
-    // If a direct Stripe link exists, use it
     if (product.stripe_link) {
       window.location.href = product.stripe_link;
       return;
@@ -113,10 +115,7 @@ const ProductPage = () => {
           ],
         }),
       });
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Aanmaken van checkout sessie mislukt");
-      }
+      if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
       if (!data?.url) throw new Error("Geen checkout URL ontvangen");
       window.location.href = data.url;
@@ -177,7 +176,7 @@ const ProductPage = () => {
               <div className="p-8 space-y-4">
                 <p className="text-sm uppercase tracking-wide text-gray-500">Product</p>
                 <h1 className="text-3xl font-bold">{product.name}</h1>
-                <div className="text-2xl font-semibold text-emerald-600">
+                <div className="text-3xl font-semibold text-emerald-600">
                   {product.priceDisplay || formatPrice(product.priceCents)}
                 </div>
                 <p className="text-gray-700 leading-relaxed">
@@ -199,6 +198,11 @@ const ProductPage = () => {
                   </a>
                 </div>
                 {error && <p className="text-sm text-destructive">{error}</p>}
+                <div className="pt-4">
+                  <Link to="/shop" className="text-sm text-gray-500 hover:text-primary">
+                    ← Verder winkelen
+                  </Link>
+                </div>
               </div>
             </div>
             {product.images && product.images.length > 0 && (
@@ -223,16 +227,5 @@ const ProductPage = () => {
     </div>
   );
 };
-
-function parsePriceToCents(value: string) {
-  const numeric = parseFloat(value.replace(/[^\d.,-]/g, "").replace(",", "."));
-  if (!Number.isFinite(numeric) || numeric <= 0) return 0;
-  return Math.round(numeric * 100);
-}
-
-function formatPrice(cents: number) {
-  const f = new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" });
-  return f.format(cents / 100);
-}
 
 export default ProductPage;

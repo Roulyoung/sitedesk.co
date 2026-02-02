@@ -218,6 +218,45 @@ const Shop = () => {
     }
   };
 
+  const handleBuyNow = async (product: Product) => {
+    const priceCents = product.priceCents || parsePriceToCents(product.price || "0");
+    if (!priceCents || priceCents <= 0) {
+      setError("Geen geldige prijs voor dit product.");
+      return;
+    }
+    const item = {
+      id: product.id || product.name || "product",
+      name: product.name || "Product",
+      price: priceCents / 100,
+      quantity: 1,
+    };
+    // Direct link?
+    if (product.stripe_link) {
+      window.location.href = product.stripe_link;
+      return;
+    }
+    try {
+      setError(null);
+      setCheckoutLoadingId(item.id);
+      const res = await fetch(CHECKOUT_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart: [item] }),
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Aanmaken van checkout sessie mislukt");
+      }
+      const data = await res.json();
+      if (!data?.url) throw new Error("Geen checkout URL ontvangen");
+      window.location.href = data.url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Checkout mislukt");
+    } finally {
+      setCheckoutLoadingId(null);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <Header />
@@ -282,6 +321,23 @@ const Shop = () => {
               >
                 In winkelmand
                 <ArrowRight size={16} />
+              </button>
+              <button
+                onClick={() => handleBuyNow(product)}
+                disabled={checkoutLoadingId === (product.id || product.name)}
+                className="inline-flex items-center justify-center gap-2 bg-secondary text-secondary-foreground px-4 py-3 rounded-lg hover:opacity-90 transition disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {checkoutLoadingId === (product.id || product.name) ? (
+                  <>
+                    <Loader2 className="animate-spin" size={16} />
+                    Even geduld...
+                  </>
+                ) : (
+                  <>
+                    Koop nu
+                    <ArrowRight size={16} />
+                  </>
+                )}
               </button>
             </div>
           ))}
