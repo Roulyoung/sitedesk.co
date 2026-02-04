@@ -12,24 +12,14 @@ dist
 dist-ssr
 *.local
 .env
-wrangler.toml
 .wrangler
+wrangler.toml
 imagesmockup/
-scripts/upload-images-to-sheets.js
-src/admin/
-src/pages/Admin.tsx
-src/pages/Cart.tsx
-src/pages/Cancel.tsx
-src/pages/Success.tsx
-src/lib/cart.ts
-public/admin-manifest.json
-public/admin-sw.js
 worker/secretgogle/
 worker/pagespeed-api-*.json
 worker/npx
 worker/package-lock.json
 worker/package.json
-wrangler.toml
 functions/api/contact.ts
 
 # Editor directories and files
