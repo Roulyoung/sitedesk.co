@@ -9,10 +9,16 @@ SHEET_ID = "1e_J1XLl9Ux7A4USxCtq8D8XWyeeVg4dKM9sTVBTEI8Y"
 GOOGLE_SERVICE_ACCOUNT_EMAIL = "pagespeed-service-account@pagespeed-api-1768888396629.iam.gserviceaccount.com"
 CHECKOUT_SUCCESS_URL = "https://sitedesk.co/success"
 CHECKOUT_CANCEL_URL = "https://sitedesk.co/cancel"
+PRODUCTS_CACHE_TTL = 900
 
 # --- DO NOT ADD SECRETS BELOW THIS LINE ---
 # The variables below should be set via the CLI or Dashboard, 
 # not hardcoded in this file if you plan to use GitHub/Git.
+
+# KV namespace for products cache (create/bind in Cloudflare dashboard or via wrangler)
+kv_namespaces = [
+  { binding = "PRODUCTS_CACHE", id = "8e8096a9552840d3baca5d754eab01c0" }
+]
 
 [observability]
 enabled = true

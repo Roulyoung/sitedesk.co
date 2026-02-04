@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { ArrowRight, Loader2 } from "lucide-react";
+import { addToCart as addToCartStore, loadCart, type CartItem } from "@/lib/cart";
+import { useToast } from "@/components/ui/use-toast";
 
 type Product = {
   id: string;
@@ -14,8 +16,13 @@ type Product = {
   priceDisplay: string;
   image?: string;
   images?: string[];
+  category?: string;
+  tags?: string[];
   stripe_link?: string;
   price_id?: string;
+  delivery_time?: string;
+  delivery_cost?: string;
+  stock?: string;
 };
 
 const PRODUCTS_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/products";
@@ -32,9 +39,12 @@ const parsePriceToCents = (value: string) => {
 
 const ProductPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -42,7 +52,12 @@ const ProductPage = () => {
         const res = await fetch(PRODUCTS_ENDPOINT);
         if (!res.ok) throw new Error("Kon producten niet laden");
         const text = await res.text();
-        const data = JSON.parse(text);
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (_err) {
+          throw new Error("Onverwachte serverrespons (geen geldige JSON)");
+        }
         const mapped: Product[] =
           data?.products?.map((row: any, idx: number) => {
             const name =
@@ -63,9 +78,15 @@ const ProductPage = () => {
               row.image4 ||
               row.image5 ||
               "";
-            const images = [row.image1, row.image2, row.image3, row.image4, row.image5]
+            const images = [row.image, row.image1, row.image2, row.image3, row.image4, row.image5]
               .map((v: string) => v?.toString())
               .filter(Boolean);
+            const tags = ["tag1", "tag2", "tag3", "tag4", "tag5"]
+              .map((t) => (row[t] || "").toString().trim())
+              .filter(Boolean);
+            const deliveryCostCents = parsePriceToCents(String(row.delivery_cost || row.verzendkosten || "0"));
+            const deliveryTime = row.delivery_time || row.delivery || "1-2 dagen";
+            const stock = row.stock || row.voorraad || "";
             return {
               id: slug,
               slug,
@@ -75,8 +96,13 @@ const ProductPage = () => {
               priceDisplay: formatPrice(priceCents),
               image: image || "",
               images,
+              category: row.category || "",
+              tags,
               stripe_link: row.stripe_link || "",
               price_id: row.price_id || "",
+              delivery_time: deliveryTime,
+              delivery_cost: deliveryCostCents.toString(),
+              stock,
             };
           }) || [];
         setProducts(mapped);
@@ -90,13 +116,51 @@ const ProductPage = () => {
   }, []);
 
   const product = useMemo(
-    () => products.find((p) => p.id === (id || "") || p.slug === (id || "")),
+    () => {
+      const lookup = (id || "").toString().toLowerCase();
+      return products.find(
+        (p) =>
+          p.id.toLowerCase() === lookup ||
+          (p.slug || "").toString().toLowerCase() === lookup,
+      );
+    },
     [products, id],
   );
 
+  useEffect(() => {
+    if (product) {
+      const primary = product.image || product.images?.[0] || null;
+      setSelectedImage(primary);
+    }
+  }, [product]);
+
+  const handleAddToCart = () => {
+    if (!product) return;
+    const item: CartItem = {
+      id: product.id,
+      name: product.name,
+      priceCents: product.priceCents || 0,
+      quantity: 1,
+      image: product.image || product.images?.[0],
+      stripe_link: product.stripe_link,
+      price_id: product.price_id,
+      deliveryCostCents: parsePriceToCents(product.delivery_cost || "0"),
+      deliveryTime: product.delivery_time || "1-2 dagen",
+      stock: product.stock || "",
+    };
+    const current = loadCart();
+    addToCartStore(current, item);
+    toast({ title: "Toegevoegd aan winkelmand", description: product.name });
+    navigate("/cart");
+  };
+
   const handleCheckout = async () => {
     if (!product) return;
-    if (product.stripe_link) {
+    const existingCart = loadCart();
+    const shippingExisting = Math.max(...existingCart.map((c) => c.deliveryCostCents || 0), 0);
+    const shippingCents = Math.max(shippingExisting, parsePriceToCents(product.delivery_cost || "0"));
+
+    if (product.stripe_link && existingCart.length === 0 && shippingCents === 0) {
       window.location.href = product.stripe_link;
       return;
     }
@@ -105,14 +169,33 @@ const ProductPage = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          cart: [
-            {
-              id: product.id,
-              name: product.name,
-              price: product.priceCents / 100,
-              quantity: 1,
-            },
-          ],
+          cart: existingCart
+            .map((item) => ({
+              id: item.id,
+              name: item.name,
+              price: (item.priceCents || 0) / 100,
+              quantity: item.quantity,
+            }))
+            .concat([
+              {
+                id: product.id,
+                name: product.name,
+                price: product.priceCents / 100,
+                quantity: 1,
+              },
+            ])
+            .concat(
+              shippingCents > 0
+                ? [
+                    {
+                      id: "shipping",
+                      name: "Verzendkosten",
+                      price: shippingCents / 100,
+                      quantity: 1,
+                    },
+                  ]
+                : [],
+            ),
         }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -145,12 +228,12 @@ const ProductPage = () => {
           <div className="max-w-lg text-center space-y-4">
             <h1 className="text-3xl font-semibold">Product niet gevonden</h1>
             <p className="text-muted-foreground">{error || "Controleer de link of ga terug naar de shop."}</p>
-            <a
-              href="/shop"
+            <Link
+              to="/shop"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition"
             >
-              ← Terug naar shop
-            </a>
+              Terug naar shop
+            </Link>
           </div>
         </main>
         <Footer />
@@ -162,27 +245,98 @@ const ProductPage = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
       <Header />
-      <main className="flex-1">
+      {/* Sticky CTA for mobile */}
+      <div className="fixed bottom-0 left-0 right-0 z-20 bg-white/90 backdrop-blur md:hidden border-t border-border px-4 py-3 flex items-center justify-between gap-3">
+        <div className="text-sm">
+          <div className="font-semibold text-foreground">{product.name}</div>
+          <div className="text-primary font-bold">{product.priceDisplay || formatPrice(product.priceCents)}</div>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={handleAddToCart}
+            className="px-3 py-2 rounded-lg border border-border text-foreground"
+          >
+            In mand
+          </button>
+          <button
+            onClick={handleCheckout}
+            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground"
+          >
+            Koop nu
+          </button>
+        </div>
+      </div>
+      <main className="flex-1 bg-gradient-to-b from-gray-50 via-white to-gray-50">
         <section className="container mx-auto px-4 py-12">
-          <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
-            <div className="grid md:grid-cols-2 gap-0">
-              <div className="bg-gray-100 flex items-center justify-center">
+          <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur rounded-3xl shadow-xl overflow-hidden border border-border">
+            <div className="grid md:grid-cols-2">
+              <div className="bg-gray-100 relative">
                 <img
-                  src={product.image || "https://dummyimage.com/800x600/edf2f7/1a202c&text=Product"}
+                  src={
+                    selectedImage ||
+                    product.image ||
+                    product.images?.find(Boolean) ||
+                    "https://dummyimage.com/800x600/edf2f7/1a202c&text=Product"
+                  }
                   alt={product.name}
-                  className="object-cover w-full h-full max-h-[520px]"
+                  className="object-cover w-full h-full max-h-[560px] transition"
                 />
               </div>
-              <div className="p-8 space-y-4">
-                <p className="text-sm uppercase tracking-wide text-gray-500">Product</p>
-                <h1 className="text-3xl font-bold">{product.name}</h1>
-                <div className="text-3xl font-semibold text-emerald-600">
+              <div className="p-8 lg:p-10 space-y-5">
+                <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                  <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-600 border border-border">
+                    {product.category || "Product"}
+                  </span>
+                  {product.tags && product.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {product.tags.map((tag) => (
+                        <span key={tag} className="px-3 py-1 rounded-full bg-muted text-muted-foreground">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <h1 className="text-3xl lg:text-4xl font-bold text-foreground leading-tight">
+                  {product.name}
+                </h1>
+                <div className="text-4xl font-semibold text-emerald-600">
                   {product.priceDisplay || formatPrice(product.priceCents)}
+                </div>
+                <div className="space-y-1 text-sm text-muted-foreground">
+                  <div>Levering: {product.delivery_time || "1-2 dagen"}</div>
+                  {parsePriceToCents(product.delivery_cost || "0") > 0 ? (
+                    <div>
+                      Verzendkosten:{" "}
+                      {new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(
+                        parsePriceToCents(product.delivery_cost || "0") / 100,
+                      )}
+                    </div>
+                  ) : (
+                    <div>Gratis verzending</div>
+                  )}
                 </div>
                 <p className="text-gray-700 leading-relaxed">
                   {product.description || "Geen beschrijving beschikbaar."}
                 </p>
-                <div className="flex gap-3 pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-muted-foreground">
+                  <div className="rounded-lg border border-border px-4 py-3 bg-gray-50">
+                    <p className="font-semibold text-foreground">Direct te bestellen</p>
+                    <p>Veilige betaling via Stripe</p>
+                  </div>
+                  <div className="rounded-lg border border-border px-4 py-3 bg-gray-50">
+                    <p className="font-semibold text-foreground">Inclusief support</p>
+                    <p>Persoonlijk contact na je bestelling</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <button
+                    onClick={handleAddToCart}
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-border text-foreground hover:bg-muted transition"
+                  >
+                    In winkelmand
+                    <ArrowRight size={16} />
+                  </button>
                   <button
                     onClick={handleCheckout}
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition"
@@ -190,17 +344,17 @@ const ProductPage = () => {
                     Bestel nu
                     <ArrowRight size={16} />
                   </button>
-                  <a
-                    href="/shop"
+                  <Link
+                    to="/shop"
                     className="inline-flex items-center gap-2 px-4 py-3 rounded-lg border border-border text-foreground hover:bg-muted transition"
                   >
                     Terug naar shop
-                  </a>
+                  </Link>
                 </div>
                 {error && <p className="text-sm text-destructive">{error}</p>}
-                <div className="pt-4">
+                <div className="pt-2">
                   <Link to="/shop" className="text-sm text-gray-500 hover:text-primary">
-                    ← Verder winkelen
+                    Verder winkelen
                   </Link>
                 </div>
               </div>
@@ -209,12 +363,20 @@ const ProductPage = () => {
               <div className="border-t border-border bg-gray-50 px-6 py-4">
                 <div className="flex gap-3 overflow-x-auto">
                   {product.images.map((img, i) => (
-                    <img
+                    <button
                       key={i}
-                      src={img}
-                      alt={`${product.name} thumb ${i + 1}`}
-                      className="h-20 w-20 object-cover rounded-lg border border-border"
-                    />
+                      type="button"
+                      onClick={() => setSelectedImage(img)}
+                      className={`relative h-20 w-20 rounded-lg border transition ${
+                        selectedImage === img ? "ring-2 ring-primary border-primary" : "border-border"
+                      }`}
+                    >
+                      <img
+                        src={img}
+                        alt={`${product.name} thumb ${i + 1}`}
+                        className="h-full w-full object-cover rounded-lg"
+                      />
+                    </button>
                   ))}
                 </div>
               </div>
