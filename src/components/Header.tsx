@@ -26,8 +26,8 @@ const Header = ({ variant = "home" }: HeaderProps) => {
 
   const cta =
     variant === "webshop"
-      ? { href: "#contact", label: "Plan een speed-call" }
-      : { href: "#contact", label: "Start voor ƒ,ª1/dag" };
+      ? { href: "#contact", label: "Plan een call" }
+      : { href: "#contact", label: "Plan een call" };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border/50">

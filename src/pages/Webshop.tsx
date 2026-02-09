@@ -139,7 +139,7 @@ const Webshop = () => {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button asChild variant="hero" size="lg" className="group">
                     <a href="#contact">
-                      Plan een speed-call
+                      Plan een call
                       <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                     </a>
                   </Button>
@@ -262,6 +262,76 @@ const Webshop = () => {
               </div>
               <div className="mt-4 p-4 rounded-xl bg-success/10 text-success text-sm">
                 0ms gevoel: Edge delivery + lean JS bundels. Geen plugins, geen warm-up.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Live Experience */}
+        <section className="container mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-4">
+              <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider">
+                Live experience
+              </span>
+              <h3 className="text-3xl md:text-4xl font-bold text-foreground">Genoeg over techniek. Ervaar het zelf.</h3>
+              <p className="text-muted-foreground text-lg">
+                We kunnen je alles vertellen over onze architectuur, maar snelheid moet je voelen. Onze demo-shop draait
+                op exact dezelfde engine die we voor jou inzetten. Geen caching-trucs, geen concessies. Alleen de
+                snelste e-commerce ervaring van 2026.
+              </p>
+              <div className="grid sm:grid-cols-3 gap-4">
+                {[
+                  { value: "100/100", label: "Google PageSpeed" },
+                  { value: "Instant", label: "Pagina overgangen" },
+                  { value: "0ms", label: "Database latency" },
+                ].map((metric) => (
+                  <div key={metric.label} className="p-4 rounded-xl bg-card border border-border shadow-md">
+                    <div className="text-2xl font-bold text-foreground">{metric.value}</div>
+                    <p className="text-sm text-muted-foreground">{metric.label}</p>
+                  </div>
+                ))}
+              </div>
+              <Button
+                asChild
+                variant="hero"
+                size="lg"
+                className="shadow-glow"
+              >
+                <a href="/shop" data-umami-event="view-demo-shop">
+                  Lanceer Demo Shop
+                </a>
+              </Button>
+            </div>
+            <div className="relative">
+              <div className="absolute -inset-4 bg-accent/10 blur-3xl rounded-3xl" aria-hidden />
+              <div className="relative bg-card border border-border rounded-2xl shadow-xl overflow-hidden">
+                <div className="bg-secondary/60 px-4 py-3 flex items-center gap-2 border-b border-border">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-destructive/50" />
+                    <div className="w-3 h-3 rounded-full bg-accent/50" />
+                    <div className="w-3 h-3 rounded-full bg-success/50" />
+                  </div>
+                  <div className="text-sm text-muted-foreground">demo.sitedesk.co/shop</div>
+                </div>
+                <div className="aspect-[4/3] bg-gradient-to-br from-primary/10 via-background to-accent/10 p-6 flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <div className="h-4 w-24 bg-primary/20 rounded" />
+                    <div className="h-6 w-48 bg-primary/30 rounded" />
+                    <div className="h-3 w-32 bg-muted rounded" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="h-20 rounded-xl bg-card border border-border shadow-sm" />
+                    <div className="h-20 rounded-xl bg-card border border-border shadow-sm" />
+                    <div className="h-20 rounded-xl bg-card border border-border shadow-sm" />
+                    <div className="h-20 rounded-xl bg-card border border-border shadow-sm" />
+                  </div>
+                  <div className="flex justify-end">
+                    <Button asChild variant="hero" size="sm">
+                      <a href="/shop" data-umami-event="view-demo-shop">Naar demo</a>
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
