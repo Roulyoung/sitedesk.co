@@ -11,6 +11,7 @@ import Success from "./pages/Success";
 import Admin from "./pages/Admin";
 import Cart from "./pages/Cart";
 import Cancel from "./pages/Cancel";
+import Webshop from "./pages/Webshop";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/shop" element={<Shop />} />
+          <Route path="/webshop" element={<Webshop />} />
           <Route path="/product/:id" element={<Product />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/success" element={<Success />} />

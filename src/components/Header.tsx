@@ -2,22 +2,39 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 
-const Header = () => {
+type HeaderProps = {
+  variant?: "home" | "webshop";
+};
+
+const Header = ({ variant = "home" }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const navLinks = [
-    { href: "#hoe-het-werkt", label: "Hoe het werkt" },
-    { href: "#features", label: "Wat je krijgt" },
-    { href: "#faq", label: "FAQ" },
-    { href: "#contact", label: "Contact" },
-  ];
+  const navLinks =
+    variant === "webshop"
+      ? [
+          { href: "#techniek", label: "Techniek" },
+          { href: "#aanbod", label: "Aanbod" },
+          { href: "#sheets", label: "Sheets" },
+          { href: "#contact", label: "Contact" },
+        ]
+      : [
+          { href: "#hoe-het-werkt", label: "Hoe het werkt" },
+          { href: "#features", label: "Wat je krijgt" },
+          { href: "#faq", label: "FAQ" },
+          { href: "#contact", label: "Contact" },
+        ];
+
+  const cta =
+    variant === "webshop"
+      ? { href: "#contact", label: "Plan een speed-call" }
+      : { href: "#contact", label: "Start voor ƒ,ª1/dag" };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border/50">
       <div className="container mx-auto">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2">
+          <a href="/" className="flex items-center gap-2">
             <img
               src="/icon-sitedesk.png"
               alt="Sitedesk logo"
@@ -41,9 +58,19 @@ const Header = () => {
           </nav>
 
           {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className={`border-accent/60 text-accent hover:bg-accent/10 ${
+                variant === "webshop" ? "bg-accent/5 shadow-glow border-accent/80" : ""
+              }`}
+            >
+              <a href="/webshop">Webshop</a>
+            </Button>
             <Button asChild variant="hero" size="default">
-              <a href="#contact">Start voor €1/dag</a>
+              <a href={cta.href}>{cta.label}</a>
             </Button>
           </div>
 
@@ -71,8 +98,17 @@ const Header = () => {
                   {link.label}
                 </a>
               ))}
-              <Button asChild variant="hero" size="lg" className="mt-4">
-                <a href="#contact">Start voor €1/dag</a>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="border-accent text-accent hover:bg-accent/10"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <a href="/webshop">Webshop</a>
+              </Button>
+              <Button asChild variant="hero" size="lg" className="mt-2">
+                <a href={cta.href}>{cta.label}</a>
               </Button>
             </nav>
           </div>

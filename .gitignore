@@ -21,6 +21,8 @@ worker/npx
 worker/package-lock.json
 worker/package.json
 functions/api/contact.ts
+secrets-test.txt
+secrets-live.txt
 
 # Editor directories and files
 .vscode/*

@@ -2,9 +2,26 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MessageSquare } from "lucide-react";
 
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
 const Contact = () => {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const trackConversion = () => {
+    if (typeof window !== "undefined" && typeof window.gtag === "function") {
+      window.gtag("event", "conversion", {
+        send_to: "AW-16878177204/contact_form_submit",
+        value: 1.0,
+        currency: "EUR",
+      });
+      window.gtag("event", "generate_lead");
+    }
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -35,6 +52,7 @@ const Contact = () => {
       }
 
       setStatus("success");
+      trackConversion();
       form.reset();
     } catch (err) {
       setStatus("error");
