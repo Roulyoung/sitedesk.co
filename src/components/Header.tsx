@@ -8,7 +8,7 @@ const navLinks = [
   { to: "/#aanbod", label: "Aanbod", type: "hash" as const },
   { to: "/#sheets", label: "Sheets", type: "hash" as const },
   { to: "/shop", label: "Demo", type: "route" as const },
-  { to: "/#contact", label: "Contact", type: "hash" as const },
+  { to: "/blog", label: "Blog", type: "route" as const },
   { to: "/zakelijke-websites", label: "Zakelijke Websites", type: "route" as const },
 ];
 

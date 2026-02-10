@@ -12,6 +12,8 @@ import Admin from "./pages/Admin";
 import Cart from "./pages/Cart";
 import Cancel from "./pages/Cancel";
 import Webshop from "./pages/Webshop";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,8 @@ const App = () => (
           <Route path="/webshop" element={<Webshop />} />
           <Route path="/product/:id" element={<Product />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/success" element={<Success />} />
           <Route path="/cancel" element={<Cancel />} />
           <Route path="/admin/*" element={<Admin />} />
