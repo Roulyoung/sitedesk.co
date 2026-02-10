@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, CalendarDays, Tag } from "lucide-react";
-import { blogPosts, PAGE_SIZE, paginate, type BlogPost } from "@/lib/blogData";
+import { posts, PAGE_SIZE, paginate, type Post } from "@/lib/blogData";
 
 const Pagination = ({ page, totalPages, onChange }: { page: number; totalPages: number; onChange: (page: number) => void }) => {
   if (totalPages <= 1) return null;
@@ -45,8 +45,8 @@ const Pagination = ({ page, totalPages, onChange }: { page: number; totalPages: 
 
 const Blog = () => {
   const [page, setPage] = useState(1);
-  const totalPages = useMemo(() => Math.max(1, Math.ceil(blogPosts.length / PAGE_SIZE)), []);
-  const posts = useMemo(() => paginate(blogPosts, page, PAGE_SIZE), [page]);
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(posts.length / PAGE_SIZE)), []);
+  const visiblePosts = useMemo(() => paginate(posts, page, PAGE_SIZE), [page]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -69,7 +69,7 @@ const Blog = () => {
           <Pagination page={page} totalPages={totalPages} onChange={setPage} />
 
           <div className="grid md:grid-cols-2 gap-8">
-            {posts.map((post) => (
+            {visiblePosts.map((post) => (
               <article
                 key={post.slug}
                 className="p-6 rounded-2xl border border-border bg-card shadow-sm hover:shadow-md transition-shadow"
