@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, Tag, ArrowLeft, ArrowRight } from "lucide-react";
+import { CalendarDays, Tag, ArrowLeft, ArrowRight, Share2 } from "lucide-react";
 import { blogPosts, PAGE_SIZE, paginate } from "@/lib/blogData";
 
 const BlogPost = () => {
@@ -23,10 +23,54 @@ const BlogPost = () => {
   const title = current.title;
   const description =
     "Hoe elke seconde vertraging direct omzet kost en waarom Edge-architectuur dit definitief oplost.";
+  const publishedDate = "2026-02-10";
+  const readingTime = "6 min";
 
   useEffect(() => {
     document.title = `${title} | Sitedesk Blog`;
     setPage(initialPage);
+
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute("content", description);
+    } else {
+      const newMeta = document.createElement("meta");
+      newMeta.name = "description";
+      newMeta.content = description;
+      document.head.appendChild(newMeta);
+    }
+
+    const ldJson = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: title,
+      datePublished: publishedDate,
+      dateModified: publishedDate,
+      author: { "@type": "Organization", name: "Sitedesk" },
+      publisher: {
+        "@type": "Organization",
+        name: "Sitedesk",
+        logo: {
+          "@type": "ImageObject",
+          url: "https://sitedesk.co/icon-sitedesk.png",
+        },
+      },
+      description,
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": window.location.href,
+      },
+    };
+
+    const scriptId = "structured-data-article";
+    let script = document.getElementById(scriptId) as HTMLScriptElement | null;
+    if (!script) {
+      script = document.createElement("script");
+      script.id = scriptId;
+      script.type = "application/ld+json";
+      document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(ldJson);
   }, [title]);
 
   const handleBack = () => {
@@ -74,8 +118,8 @@ const BlogPost = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="pt-24">
-        <article className="container mx-auto max-w-3xl pb-20">
-          <div className="flex items-center justify-between mb-6">
+        <article className="container mx-auto max-w-4xl pb-20">
+          <div className="mb-6 flex items-center justify-between">
             <Button variant="outline" size="sm" onClick={handleBack} className="gap-2">
               <ArrowLeft className="w-4 h-4" />
               Terug naar blogoverzicht
@@ -85,23 +129,44 @@ const BlogPost = () => {
               High-performance e-commerce inzichten
             </div>
           </div>
-          <header className="space-y-4 mb-8">
-            <p className="text-sm text-muted-foreground uppercase tracking-wide">Blog</p>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground">{title}</h1>
-            <p className="text-lg text-muted-foreground">{description}</p>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span className="inline-flex items-center gap-2">
-                <CalendarDays className="w-4 h-4" />
-                10 februari 2026
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <Tag className="w-4 h-4" />
-                Performance, Edge, CRO
-              </span>
-            </div>
-          </header>
 
-          <section className="prose prose-invert prose-lg max-w-none">
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-card/80 backdrop-blur">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10" />
+            <div className="relative p-8 md:p-10 space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 text-accent text-xs font-semibold">
+                <Tag className="w-4 h-4" />
+                Blog
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-tight">{title}</h1>
+              <p className="text-lg text-muted-foreground max-w-3xl">{description}</p>
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                <span className="inline-flex items-center gap-2">
+                  <CalendarDays className="w-4 h-4" />
+                  10 februari 2026
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <Tag className="w-4 h-4" />
+                  Performance, Edge, CRO
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <Share2 className="w-4 h-4" />
+                  {readingTime} leestijd
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button asChild variant="hero" size="sm">
+                  <a href="/#contact">Plan een Speed-Check</a>
+                </Button>
+                <Button asChild variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10">
+                  <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
+                    WhatsApp direct
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <section className="prose prose-invert prose-lg max-w-none mt-10 space-y-6 leading-relaxed">
             <p>
               Hoe elke seconde vertraging je direct omzet kost en waarom de Edge-architectuur dit definitief oplost.
             </p>
