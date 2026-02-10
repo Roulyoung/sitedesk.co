@@ -396,19 +396,7 @@ const BlogPost = () => {
               <div className="flex items-center justify-between">
                 <h4 className="text-xl font-semibold text-foreground">Gerelateerde artikelen</h4>
               </div>
-              <div className="grid md:grid-cols-3 gap-4">
-                {[
-                  "Edge Commerce: zo haal je 100/100 op Core Web Vitals",
-                  "Waarom je checkout 2 kliks moet zijn (en niets meer)",
-                  "Migreren zonder omzetverlies: een 10-dagen draaiboek",
-                ].map((relTitle) => (
-                  <div key={relTitle} className="p-5 rounded-2xl border border-border bg-card hover:shadow-md transition-shadow">
-                    <h5 className="text-lg font-semibold text-foreground leading-snug">{relTitle}</h5>
-                    <p className="text-sm text-muted-foreground mt-2">Lees hoe Sitedesk dit in praktijk brengt voor scale-ups.</p>
-                    <a href="/blog" className="text-accent text-sm font-semibold mt-3 inline-block">Lees artikel</a>
-                  </div>
-                ))}
-              </div>
+              <p className="text-sm text-muted-foreground">Binnenkort vind je hier onze meest relevante artikelen.</p>
             </div>
           </section>
 
