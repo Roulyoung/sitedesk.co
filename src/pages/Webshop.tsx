@@ -114,7 +114,7 @@ const Webshop = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header variant="webshop" />
+      <Header />
       <main className="pt-20 md:pt-24 space-y-24 md:space-y-32">
         {/* Hero */}
         <section id="speed-shock" className="relative overflow-hidden">
@@ -130,11 +130,11 @@ const Webshop = () => {
                   <span>Headless Edge E-commerce</span>
                 </div>
                 <h1 className="text-4xl md:text-5xl font-bold leading-tight text-foreground">
-                  De Snelheids-shock: Van 10 seconden naar 0ms.
+                  De snelste e-commerce engine voor ambitieuze merken.
                 </h1>
                 <p className="text-lg text-muted-foreground max-w-2xl">
-                  Managed Headless E-commerce voor MKB. 100/100 PageSpeed, beheer via Google Sheets,
-                  en conversie-optimalisatie zonder dure plugins.
+                  Stop met het verliezen van omzet door trage systemen. Wij zijn je volledig beheerde tech-afdeling en
+                  bouwen high-performance webshops op Edge-technologie die net zo makkelijk te beheren zijn als een spreadsheet.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button asChild variant="hero" size="lg" className="group">
@@ -157,16 +157,16 @@ const Webshop = () => {
                 </div>
                 <div className="grid sm:grid-cols-3 gap-3 text-sm text-muted-foreground">
                   <div className="p-3 rounded-xl bg-card border border-border shadow-sm">
-                    <div className="text-foreground font-semibold">0ms Edge</div>
-                    <p>Serverless deploys, wereldwijd geocache.</p>
+                    <div className="text-foreground font-semibold">Volledig ontzorgd</div>
+                    <p>Wij zijn je vaste tech-team, dagelijkse wijzigingen inbegrepen.</p>
                   </div>
                   <div className="p-3 rounded-xl bg-card border border-border shadow-sm">
-                    <div className="text-foreground font-semibold">100/100</div>
-                    <p>Core Web Vitals standaard groen.</p>
+                    <div className="text-foreground font-semibold">Geen developer nodig</div>
+                    <p>Stuur wensen via WhatsApp of telefoon, wij regelen het.</p>
                   </div>
                   <div className="p-3 rounded-xl bg-card border border-border shadow-sm">
-                    <div className="text-foreground font-semibold">Sheets-native</div>
-                    <p>Team kan beheren zonder developer.</p>
+                    <div className="text-foreground font-semibold">Snel resultaat</div>
+                    <p>Aanpassingen en CRO-tests zonder wachtrij.</p>
                   </div>
                 </div>
               </div>
@@ -176,7 +176,7 @@ const Webshop = () => {
                   <div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-semibold text-foreground">Shopify/WooCommerce</span>
-                      <span className="text-destructive font-bold text-lg">10s</span>
+                      <span className="text-destructive font-bold text-lg">3s - 10s</span>
                     </div>
                     <div className="h-3 rounded-full bg-destructive/10 overflow-hidden mt-2">
                       <div className="h-full w-[90%] bg-destructive/80 animate-[pulse_2s_ease-in-out_infinite]" />
@@ -209,7 +209,7 @@ const Webshop = () => {
         </section>
 
         {/* Techniek */}
-        <section id="techniek" className="container mx-auto">
+        <section id="techniek" className="container mx-auto scroll-mt-28">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div className="space-y-4">
               <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider">
@@ -292,16 +292,32 @@ const Webshop = () => {
                   </div>
                 ))}
               </div>
-              <Button
-                asChild
-                variant="hero"
-                size="lg"
-                className="shadow-glow"
-              >
-                <a href="/shop" data-umami-event="view-demo-shop">
-                  Lanceer Demo Shop
-                </a>
-              </Button>
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  asChild
+                  variant="hero"
+                  size="lg"
+                  className="shadow-glow"
+                >
+                  <a href="/shop" data-umami-event="view-demo-shop">
+                    Lanceer Demo Shop
+                  </a>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="border-accent text-accent hover:bg-accent/10"
+                >
+                  <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
+                    <MessageCircle />
+                    WhatsApp direct
+                  </a>
+                </Button>
+                <Button asChild variant="hero" size="lg">
+                  <a href="#contact">Plan een call</a>
+                </Button>
+              </div>
             </div>
             <div className="relative">
               <div className="absolute -inset-4 bg-accent/10 blur-3xl rounded-3xl" aria-hidden />
@@ -423,7 +439,7 @@ const Webshop = () => {
         </section>
 
         {/* Pilot / Aanbod */}
-        <section id="aanbod" className="container mx-auto">
+        <section id="aanbod" className="container mx-auto scroll-mt-28">
           <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary to-primary/80 text-primary-foreground p-8 md:p-12 shadow-xl">
             <div className="grid lg:grid-cols-2 gap-10 items-center">
               <div className="space-y-5">
@@ -443,14 +459,21 @@ const Webshop = () => {
                     <p className="text-2xl font-semibold text-foreground">€150 p/m (lifetime)</p>
                   </div>
                   <p className="text-sm text-muted-foreground mt-4">
-                    Inclusief hosting, onbeperkt support en alle maatwerk plugins die je nodig hebt.
+                    Inclusief hosting, onbeperkt support en doorontwikkeling van je shop: features, CRO-tests en koppelingen. Niet alleen hosting.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3 mt-6">
                     <Button asChild variant="hero" size="lg" className="bg-primary text-primary-foreground">
-                      <a href="#contact">Claim pilotplek</a>
+                      <a href="#contact">Plan een call</a>
                     </Button>
-                    <Button asChild variant="heroOutline" size="lg" className="border-primary-foreground text-primary-foreground">
-                      <a href="#techniek">Zie de techniek</a>
+                    <Button
+                      asChild
+                      variant="heroOutline"
+                      size="lg"
+                      className="border-primary-foreground text-primary-foreground"
+                    >
+                      <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
+                        WhatsApp direct
+                      </a>
                     </Button>
                   </div>
                 </div>
@@ -490,7 +513,7 @@ const Webshop = () => {
         </section>
 
         {/* Google Sheets beheer */}
-        <section id="sheets" className="container mx-auto">
+        <section id="sheets" className="container mx-auto scroll-mt-28">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-4">
               <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider">
@@ -561,14 +584,40 @@ const Webshop = () => {
               <h3 className="text-3xl font-bold text-foreground">De &quot;We Got You&quot; belofte</h3>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Stop met het zoeken naar freelancers of het kopen van dure plugins. Wij zijn je tech-team.
-                Heb je een nieuwe functie nodig? Een extra koppeling? Een maatwerk veld? Wij bouwen en onderhouden het
-                voor je. Zonder extra facturen, zonder gedoe.
+                Stuur wijzigingen via WhatsApp of telefoon en wij voeren ze uit. Geen extra developers nodig en geen losse facturen.
               </p>
+              <ul className="space-y-2 text-muted-foreground">
+                <li className="flex gap-2">
+                  <CheckCircle2 className="text-success" size={18} /> WhatsApp of bel: wij plannen en passen direct aan.
+                </li>
+                <li className="flex gap-2">
+                  <CheckCircle2 className="text-success" size={18} /> Nieuwe features, CRO-tests en koppelingen vallen binnen je maandbedrag.
+                </li>
+                <li className="flex gap-2">
+                  <CheckCircle2 className="text-success" size={18} /> Geen developers aannemen of tickets beheren: wij doen het werk.
+                </li>
+              </ul>
               <div className="p-4 rounded-2xl bg-card border border-border shadow-md">
                 <p className="text-foreground font-semibold mb-2">Exclusieve Pilot Deal</p>
                 <p className="text-muted-foreground">
-                  Tijdelijke Early Adopter Deal: Nu slechts €150,- per maand (lifetime!) en setup tijdelijk €1.000 voor de eerste 10 klanten. Inclusief hosting, onbeperkt support en alle maatwerk plugins die je nodig hebt. Wij bouwen wat jij nodig hebt, jij focust op de verkoop.
+                  Tijdelijke Early Adopter Deal: €150,- per maand (lifetime) en setup €1.000 voor de eerste 10 klanten. Inclusief hosting, onbeperkt support en doorontwikkeling van je shop (features, CRO-tests, koppelingen). Wij bouwen wat jij nodig hebt, jij focust op de verkoop.
                 </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button asChild variant="hero" size="lg">
+                  <a href="#contact">Plan een call</a>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="border-accent text-accent hover:bg-accent/10"
+                >
+                  <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
+                    <MessageCircle />
+                    WhatsApp direct
+                  </a>
+                </Button>
               </div>
             </div>
             <div className="space-y-4">
@@ -603,7 +652,7 @@ const Webshop = () => {
           </div>
         </section>
 
-        <section id="contact" className="container mx-auto pb-20">
+        <section id="contact" className="container mx-auto pb-20 scroll-mt-28">
           <div className="grid lg:grid-cols-2 gap-12 items-start bg-card border border-border rounded-3xl p-8 md:p-12 shadow-lg">
             <div className="space-y-4">
               <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider">
@@ -626,6 +675,9 @@ const Webshop = () => {
                     <MessageCircle />
                     WhatsApp direct
                   </a>
+                </Button>
+                <Button asChild variant="hero" size="lg">
+                  <a href="#contact">Plan een call</a>
                 </Button>
               </div>
             </div>

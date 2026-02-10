@@ -37,28 +37,35 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Links */}
+          {/* Oplossingen */}
+          <div>
+            <h4 className="font-semibold mb-4">Onze Oplossingen</h4>
+            <ul className="space-y-2 text-primary-foreground/70">
+              <li>
+                <a href="/" className="hover:text-primary-foreground transition-colors">
+                  Webshops
+                </a>
+              </li>
+              <li>
+                <a href="/zakelijke-websites" className="hover:text-primary-foreground transition-colors">
+                  Zakelijke Websites
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Navigatie */}
           <div>
             <h4 className="font-semibold mb-4">Navigatie</h4>
             <ul className="space-y-2 text-primary-foreground/70">
               <li>
-                <a href="#hoe-het-werkt" className="hover:text-primary-foreground transition-colors">
-                  Hoe het werkt
+                <a href="/#contact" className="hover:text-primary-foreground transition-colors">
+                  Plan een call
                 </a>
               </li>
               <li>
-                <a href="#features" className="hover:text-primary-foreground transition-colors">
-                  Wat je krijgt
-                </a>
-              </li>
-              <li>
-                <a href="#faq" className="hover:text-primary-foreground transition-colors">
-                  FAQ
-                </a>
-              </li>
-              <li>
-                <a href="#contact" className="hover:text-primary-foreground transition-colors">
-                  Contact
+                <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer" className="hover:text-primary-foreground transition-colors">
+                  WhatsApp direct
                 </a>
               </li>
             </ul>

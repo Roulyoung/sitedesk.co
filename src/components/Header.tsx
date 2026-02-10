@@ -1,33 +1,65 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, MessageCircle } from "lucide-react";
 
-type HeaderProps = {
-  variant?: "home" | "webshop";
-};
+const navLinks = [
+  { to: "/#techniek", label: "Techniek", type: "hash" as const },
+  { to: "/#aanbod", label: "Aanbod", type: "hash" as const },
+  { to: "/#sheets", label: "Sheets", type: "hash" as const },
+  { to: "/shop", label: "Demo", type: "route" as const },
+  { to: "/#contact", label: "Contact", type: "hash" as const },
+  { to: "/zakelijke-websites", label: "Zakelijke Websites", type: "route" as const },
+];
 
-const Header = ({ variant = "home" }: HeaderProps) => {
+const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+  const [prevPath, setPrevPath] = useState(location.pathname);
 
-  const navLinks =
-    variant === "webshop"
-      ? [
-          { href: "#techniek", label: "Techniek" },
-          { href: "#aanbod", label: "Aanbod" },
-          { href: "#sheets", label: "Sheets" },
-          { href: "#contact", label: "Contact" },
-        ]
-      : [
-          { href: "#hoe-het-werkt", label: "Hoe het werkt" },
-          { href: "#features", label: "Wat je krijgt" },
-          { href: "#faq", label: "FAQ" },
-          { href: "#contact", label: "Contact" },
-        ];
+  const handleNavClick = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    to: string,
+    type: "route" | "hash",
+  ) => {
+    if (type !== "hash") return;
+    const url = new URL(to, window.location.origin);
+    const targetId = url.hash.replace("#", "");
+    if (location.pathname === url.pathname) {
+      event.preventDefault();
+      setIsMenuOpen(false);
+      scrollToHash(targetId);
+    }
+  };
 
-  const cta =
-    variant === "webshop"
-      ? { href: "#contact", label: "Plan een call" }
-      : { href: "#contact", label: "Plan een call" };
+  const isActive = (to: string, type: "route" | "hash") => {
+    if (type === "hash") {
+      const url = new URL(to, window.location.origin);
+      return location.pathname === url.pathname && location.hash === url.hash;
+    }
+    const url = new URL(to, window.location.origin);
+    return location.pathname === url.pathname;
+  };
+
+  const scrollToHash = (targetId: string) => {
+    const el = document.getElementById(targetId);
+    if (!el) return;
+    const y = el.getBoundingClientRect().top + window.scrollY - 96; // offset for fixed header
+    window.scrollTo({ top: y, behavior: "smooth" });
+  };
+
+  // Ensure hash navigation works after route changes
+  useEffect(() => {
+    if (location.pathname !== prevPath && !location.hash) {
+      window.scrollTo({ top: 0, behavior: "auto" });
+      setPrevPath(location.pathname);
+    }
+
+    if (location.hash) {
+      const targetId = location.hash.replace("#", "");
+      scrollToHash(targetId);
+    }
+  }, [location.pathname, location.hash]);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border/50">
@@ -46,31 +78,38 @@ const Header = ({ variant = "home" }: HeaderProps) => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              const active = isActive(link.to, link.type);
+              return (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  className={`text-sm font-medium transition-colors ${
+                    active
+                      ? "text-foreground border-b-2 border-accent pb-1"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  onClick={(e) => {
+                    setIsMenuOpen(false);
+                    handleNavClick(e, link.to, link.type);
+                  }}
+                >
+                  {link.label}
+                </NavLink>
+              );
+            })}
           </nav>
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
-            <Button
-              asChild
-              variant="outline"
-              size="sm"
-              className={`border-accent/60 text-accent hover:bg-accent/10 ${
-                variant === "webshop" ? "bg-accent/5 shadow-glow border-accent/80" : ""
-              }`}
-            >
-              <a href="/webshop">Webshop</a>
+            <Button asChild variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10">
+              <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
+                <MessageCircle className="w-4 h-4" />
+                WhatsApp
+              </a>
             </Button>
             <Button asChild variant="hero" size="default">
-              <a href={cta.href}>{cta.label}</a>
+              <a href="/#contact">Plan een call</a>
             </Button>
           </div>
 
@@ -88,16 +127,26 @@ const Header = ({ variant = "home" }: HeaderProps) => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-border/50 animate-fade-in">
             <nav className="flex flex-col gap-4">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="text-muted-foreground hover:text-foreground transition-colors text-base font-medium py-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.label}
-                </a>
-              ))}
+              {navLinks.map((link) => {
+                const active = isActive(link.to, link.type);
+                return (
+                  <NavLink
+                    key={link.to}
+                    to={link.to}
+                    className={`text-base font-medium py-2 ${
+                      active
+                        ? "text-foreground border-b-2 border-accent pb-1"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                    onClick={(e) => {
+                      setIsMenuOpen(false);
+                      handleNavClick(e, link.to, link.type);
+                    }}
+                  >
+                    {link.label}
+                  </NavLink>
+                );
+              })}
               <Button
                 asChild
                 variant="outline"
@@ -105,10 +154,13 @@ const Header = ({ variant = "home" }: HeaderProps) => {
                 className="border-accent text-accent hover:bg-accent/10"
                 onClick={() => setIsMenuOpen(false)}
               >
-                <a href="/webshop">Webshop</a>
+                <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
+                  <MessageCircle />
+                  WhatsApp
+                </a>
               </Button>
-              <Button asChild variant="hero" size="lg" className="mt-2">
-                <a href={cta.href}>{cta.label}</a>
+              <Button asChild variant="hero" size="lg" className="mt-2" onClick={() => setIsMenuOpen(false)}>
+                <a href="/#contact">Plan een call</a>
               </Button>
             </nav>
           </div>
