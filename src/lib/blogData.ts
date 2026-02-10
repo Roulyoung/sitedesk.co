@@ -103,4 +103,32 @@ export const posts: Post[] = [
       { type: "text", value: "Gepubliceerd door Sitedesk Performance Lab — Wij bouwen de snelste e-commerce infrastructuur op de Edge." },
     ],
   },
+  {
+    id: "verborgen-kosten-woocommerce",
+    title: "De verborgen kosten van WooCommerce: Waarom je webshop-groei stagneert",
+    excerpt: "In een wereld waar AI de standaarden voor snelheid en veiligheid bepaalt, is de traditionele WordPress-shop niet langer een fundament, maar een risico.",
+    date: "2026-02-10",
+    tags: ["E-commerce", "Performance", "Security"],
+    readingTime: "5 min",
+    content: [
+      { type: "text", value: "Je webshop begon waarschijnlijk met WooCommerce. Het is gratis en iedereen gebruikt het. Maar in 2026 is het veranderd in een blok aan het been." },
+      { type: "h2", value: "De illusie van gratis: De verborgen Legacy Tax" },
+      { type: "text", value: "De grootste leugen in e-commerce is dat WooCommerce gratis is. De infrastructuur om een zware PHP-site snel te houden is peperduur. Voor Google is een trage TTFB een direct signaal om je lager te ranken." },
+      { type: "h2", value: "De AI-Security Paradox: Waarom WordPress een schietschijf is" },
+      { type: "text", value: "Met AI scannen bots 24/7 op kwetsbaarheden in plugins. Omdat WooCommerce-shops vaak op 20+ plugins draaien, is er altijd wel ergens een lek." },
+      {
+        type: "calc_box",
+        data: {
+          leftTitle: "WooCommerce onderhoud",
+          leftItems: ["Onderhoud, patches en conflicten: ±€360 p/m"],
+          rightTitle: "Sitedesk Edge",
+          rightItems: ["Vast bedrag: €150 p/m", "Geen onderhoud, geen updates"],
+          summary: "Besparing: €2.520 per jaar + 100% minder stress.",
+        },
+      },
+      { type: "h2", value: "De verlossing van de ontkoppelde backend" },
+      { type: "text", value: "De toekomst is Headless. Beheer je voorraad simpelweg in een Google Sheet. Het is sneller, veiliger en AI-ready." },
+      { type: "cta_box", data: { title: "Pilot Deal: Stap nu over naar de Edge", body: "€1.000 eenmalig, €150 p/m. Wij migreren je producten, richten je Google Sheets-backend in en zetten je shop op de wereldwijde Edge-infrastructuur." } },
+    ],
+  },
 ];
