@@ -4,17 +4,28 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, Tag, ArrowLeft, ArrowRight, Share2 } from "lucide-react";
+import { CalendarDays, Tag, ArrowLeft, ArrowRight, Share2, CheckCircle2 } from "lucide-react";
 import { blogPosts, PAGE_SIZE, paginate } from "@/lib/blogData";
+
+const tocItems = [
+  { id: "hard-cijfers", label: "De harde cijfers" },
+  { id: "centrale-database", label: "Centrale database" },
+  { id: "edge-oplossing", label: "Edge-architectuur" },
+  { id: "rekensom", label: "Rekensom" },
+  { id: "cta-breakout", label: "Pilot Deal" },
+  { id: "waarom-sitedesk", label: "Waarom Sitedesk" },
+  { id: "klaar-edge", label: "Klaar voor 0ms" },
+];
 
 const BlogPost = () => {
   const { slug } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-
   const searchParams = new URLSearchParams(location.search);
   const initialPage = Number(searchParams.get("page")) || 1;
+
   const [page, setPage] = useState(initialPage);
+  const [activeSection, setActiveSection] = useState<string>(tocItems[0].id);
 
   const totalPages = useMemo(() => Math.max(1, Math.ceil(blogPosts.length / PAGE_SIZE)), []);
   const listing = useMemo(() => paginate(blogPosts, page, PAGE_SIZE), [page]);
@@ -71,7 +82,22 @@ const BlogPost = () => {
       document.head.appendChild(script);
     }
     script.textContent = JSON.stringify(ldJson);
-  }, [title]);
+  }, [title, description, initialPage]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.find((entry) => entry.isIntersecting);
+        if (visible?.target?.id) setActiveSection(visible.target.id);
+      },
+      { rootMargin: "-30% 0px -50% 0px", threshold: 0.1 },
+    );
+    tocItems.forEach((item) => {
+      const el = document.getElementById(item.id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
 
   const handleBack = () => {
     navigate(`/blog?page=${page}`);
@@ -118,7 +144,7 @@ const BlogPost = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="pt-24">
-        <article className="container mx-auto max-w-4xl pb-20">
+        <article className="container mx-auto max-w-6xl pb-20">
           <div className="mb-6 flex items-center justify-between">
             <Button variant="outline" size="sm" onClick={handleBack} className="gap-2">
               <ArrowLeft className="w-4 h-4" />
@@ -137,8 +163,10 @@ const BlogPost = () => {
                 <Tag className="w-4 h-4" />
                 Blog
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-tight">{title}</h1>
-              <p className="text-lg text-muted-foreground max-w-3xl">{description}</p>
+              <h1 className="text-4xl md:text-5xl font-extrabold text-foreground leading-tight">{title}</h1>
+              <p className="text-xl text-muted-foreground max-w-4xl" id="lede">
+                <strong>Hoe elke seconde vertraging je direct omzet kost en waarom Edge-architectuur dit definitief oplost.</strong> {description}
+              </p>
               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 <span className="inline-flex items-center gap-2">
                   <CalendarDays className="w-4 h-4" />
@@ -166,88 +194,191 @@ const BlogPost = () => {
             </div>
           </div>
 
-          <section className="prose prose-invert prose-lg max-w-none mt-10 space-y-6 leading-relaxed">
-            <p>
-              Hoe elke seconde vertraging je direct omzet kost en waarom de Edge-architectuur dit definitief oplost.
-            </p>
-            <p>
-              Je opent een webshop op je telefoon. Je ziet een wit scherm. Eén seconde gaat voorbij... twee seconden... drie...
-              Je bent weg, toch? Je bent niet de enige. In 2026 is de online consument ongeduldiger dan ooit. Snelheid is
-              niet langer een &quot;nice-to-have&quot; feature; het is de fundering van je winstgevendheid.
-            </p>
-            <h2>De harde cijfers: Elke seconde telt (letterlijk)</h2>
-            <p>
-              Wanneer we zeggen dat traagheid omzet kost, baseren we dat niet op een onderbuikgevoel. De data van tech-giganten is onverbiddelijk:
-            </p>
-            <ul>
-              <li>
-                <strong>De 53%-grens:</strong> Volgens onderzoek van Google verlaat 53% van de mobiele bezoekers een website als het laden langer dan 3 seconden duurt. (Bron: Google/SOASTA Research)
-              </li>
-              <li>
-                <strong>Conversie-killer:</strong> Portent toonde aan dat een website die in 1 seconde laadt, een conversiepercentage heeft dat 3x hoger is dan een site die er 5 seconden over doet. (Bron: Portent Speed Study)
-              </li>
-              <li>
-                <strong>Het Amazon-effect:</strong> Al jaren geleden ontdekte Amazon dat elke 100 milliseconden (0,1 seconde!) extra vertraging hen 1% van de totale omzet kostte. (Bron: Amazon Strategy Audit)
-              </li>
-            </ul>
-            <p>
-              De conclusie? Als jouw shop op Shopify of WooCommerce draait en een laadtijd heeft van 4 seconden, gooi je technisch gezien de helft van je marketingbudget direct in de prullenbak.
-            </p>
-            <h2>Het probleem van de &quot;Centrale Database&quot;</h2>
-            <p>
-              Waarom zijn traditionele shops traag? Omdat ze werken met een ouderwetse structuur. Wanneer een klant klikt, moet er een verzoek naar een centrale server (vaak in Duitsland of de VS). Die server moet een database induiken, pagina’s opbouwen en ze weer terugsturen. Dit noemen we latency. Hoe meer plugins, hoe meer &quot;verkeer&quot; op die lijn, hoe trager de shop.
-            </p>
-            <h2>De Oplossing: Edge-architectuur (De Sitedesk Engine)</h2>
-            <p>Bij Sitedesk doen we het anders. Wij gebruiken de Cloudflare Edge-architectuur. In plaats van één centrale server, staat jouw webshop op duizenden servers over de hele wereld tegelijk.</p>
-            <ul>
-              <li><strong>0ms vertraging:</strong> De shop staat fysiek al &quot;naast&quot; de bezoeker.</li>
-              <li><strong>Geen Database-calls:</strong> We serveren data direct vanaf de Edge.</li>
-              <li><strong>Headless-snelheid:</strong> De voorkant (wat de klant ziet) is volledig ontkoppeld van de achterkant (jouw Google Sheets).</li>
-            </ul>
-            <h2>De Rekensom: Wat levert 0ms je op?</h2>
-            <p>
-              Laten we stoppen met praten over techniek en praten over rendement. Stel je voor: je hebt een bescheiden webshop.
-            </p>
-            <h3>Huidige situatie:</h3>
-            <ul>
-              <li>Bezoekers per maand: 5.000</li>
-              <li>Gemiddelde orderwaarde: €60,-</li>
-              <li>Huidige conversie (bij 4s laadtijd): 1,5%</li>
-              <li>Maandomzet: €4.500,-</li>
-            </ul>
-            <h3>Sitedesk Situatie (na overstap naar 0ms):</h3>
-            <ul>
-              <li>Bezoekers per maand: 5.000 (blijft gelijk)</li>
-              <li>Gemiddelde orderwaarde: €60,- (blijft gelijk)</li>
-              <li>Nieuwe conversie (door snelheid & UX): 2,2% (een conservatieve stijging van 0,7%)</li>
-              <li>Nieuwe maandomzet: €6.600,-</li>
-            </ul>
-            <p>
-              Het verschil? €2.100,- extra omzet per maand. Dat is €25.200,- per jaar extra winst, puur door de techniek te fixen. Hier zijn de verborgen besparingen nog niet eens in meegeteld: geen dure Shopify-apps meer van €50/maand en geen urenfacturen van developers die &quot;plugins moeten updaten&quot;.
-            </p>
-            <h2>Waarom Sitedesk de enige logische investering is</h2>
-            <p>
-              Veel ondernemers zien een nieuwe webshop als een grote kostenpost. Bij Sitedesk zien we het als het verwijderen van een blok aan je been. Onze Pilot Deal (€1.000 eenmalig, €150 p/m) verdient zichzelf in het bovenstaande voorbeeld al in de éérste maand terug. Je bespaart niet alleen op verloren klanten, je bespaart ook op de &quot;hoofdpijn-belasting&quot;:
-            </p>
-            <ul>
-              <li>Geen onderhoud aan servers.</li>
-              <li>Geen trage admin-dashboards (beheer alles in Google Sheets).</li>
-              <li>Wij zijn je tech-team: wij bouwen, wij beheren, jij verkoopt.</li>
-            </ul>
-            <h2>Klaar voor de overstap naar de Edge?</h2>
-            <p>
-              Snelheid is geen luxe. Het is het verschil tussen een bezoeker die koopt en een bezoeker die naar de concurrent gaat. Wil jij weten hoeveel omzet je nu laat liggen door je huidige laadtijd?
-            </p>
-            <p>
-              <a href="/#contact" className="text-accent font-semibold">Plan een gratis Speed-Check in</a> of{" "}
-              <a href="https://wa.me/31640326650" className="text-accent font-semibold">stuur ons direct een WhatsApp-bericht</a>.
-              Wij kijken gratis met je mee en laten je zien wat 0ms voor jouw merk kan betekenen.
-            </p>
-            <p><strong>Waarom een laadtijd van 0ms geen luxe is, maar pure noodzaak.</strong></p>
-            <p>
-              Vond je dit een waardevol artikel? Bekijk ook onze andere blogs over hoe wij e-commerce herdefiniëren met Edge-technologie.
-            </p>
-          </section>
+          <div className="mt-10 grid lg:grid-cols-[1fr,280px] gap-10">
+            <section className="space-y-10 text-lg md:text-xl leading-relaxed md:leading-8">
+              <p>
+                Je opent een webshop op je telefoon. Je ziet een wit scherm. Eén seconde gaat voorbij... twee seconden... drie...
+                <strong> Je bent weg, toch?</strong> In 2026 is de online consument ongeduldiger dan ooit. <strong>Snelheid is niet langer nice-to-have; het is de fundering van je winstgevendheid.</strong>
+              </p>
+
+              <figure className="rounded-2xl border border-border overflow-hidden bg-card">
+                <img src="/icon-sitedesk.png" alt="Sitedesk Edge Performance" className="w-full h-52 object-cover" />
+                <figcaption className="text-sm text-muted-foreground px-4 py-3">
+                  Edge-first infrastructuur: content staat al naast je bezoeker voor 0ms gevoel.
+                </figcaption>
+              </figure>
+
+              <section id="hard-cijfers" className="space-y-4">
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground border-b border-accent/40 pb-2">
+                  De harde cijfers: elke seconde telt
+                </h2>
+                <p>
+                  Wanneer we zeggen dat traagheid omzet kost, baseren we dat niet op een onderbuikgevoel. <strong>De data van tech-giganten is onverbiddelijk.</strong>
+                </p>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="text-success mt-1" size={18} />
+                    <span><strong>De 53%-grens:</strong> 53% van mobiele bezoekers haakt af na 3 seconden laden. (Google/SOASTA)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="text-success mt-1" size={18} />
+                    <span><strong>Conversie-killer:</strong> 1s laadtijd = 3x hogere conversie vs 5s. (Portent)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="text-success mt-1" size={18} />
+                    <span><strong>Amazon-effect:</strong> Elke 100ms vertraging kost 1% omzet. (Amazon)</span>
+                  </li>
+                </ul>
+                <blockquote className="border-l-4 border-accent pl-4 italic text-foreground">
+                  “0ms is geen hype. Het is het verschil tussen groeien en stilstaan.”
+                  <div className="text-sm text-muted-foreground mt-1">— Sitedesk Performance Lab</div>
+                </blockquote>
+                <p>
+                  <strong>Conclusie:</strong> Draait je shop met ~4s laadtijd? Dan verdampt de helft van je marketingbudget nog voor de betaalknop in beeld komt.
+                </p>
+              </section>
+
+              <section id="centrale-database" className="space-y-4">
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground border-b border-accent/40 pb-2">
+                  Het probleem van de centrale database
+                </h2>
+                <p>
+                  Traditionele shops renderen vanaf een centrale server. <strong>Elke klik wacht op server, database en HTML-build.</strong> Hoe meer plugins, hoe zwaarder de lijn.
+                </p>
+                <h3 className="text-xl font-semibold text-foreground">Waarom dit traag is</h3>
+                <p>
+                  Meer apps = meer latency. Meer thema&apos;s = grotere bundels. <strong>De bezoeker wacht, jij verliest omzet.</strong>
+                </p>
+              </section>
+
+              <section id="edge-oplossing" className="space-y-4">
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground border-b border-accent/40 pb-2">
+                  De oplossing: Edge-architectuur (Sitedesk Engine)
+                </h2>
+                <p>
+                  Wij deployen je shop op Cloudflare Edge. <strong>Niet één server, maar duizenden nodes dichter bij je bezoeker.</strong>
+                </p>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="text-success mt-1" size={18} />
+                    <span><strong>0ms gevoel:</strong> Assets staan al naast je bezoeker.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="text-success mt-1" size={18} />
+                    <span><strong>Geen database-calls:</strong> Data serveert direct vanaf de Edge.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="text-success mt-1" size={18} />
+                    <span><strong>Headless-snelheid:</strong> Frontend en Sheets-backend zijn ontkoppeld voor pure performance.</span>
+                  </li>
+                </ul>
+              </section>
+
+              <section id="rekensom" className="space-y-4">
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground border-b border-accent/40 pb-2">
+                  De rekensom: wat levert 0ms op?
+                </h2>
+                <p>
+                  Stel je hebt een bescheiden shop. <strong>Alleen al op snelheid pak je elke maand duizenden euro’s terug.</strong>
+                </p>
+                <h3 className="text-xl font-semibold text-foreground">Huidige situatie (4s)</h3>
+                <ul className="space-y-2">
+                  <li>Bezoekers: 5.000</li>
+                  <li>Gemiddelde orderwaarde: €60,-</li>
+                  <li>Conversie: 1,5%</li>
+                  <li>Maandomzet: €4.500,-</li>
+                </ul>
+                <h3 className="text-xl font-semibold text-foreground">Met Sitedesk Edge (0ms gevoel)</h3>
+                <ul className="space-y-2">
+                  <li>Bezoekers: 5.000 (gelijk)</li>
+                  <li>Gemiddelde orderwaarde: €60,- (gelijk)</li>
+                  <li>Conversie: 2,2% (conservatief)</li>
+                  <li>Maandomzet: €6.600,-</li>
+                </ul>
+                <p>
+                  <strong>Resultaat:</strong> +€2.100 per maand (+€25.200 per jaar) puur door techniek. Geen Shopify app-fees van €50/maand en geen losse developer-uren meer.
+                </p>
+              </section>
+
+              <section
+                id="cta-breakout"
+                className="rounded-3xl border border-primary/20 bg-gradient-to-r from-primary/15 via-primary/10 to-accent/10 p-8 space-y-4"
+              >
+                <h2 className="text-2xl font-extrabold text-foreground">Pilot Deal: 0ms of niets</h2>
+                <p className="text-lg text-muted-foreground">
+                  €1.000 eenmalig, €150 p/m. Inclusief hosting, onbeperkt support én doorontwikkeling. <strong>Verdient zichzelf in maand 1 terug.</strong>
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <Button asChild variant="hero" size="lg">
+                    <a href="/#contact">Plan je Speed-Check</a>
+                  </Button>
+                  <Button asChild variant="outline" size="lg" className="border-accent text-accent hover:bg-accent/10">
+                    <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
+                      WhatsApp direct
+                    </a>
+                  </Button>
+                </div>
+              </section>
+
+              <section id="waarom-sitedesk" className="space-y-4">
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground border-b border-accent/40 pb-2">
+                  Waarom Sitedesk de logische investering is
+                </h2>
+                <p>
+                  Een nieuwe shop voelt vaak als een kostenpost. <strong>Wij zien het als het verwijderen van een blok aan je been.</strong> Onze Pilot Deal verdient zichzelf direct terug en verlaagt je hoofdpijn-belasting.
+                </p>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="text-success mt-1" size={18} />
+                    <span>Geen server-onderhoud.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="text-success mt-1" size={18} />
+                    <span>Geen trage admin-dashboards: beheer alles in Google Sheets.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="text-success mt-1" size={18} />
+                    <span>Wij zijn je tech-team: wij bouwen, beheren en optimaliseren.</span>
+                  </li>
+                </ul>
+              </section>
+
+              <section id="klaar-edge" className="space-y-4">
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground border-b border-accent/40 pb-2">
+                  Klaar voor 0ms? Zo pakken we het aan
+                </h2>
+                <p>
+                  <strong>Snelheid is het verschil tussen winnen en verliezen.</strong> Wil je weten hoeveel omzet je nu laat liggen?
+                </p>
+                <p>
+                  <a href="/#contact" className="text-accent font-semibold">Plan een gratis Speed-Check</a> of{" "}
+                  <a href="https://wa.me/31640326650" className="text-accent font-semibold">stuur een WhatsApp</a>. We laten je zien wat 0ms voor jouw merk doet.
+                </p>
+              </section>
+            </section>
+
+            <aside className="hidden lg:block sticky top-28 self-start">
+              <div className="rounded-2xl border border-border bg-card/70 p-5 space-y-4">
+                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Inhoudsopgave</h3>
+                <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
+                  {tocItems.map((item) => (
+                    <a
+                      key={item.id}
+                      href={`#${item.id}`}
+                      className={`flex items-center gap-2 rounded-lg px-2 py-1 ${
+                        activeSection === item.id
+                          ? "text-foreground bg-accent/10 border border-accent/30"
+                          : "hover:text-foreground"
+                      }`}
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                      {item.label}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+            </aside>
+          </div>
 
           <section className="mt-12">
             <div className="flex items-center justify-between mb-4">
@@ -278,6 +409,36 @@ const BlogPost = () => {
               ))}
             </div>
             <Pagination />
+          </section>
+
+          <section className="mt-16 space-y-6">
+            <div className="rounded-2xl border border-border bg-card/80 p-6">
+              <h4 className="text-lg font-semibold text-foreground">Geschreven door</h4>
+              <p className="text-foreground font-bold">Alex de Vries</p>
+              <p className="text-muted-foreground text-sm">E-commerce Architect bij Sitedesk</p>
+              <p className="text-muted-foreground mt-2">
+                Specialist in edge-performance en conversiegedreven checkout flows voor ambitieuze merken.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xl font-semibold text-foreground">Gerelateerde artikelen</h4>
+              </div>
+              <div className="grid md:grid-cols-3 gap-4">
+                {[
+                  "Edge Commerce: zo haal je 100/100 op Core Web Vitals",
+                  "Waarom je checkout 2 kliks moet zijn (en niets meer)",
+                  "Migreren zonder omzetverlies: een 10-dagen draaiboek",
+                ].map((relTitle) => (
+                  <div key={relTitle} className="p-5 rounded-2xl border border-border bg-card hover:shadow-md transition-shadow">
+                    <h5 className="text-lg font-semibold text-foreground leading-snug">{relTitle}</h5>
+                    <p className="text-sm text-muted-foreground mt-2">Lees hoe Sitedesk dit in praktijk brengt voor scale-ups.</p>
+                    <a href="/blog" className="text-accent text-sm font-semibold mt-3 inline-block">Lees artikel</a>
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
         </article>
       </main>
