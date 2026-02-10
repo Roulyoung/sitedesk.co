@@ -33,10 +33,9 @@ const BlogPost = () => {
   const listing = useMemo(() => paginate(otherPosts, page, PAGE_SIZE), [page, otherPosts]);
 
   const title = current.title;
-  const description =
-    "Hoe elke seconde vertraging direct omzet kost en waarom Edge-architectuur dit definitief oplost.";
-  const publishedDate = "2026-02-10";
-  const readingTime = "6 min";
+  const description = current.excerpt;
+  const publishedDate = new Date(current.date).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
+  const readingTime = current.slug === "waarom-woocommerce-je-groei-belemmert" ? "7 min" : "6 min";
 
   useEffect(() => {
     document.title = `${title} | Sitedesk Blog`;
@@ -138,6 +137,283 @@ const BlogPost = () => {
           <ArrowRight className="w-4 h-4 ml-1" />
         </Button>
       </div>
+    );
+  };
+
+  const renderContent = () => {
+    if (current.slug === "waarom-woocommerce-je-groei-belemmert") {
+      return (
+        <>
+          <p className="text-lg leading-relaxed mb-8">
+            Je webshop begon waarschijnlijk met WooCommerce. Het was gratis, bekend en &quot;iedereen gebruikte het.&quot; In 2026 is dat veranderd in een blok aan je been. In een AI-tijdperk waarin snelheid en veiligheid standaard zijn, wordt de traditionele WordPress-shop een risico.
+          </p>
+
+          <section id="legacy-tax">
+            <h2 className="font-extrabold text-3xl mt-24 mb-8">De illusie van gratis: De verborgen &quot;Legacy Tax&quot;</h2>
+            <p className="text-lg leading-relaxed mb-8">
+              WooCommerce lijkt gratis, maar de infrastructuur om een zware PHP-site snel te houden is peperduur. Het monolithische systeem koppelt database, admin en frontend vast. Bij groei explodeert de bloat: elke klik doet een zware call naar je centrale server en verhoogt je TTFB. Google straft dat direct met lagere rankings. Je betaalt dus dagelijks voor &quot;gratis&quot; in gemiste conversies.
+            </p>
+            <div className="pl-6 border-l-4 border-yellow-400 my-10 space-y-4">
+              <div className="flex items-start gap-3">
+                <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+                <span><strong>Legacy tax:</strong> Server-kosten, caching-lagen en plugin-conflicten stapelen op.</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+                <span><strong>Rankingschade:</strong> Hoge TTFB = lagere SEO, dus minder omzet.</span>
+              </div>
+            </div>
+          </section>
+
+          <section id="ai-security">
+            <h2 className="font-extrabold text-3xl mt-24 mb-8">De AI-Security Paradox: Waarom WordPress een schietschijf is</h2>
+            <p className="text-lg leading-relaxed mb-8">
+              AI-bots scannen 24/7 op plugin-kwetsbaarheden. Een gemiddelde WooCommerce-shop draait op 20-50 plugins van verschillende makers—er is altijd een zwakke schakel. Omdat je shop op een traditionele server draait, heeft een hacker een fysiek doelwit.
+            </p>
+            <div className="pl-6 border-l-4 border-yellow-400 my-10 space-y-4">
+              <div className="flex items-start gap-3">
+                <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+                <span><strong>Geautomatiseerde aanvallen:</strong> AI probeert duizenden exploit-varianten per minuut.</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+                <span><strong>Server als doelwit:</strong> Een centrale server is fysiek te kraken; de Edge niet.</span>
+              </div>
+            </div>
+            <p className="text-lg leading-relaxed mb-8">
+              Bij Sitedesk lossen we dit op door ontkoppeling: storefront op de Edge (Cloudflare), data in een afgeschermde backend (Google Sheets). Geen centrale server om te raken.
+            </p>
+          </section>
+
+          <section id="rekening">
+            <h2 className="font-extrabold text-3xl mt-24 mb-8">De Rekensom: WooCommerce vs. Sitedesk Edge</h2>
+            <div className="bg-gray-50 p-8 rounded-xl my-12">
+              <h3 className="font-semibold text-2xl mb-4">WooCommerce onderhoud</h3>
+              <p className="text-lg leading-relaxed mb-8">
+                Updates, beveiligingspatches en plugin-conflicten kosten gemiddeld 4 uur per maand. Bij €90,- per uur is dat €360,- p/m.
+              </p>
+              <h3 className="font-semibold text-2xl mb-4">Sitedesk Snelheidssysteem</h3>
+              <p className="text-lg leading-relaxed mb-8">
+                Vast bedrag €150,- p/m. Geen onderhoud, geen updates, geen gedoe.
+              </p>
+              <p className="text-lg leading-relaxed mb-8">
+                <strong>Besparing:</strong> €2.520,- per jaar minder technische hoofdpijn, plus extra omzet door snelheid.
+              </p>
+            </div>
+          </section>
+
+          <section id="ontkoppelde-backend">
+            <h2 className="font-extrabold text-3xl mt-24 mb-8">De verlossing van de ontkoppelde backend</h2>
+            <p className="text-lg leading-relaxed mb-8">
+              De toekomst is Headless: frontend los, backend licht. Waarom door een traag WP-dashboard gaan als je voorraad in Google Sheets sneller en veiliger is? Onze lichte data-structuur is AI-ready; modellen verwerken je productdata veel efficiënter dan een rommelige Woo-database.
+            </p>
+          </section>
+
+          <section id="conclusie">
+            <h2 className="font-extrabold text-3xl mt-24 mb-8">Conclusie: Durf je afscheid te nemen van 2015?</h2>
+            <p className="text-lg leading-relaxed mb-8">
+              WooCommerce was fantastisch in het vorige decennium. Maar als klanten 0ms verwachten en AI-bots constant scannen, heb je een professionele architectuur nodig. Sitedesk bevrijdt je uit de plugin-hel.
+            </p>
+          </section>
+
+          <section
+            id="cta-breakout"
+            className="bg-black text-white p-10 rounded-2xl my-16 text-center"
+          >
+            <h2 className="font-extrabold text-3xl">Pilot Deal: Stap nu over naar de Edge</h2>
+            <p className="text-lg leading-relaxed mt-4">
+              €1.000 eenmalig, €150 p/m. We migreren je producten, richten je Sheets-backend in en zetten je shop op de wereldwijde Edge-infrastructuur.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-3 mt-6">
+              <Button asChild variant="hero" size="lg">
+                <a href="/#contact">Plan je Speed-Check</a>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
+                <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
+                  WhatsApp direct
+                </a>
+              </Button>
+            </div>
+          </section>
+
+          <p className="text-lg leading-relaxed mb-8 text-muted-foreground">
+            Gepubliceerd door Sitedesk Performance Lab — Wij bouwen de snelste e-commerce infrastructuur op de Edge.
+          </p>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <p className="text-lg leading-relaxed mb-8">
+          Je opent een webshop op je telefoon. Je ziet een wit scherm. Eén seconde gaat voorbij... twee seconden... drie...
+          <strong> Je bent weg, toch?</strong> In 2026 is de online consument ongeduldiger dan ooit. <strong>Snelheid is niet langer nice-to-have; het is de fundering van je winstgevendheid.</strong>
+        </p>
+
+        <section id="hard-cijfers">
+          <h2 className="font-extrabold text-3xl mt-24 mb-8">De harde cijfers: elke seconde telt</h2>
+          <p className="text-lg leading-relaxed mb-8">
+            Wanneer we zeggen dat traagheid omzet kost, baseren we dat niet op een onderbuikgevoel. <strong>De data van tech-giganten is onverbiddelijk.</strong>
+          </p>
+          <div className="pl-6 border-l-4 border-yellow-400 my-10 space-y-4">
+            <div className="flex items-start gap-3">
+              <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+              <span><strong>De 53%-grens:</strong> 53% van mobiele bezoekers haakt af na 3 seconden laden. (Google/SOASTA)</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+              <span><strong>Conversie-killer:</strong> 1s laadtijd = 3x hogere conversie vs 5s. (Portent)</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+              <span><strong>Amazon-effect:</strong> Elke 100ms vertraging kost 1% omzet. (Amazon)</span>
+            </div>
+          </div>
+          <blockquote className="border-l-4 border-[#FFB800] pl-8 italic text-[1.25rem] my-16">
+            “0ms is geen hype. Het is het verschil tussen groeien en stilstaan.”
+            <div className="text-sm text-muted-foreground mt-1">— Sitedesk Performance Lab</div>
+          </blockquote>
+          <p className="text-lg leading-relaxed mb-8">
+            <strong>Conclusie:</strong> Draait je shop met ~4s laadtijd? Dan verdampt de helft van je marketingbudget nog voor de betaalknop in beeld komt.
+          </p>
+        </section>
+
+        <section id="centrale-database">
+          <h2 className="font-extrabold text-3xl mt-24 mb-8">Het probleem van de centrale database</h2>
+          <p className="text-lg leading-relaxed mb-8">
+            Traditionele shops renderen vanaf een centrale server. <strong>Elke klik wacht op server, database en HTML-build.</strong> Hoe meer plugins, hoe zwaarder de lijn.
+          </p>
+          <h3 className="font-semibold text-2xl mt-14 mb-4">Waarom dit traag is</h3>
+          <p className="text-lg leading-relaxed mb-8">
+            Meer apps = meer latency. Meer thema&apos;s = grotere bundels. <strong>De bezoeker wacht, jij verliest omzet.</strong>
+          </p>
+        </section>
+
+        <section id="edge-oplossing">
+          <h2 className="font-extrabold text-3xl mt-24 mb-8">De oplossing: Edge-architectuur (Sitedesk Engine)</h2>
+          <p className="text-lg leading-relaxed mb-8">
+            Wij deployen je shop op Cloudflare Edge. <strong>Niet één server, maar duizenden nodes dichter bij je bezoeker.</strong>
+          </p>
+          <div className="pl-6 border-l-4 border-yellow-400 my-10 space-y-4">
+            <div className="flex items-start gap-3">
+              <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+              <span><strong>0ms gevoel:</strong> Assets staan al naast je bezoeker.</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+              <span><strong>Geen database-calls:</strong> Data serveert direct vanaf de Edge.</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+              <span><strong>Headless-snelheid:</strong> Frontend en Sheets-backend zijn ontkoppeld voor pure performance.</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="rekensom">
+          <h2 className="font-extrabold text-3xl mt-24 mb-8">De rekensom: wat levert 0ms op?</h2>
+          <p className="text-lg leading-relaxed mb-8">
+            Stel je hebt een bescheiden shop. <strong>Alleen al op snelheid pak je elke maand duizenden euro’s terug.</strong>
+          </p>
+          <div className="bg-gray-50 p-8 rounded-xl my-12">
+            <h3 className="font-semibold text-2xl mb-4">Huidige situatie (4s)</h3>
+            <ul className="mb-6 space-y-2 list-none pl-6">
+              <li>Bezoekers: 5.000</li>
+              <li>Gemiddelde orderwaarde: €60,-</li>
+              <li>Conversie: 1,5%</li>
+              <li>Maandomzet: €4.500,-</li>
+            </ul>
+            <h3 className="font-semibold text-2xl mb-4">Met Sitedesk Edge (0ms gevoel)</h3>
+            <ul className="space-y-2 list-none pl-6">
+              <li>Bezoekers: 5.000 (gelijk)</li>
+              <li>Gemiddelde orderwaarde: €60,- (gelijk)</li>
+              <li>Conversie: 2,2% (conservatief)</li>
+              <li>Maandomzet: €6.600,-</li>
+            </ul>
+          </div>
+          <p className="text-lg leading-relaxed mb-8">
+            <strong>Resultaat:</strong> +€2.100 per maand (+€25.200 per jaar) puur door techniek. Geen Shopify app-fees van €50/maand en geen losse developer-uren meer.
+          </p>
+        </section>
+
+        <section
+          id="cta-breakout"
+          className="bg-black text-white p-10 rounded-2xl my-16 text-center"
+        >
+          <h2 className="font-extrabold text-3xl">Pilot Deal: 0ms of niets</h2>
+          <p className="text-lg leading-relaxed mt-4">
+            €1.000 eenmalig, €150 p/m. Inclusief hosting, onbeperkt support én doorontwikkeling. <strong>Verdient zichzelf in maand 1 terug.</strong>
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-3 mt-6">
+            <Button asChild variant="hero" size="lg">
+              <a href="/#contact">Plan je Speed-Check</a>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
+              <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
+                WhatsApp direct
+              </a>
+            </Button>
+          </div>
+        </section>
+
+        <section id="waarom-sitedesk">
+          <h2 className="font-extrabold text-3xl mt-24 mb-8">Waarom Sitedesk de logische investering is</h2>
+          <p className="text-lg leading-relaxed mb-8">
+            Een nieuwe shop voelt vaak als een kostenpost. <strong>Wij zien het als het verwijderen van een blok aan je been.</strong> Onze Pilot Deal verdient zichzelf direct terug en verlaagt je hoofdpijn-belasting.
+          </p>
+          <div className="pl-6 border-left-4 border-yellow-400 my-10 space-y-4">
+            <div className="flex items-start gap-3">
+              <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+              <span>Geen server-onderhoud.</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+              <span>Geen trage admin-dashboards: beheer alles in Google Sheets.</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+              <span>Wij zijn je tech-team: wij bouwen, beheren en optimaliseren.</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="klaar-edge">
+          <h2 className="font-extrabold text-3xl mt-24 mb-8">Klaar voor 0ms? Zo pakken we het aan</h2>
+          <p className="text-lg leading-relaxed mb-8">
+            <strong>Snelheid is het verschil tussen winnen en verliezen.</strong> Wil je weten hoeveel omzet je nu laat liggen?
+          </p>
+          <p className="text-lg leading-relaxed mb-8">
+            <a href="/#contact" className="text-accent font-semibold">Plan een gratis Speed-Check</a> of{" "}
+            <a href="https://wa.me/31640326650" className="text-accent font-semibold">stuur een WhatsApp</a>. We laten je zien wat 0ms voor jouw merk doet.
+          </p>
+        </section>
+      </>
     );
   };
 

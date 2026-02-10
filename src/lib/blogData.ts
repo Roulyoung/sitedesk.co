@@ -14,6 +14,14 @@ export const blogPosts: BlogPost[] = [
     date: "2026-02-10",
     tags: ["Performance", "Edge", "CRO"],
   },
+  {
+    title: "Waarom WooCommerce je groei belemmert (en waarom het in het AI-tijdperk gevaarlijk is)",
+    slug: "waarom-woocommerce-je-groei-belemmert",
+    excerpt:
+      "WooCommerce lijkt gratis, maar in 2026 is het een legacy-tax: traag, kwetsbaar en kostbaar in onderhoud. Ontdek waarom een Edge-architectuur de enige logische stap is.",
+    date: "2026-02-14",
+    tags: ["WooCommerce", "Security", "Headless"],
+  },
 ];
 
 export const PAGE_SIZE = 6;
