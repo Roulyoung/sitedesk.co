@@ -132,3 +132,10 @@ export const posts: Post[] = [
     ],
   },
 ];
+
+export const PAGE_SIZE = 6;
+
+export const paginate = <T,>(items: T[], page: number, perPage: number): T[] => {
+  const start = (page - 1) * perPage;
+  return items.slice(start, start + perPage);
+};

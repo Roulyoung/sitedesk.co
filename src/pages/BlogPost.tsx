@@ -16,9 +16,9 @@ const BlogPost = () => {
 
   const current = posts.find((p) => p.id === slug) ?? posts[0];
   const otherPosts = posts.filter((p) => p.id !== current.id);
-  const totalPages = useMemo(() => Math.max(1, Math.ceil(otherPosts.length / PAGE_SIZE) || 1), [otherPosts.length]);
-  const listing = useMemo(() => paginate(otherPosts, initialPage, PAGE_SIZE), [initialPage, otherPosts]);
   const [page, setPage] = useState(initialPage);
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(otherPosts.length / PAGE_SIZE) || 1), [otherPosts.length]);
+  const listing = useMemo(() => paginate(otherPosts, page, PAGE_SIZE), [page, otherPosts]);
 
   const title = current.title;
   const description = current.excerpt;
