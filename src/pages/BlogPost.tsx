@@ -27,9 +27,10 @@ const BlogPost = () => {
   const [page, setPage] = useState(initialPage);
   const [activeSection, setActiveSection] = useState<string>(tocItems[0].id);
 
-  const totalPages = useMemo(() => Math.max(1, Math.ceil(blogPosts.length / PAGE_SIZE)), []);
-  const listing = useMemo(() => paginate(blogPosts, page, PAGE_SIZE), [page]);
   const current = blogPosts.find((p) => p.slug === slug) ?? blogPosts[0];
+  const otherPosts = blogPosts.filter((p) => p.slug !== current.slug);
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(otherPosts.length / PAGE_SIZE) || 1), [otherPosts.length]);
+  const listing = useMemo(() => paginate(otherPosts, page, PAGE_SIZE), [page, otherPosts]);
 
   const title = current.title;
   const description =
@@ -381,37 +382,6 @@ const BlogPost = () => {
             </aside>
           </div>
 
-          <section className="mt-12">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-foreground">Meer artikelen</h3>
-            </div>
-            <Pagination />
-            <div className="grid md:grid-cols-2 gap-6">
-              {listing.map((post) => (
-                <article key={post.slug} className="p-5 rounded-2xl border border-border bg-card shadow-sm">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                    <CalendarDays className="w-4 h-4" />
-                    <span>{new Date(post.date).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })}</span>
-                  </div>
-                  <h4 className="text-lg font-semibold text-foreground mb-2">
-                    <a href={`/blog/${post.slug}?page=${page}`} className="hover:text-accent transition-colors">
-                      {post.title}
-                    </a>
-                  </h4>
-                  <p className="text-sm text-muted-foreground mb-3">{post.excerpt}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {post.tags.map((tag) => (
-                      <span key={tag} className="text-2xs px-2 py-1 rounded-full bg-secondary/60 text-muted-foreground border border-border">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </article>
-              ))}
-            </div>
-            <Pagination />
-          </section>
-
           <section className="mt-16 space-y-6">
             <div className="rounded-2xl border border-border bg-card/80 p-6">
               <h4 className="text-lg font-semibold text-foreground">Geschreven door</h4>
@@ -440,6 +410,37 @@ const BlogPost = () => {
                 ))}
               </div>
             </div>
+          </section>
+
+          <section className="mt-16">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-foreground">Meer artikelen</h3>
+            </div>
+            <Pagination />
+            <div className="grid md:grid-cols-2 gap-6">
+              {listing.map((post) => (
+                <article key={post.slug} className="p-5 rounded-2xl border border-border bg-card shadow-sm">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                    <CalendarDays className="w-4 h-4" />
+                    <span>{new Date(post.date).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })}</span>
+                  </div>
+                  <h4 className="text-lg font-semibold text-foreground mb-2">
+                    <a href={`/blog/${post.slug}?page=${page}`} className="hover:text-accent transition-colors">
+                      {post.title}
+                    </a>
+                  </h4>
+                  <p className="text-sm text-muted-foreground mb-3">{post.excerpt}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {post.tags.map((tag) => (
+                      <span key={tag} className="text-2xs px-2 py-1 rounded-full bg-secondary/60 text-muted-foreground border border-border">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+            <Pagination />
           </section>
         </article>
       </main>
