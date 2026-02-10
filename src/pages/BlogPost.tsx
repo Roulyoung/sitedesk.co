@@ -145,13 +145,16 @@ const BlogPost = () => {
       return (
         <>
           <p className="text-lg leading-relaxed mb-8">
-            Je webshop begon waarschijnlijk met WooCommerce. Het was gratis, bekend en &quot;iedereen gebruikte het.&quot; In 2026 is dat veranderd in een blok aan je been. In een AI-tijdperk waarin snelheid en veiligheid standaard zijn, wordt de traditionele WordPress-shop een risico.
+            Je webshop begon waarschijnlijk met WooCommerce. Het is gratis, het is bekend en &quot;iedereen gebruikt het.&quot; Maar wat ooit een veilige keuze leek, is in 2026 veranderd in een blok aan het been van elke serieuze ondernemer. In een wereld waar AI de standaarden voor snelheid en veiligheid bepaalt, is de traditionele WordPress-shop niet langer een fundament, maar een risico.
           </p>
 
           <section id="legacy-tax">
             <h2 className="font-extrabold text-3xl mt-24 mb-8">De illusie van gratis: De verborgen &quot;Legacy Tax&quot;</h2>
             <p className="text-lg leading-relaxed mb-8">
-              WooCommerce lijkt gratis, maar de infrastructuur om een zware PHP-site snel te houden is peperduur. Het monolithische systeem koppelt database, admin en frontend vast. Bij groei explodeert de bloat: elke klik doet een zware call naar je centrale server en verhoogt je TTFB. Google straft dat direct met lagere rankings. Je betaalt dus dagelijks voor &quot;gratis&quot; in gemiste conversies.
+              De grootste leugen in e-commerce is dat WooCommerce gratis is. Ja, de plugin kost niets, maar de infrastructuur die nodig is om een zware PHP-site snel te houden, is peperduur. WooCommerce is een monolithisch systeem: de database, de admin-omgeving en de voorkant van je shop zitten aan elkaar vastgeketend.
+            </p>
+            <p className="text-lg leading-relaxed mb-8">
+              Wanneer je shop groeit, groeit de database-vervuiling (bloat). Elke klik van een klant vereist een zware call naar een centrale server. Dit veroorzaakt een trage Time to First Byte (TTFB). Voor Google is dit een direct signaal om je lager te ranken. <strong>Je betaalt de prijs voor &quot;gratis&quot; dus elke dag in de vorm van gemiste conversies.</strong>
             </p>
             <div className="pl-6 border-l-4 border-yellow-400 my-10 space-y-4">
               <div className="flex items-start gap-3">
@@ -172,20 +175,20 @@ const BlogPost = () => {
           <section id="ai-security">
             <h2 className="font-extrabold text-3xl mt-24 mb-8">De AI-Security Paradox: Waarom WordPress een schietschijf is</h2>
             <p className="text-lg leading-relaxed mb-8">
-              AI-bots scannen 24/7 op plugin-kwetsbaarheden. Een gemiddelde WooCommerce-shop draait op 20-50 plugins van verschillende makers—er is altijd een zwakke schakel. Omdat je shop op een traditionele server draait, heeft een hacker een fysiek doelwit.
+              Met de komst van AI is het speelveld voor hackers fundamenteel veranderd. AI-bots scannen 24/7 op plugin-kwetsbaarheden. Omdat de gemiddelde WooCommerce-shop draait op 20 tot 50 verschillende plugins van verschillende makers, is er altijd wel ergens een zwakke schakel.
             </p>
             <div className="pl-6 border-l-4 border-yellow-400 my-10 space-y-4">
               <div className="flex items-start gap-3">
                 <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 6 9 17l-5-5" />
                 </svg>
-                <span><strong>Geautomatiseerde aanvallen:</strong> AI probeert duizenden exploit-varianten per minuut.</span>
+                <span><strong>Geautomatiseerde aanvallen:</strong> AI kan binnen seconden duizenden varianten van een exploit proberen op jouw inlogpagina of database.</span>
               </div>
               <div className="flex items-start gap-3">
                 <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 6 9 17l-5-5" />
                 </svg>
-                <span><strong>Server als doelwit:</strong> Een centrale server is fysiek te kraken; de Edge niet.</span>
+                <span><strong>De server is het probleem:</strong> Omdat je shop op een traditionele server staat, hebben hackers een fysiek doelwit om te kraken.</span>
               </div>
             </div>
             <p className="text-lg leading-relaxed mb-8">
@@ -220,7 +223,7 @@ const BlogPost = () => {
           <section id="conclusie">
             <h2 className="font-extrabold text-3xl mt-24 mb-8">Conclusie: Durf je afscheid te nemen van 2015?</h2>
             <p className="text-lg leading-relaxed mb-8">
-              WooCommerce was fantastisch in het vorige decennium. Maar als klanten 0ms verwachten en AI-bots constant scannen, heb je een professionele architectuur nodig. Sitedesk bevrijdt je uit de plugin-hel.
+              WooCommerce was fantastisch in het vorige decennium. Maar in een tijdperk waar klanten 0ms laadtijd verwachten en AI-bots constant aan de deur rammelen, is het tijd voor een professionele architectuur. Sitedesk biedt je de verlossing van de plugin-hel.
             </p>
           </section>
 
@@ -230,7 +233,7 @@ const BlogPost = () => {
           >
             <h2 className="font-extrabold text-3xl">Pilot Deal: Stap nu over naar de Edge</h2>
             <p className="text-lg leading-relaxed mt-4">
-              €1.000 eenmalig, €150 p/m. We migreren je producten, richten je Sheets-backend in en zetten je shop op de wereldwijde Edge-infrastructuur.
+              €1.000 eenmalig, €150 p/m. Wij migreren je producten, richten je Google Sheets-backend in en zetten je shop op de wereldwijde Edge-infrastructuur.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-3 mt-6">
               <Button asChild variant="hero" size="lg">
