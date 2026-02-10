@@ -195,7 +195,7 @@ const BlogPost = () => {
           </div>
 
           <div className="mt-10 grid lg:grid-cols-[1fr,280px] gap-10">
-            <section className="article-body space-y-10 text-lg md:text-xl leading-[1.75] max-w-[680px] [&_p]:mb-7 [&_p]:text-foreground [&_strong]:text-foreground [&_h2]:mt-20 [&_h2]:mb-6 [&_h2]:text-3xl [&_h2]:font-extrabold [&_h3]:mt-10 [&_h3]:mb-4 [&_h3]:text-2xl [&_h3]:font-semibold [&_ul]:my-8 [&_ol]:my-8 [&_li]:mb-4 [&_blockquote]:my-12 [&_blockquote]:pl-8 [&_blockquote]:border-l-4 [&_blockquote]:border-accent [&_blockquote]:text-xl [&_blockquote]:italic">
+            <section className="article-body space-y-10 text-[1.125rem] leading-[1.75] max-w-[65ch] text-[#333] [&_p]:mb-8 [&_p]:text-[#333] [&_strong]:text-black [&_strong]:font-bold [&_h2]:mt-24 [&_h2]:mb-6 [&_h2]:text-[2.441rem] [&_h2]:leading-[1.2] [&_h2]:font-bold [&_h3]:mt-14 [&_h3]:mb-4 [&_h3]:text-[1.953rem] [&_h3]:leading-[1.3] [&_h3]:font-semibold [&_ul]:list-none [&_ul]:pl-10 [&_ul]:my-8 [&_ol]:list-none [&_ol]:pl-10 [&_ol]:my-8 [&_li]:mb-4 [&_blockquote]:my-16 [&_blockquote]:pl-8 [&_blockquote]:border-l-4 [&_blockquote]:border-[#FFB800] [&_blockquote]:text-[1.25rem] [&_blockquote]:italic">
               <p>
                 Je opent een webshop op je telefoon. Je ziet een wit scherm. Eén seconde gaat voorbij... twee seconden... drie...
                 <strong> Je bent weg, toch?</strong> In 2026 is de online consument ongeduldiger dan ooit. <strong>Snelheid is niet langer nice-to-have; het is de fundering van je winstgevendheid.</strong>
@@ -208,17 +208,23 @@ const BlogPost = () => {
                 <p>
                   Wanneer we zeggen dat traagheid omzet kost, baseren we dat niet op een onderbuikgevoel. <strong>De data van tech-giganten is onverbiddelijk.</strong>
                 </p>
-                <ul className="space-y-2">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="text-success mt-1" size={18} />
+                <ul>
+                  <li className="flex items-start gap-3">
+                    <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
                     <span><strong>De 53%-grens:</strong> 53% van mobiele bezoekers haakt af na 3 seconden laden. (Google/SOASTA)</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="text-success mt-1" size={18} />
+                  <li className="flex items-start gap-3">
+                    <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
                     <span><strong>Conversie-killer:</strong> 1s laadtijd = 3x hogere conversie vs 5s. (Portent)</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="text-success mt-1" size={18} />
+                  <li className="flex items-start gap-3">
+                    <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
                     <span><strong>Amazon-effect:</strong> Elke 100ms vertraging kost 1% omzet. (Amazon)</span>
                   </li>
                 </ul>
@@ -251,17 +257,23 @@ const BlogPost = () => {
                 <p>
                   Wij deployen je shop op Cloudflare Edge. <strong>Niet één server, maar duizenden nodes dichter bij je bezoeker.</strong>
                 </p>
-                <ul className="space-y-2">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="text-success mt-1" size={18} />
+                <ul>
+                  <li className="flex items-start gap-3">
+                    <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
                     <span><strong>0ms gevoel:</strong> Assets staan al naast je bezoeker.</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="text-success mt-1" size={18} />
+                  <li className="flex items-start gap-3">
+                    <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
                     <span><strong>Geen database-calls:</strong> Data serveert direct vanaf de Edge.</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="text-success mt-1" size={18} />
+                  <li className="flex items-start gap-3">
+                    <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
                     <span><strong>Headless-snelheid:</strong> Frontend en Sheets-backend zijn ontkoppeld voor pure performance.</span>
                   </li>
                 </ul>
@@ -275,14 +287,14 @@ const BlogPost = () => {
                   Stel je hebt een bescheiden shop. <strong>Alleen al op snelheid pak je elke maand duizenden euro’s terug.</strong>
                 </p>
                 <h3 className="text-foreground">Huidige situatie (4s)</h3>
-                <ul className="space-y-2">
+                <ul>
                   <li>Bezoekers: 5.000</li>
                   <li>Gemiddelde orderwaarde: €60,-</li>
                   <li>Conversie: 1,5%</li>
                   <li>Maandomzet: €4.500,-</li>
                 </ul>
                 <h3 className="text-foreground">Met Sitedesk Edge (0ms gevoel)</h3>
-                <ul className="space-y-2">
+                <ul>
                   <li>Bezoekers: 5.000 (gelijk)</li>
                   <li>Gemiddelde orderwaarde: €60,- (gelijk)</li>
                   <li>Conversie: 2,2% (conservatief)</li>
