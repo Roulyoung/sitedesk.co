@@ -385,7 +385,7 @@ const BlogPost = () => {
           <section className="mt-16 space-y-6">
             <div className="rounded-2xl border border-border bg-card/80 p-6">
               <h4 className="text-lg font-semibold text-foreground">Geschreven door</h4>
-              <p className="text-foreground font-bold">Alex de Vries</p>
+              <p className="text-foreground font-bold">Roeland</p>
               <p className="text-muted-foreground text-sm">E-commerce Architect bij Sitedesk</p>
               <p className="text-muted-foreground mt-2">
                 Specialist in edge-performance en conversiegedreven checkout flows voor ambitieuze merken.
