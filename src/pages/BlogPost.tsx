@@ -195,129 +195,123 @@ const BlogPost = () => {
           </div>
 
           <div className="mt-10 grid lg:grid-cols-[1fr,280px] gap-10">
-            <section className="article-body space-y-10 text-[1.125rem] leading-[1.75] max-w-[65ch] text-[#333] [&_p]:mb-8 [&_p]:text-[#333] [&_strong]:text-black [&_strong]:font-bold [&_h2]:mt-24 [&_h2]:mb-6 [&_h2]:text-[2.441rem] [&_h2]:leading-[1.2] [&_h2]:font-bold [&_h3]:mt-14 [&_h3]:mb-4 [&_h3]:text-[1.953rem] [&_h3]:leading-[1.3] [&_h3]:font-semibold [&_ul]:list-none [&_ul]:pl-10 [&_ul]:my-8 [&_ol]:list-none [&_ol]:pl-10 [&_ol]:my-8 [&_li]:mb-4 [&_blockquote]:my-16 [&_blockquote]:pl-8 [&_blockquote]:border-l-4 [&_blockquote]:border-[#FFB800] [&_blockquote]:text-[1.25rem] [&_blockquote]:italic">
-              <p>
+            <section className="article-body max-w-[720px] mx-auto text-lg leading-relaxed text-foreground space-y-12">
+              <p className="text-lg leading-relaxed mb-8">
                 Je opent een webshop op je telefoon. Je ziet een wit scherm. Eén seconde gaat voorbij... twee seconden... drie...
                 <strong> Je bent weg, toch?</strong> In 2026 is de online consument ongeduldiger dan ooit. <strong>Snelheid is niet langer nice-to-have; het is de fundering van je winstgevendheid.</strong>
               </p>
 
-              <section id="hard-cijfers" className="space-y-4">
-                <h2 className="text-foreground">
-                  De harde cijfers: elke seconde telt
-                </h2>
-                <p>
+              <section id="hard-cijfers">
+                <h2 className="font-extrabold text-3xl mt-24 mb-8">De harde cijfers: elke seconde telt</h2>
+                <p className="text-lg leading-relaxed mb-8">
                   Wanneer we zeggen dat traagheid omzet kost, baseren we dat niet op een onderbuikgevoel. <strong>De data van tech-giganten is onverbiddelijk.</strong>
                 </p>
-                <ul>
-                  <li className="flex items-start gap-3">
+                <div className="pl-6 border-l-4 border-yellow-400 my-10 space-y-4">
+                  <div className="flex items-start gap-3">
                     <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
                     <span><strong>De 53%-grens:</strong> 53% van mobiele bezoekers haakt af na 3 seconden laden. (Google/SOASTA)</span>
-                  </li>
-                  <li className="flex items-start gap-3">
+                  </div>
+                  <div className="flex items-start gap-3">
                     <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
                     <span><strong>Conversie-killer:</strong> 1s laadtijd = 3x hogere conversie vs 5s. (Portent)</span>
-                  </li>
-                  <li className="flex items-start gap-3">
+                  </div>
+                  <div className="flex items-start gap-3">
                     <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
                     <span><strong>Amazon-effect:</strong> Elke 100ms vertraging kost 1% omzet. (Amazon)</span>
-                  </li>
-                </ul>
-                <blockquote className="border-l-4 border-accent pl-4 italic text-foreground">
+                  </div>
+                </div>
+                <blockquote className="border-l-4 border-[#FFB800] pl-8 italic text-[1.25rem] my-16">
                   “0ms is geen hype. Het is het verschil tussen groeien en stilstaan.”
                   <div className="text-sm text-muted-foreground mt-1">— Sitedesk Performance Lab</div>
                 </blockquote>
-                <p>
+                <p className="text-lg leading-relaxed mb-8">
                   <strong>Conclusie:</strong> Draait je shop met ~4s laadtijd? Dan verdampt de helft van je marketingbudget nog voor de betaalknop in beeld komt.
                 </p>
               </section>
 
-              <section id="centrale-database" className="space-y-4">
-                <h2 className="text-foreground">
-                  Het probleem van de centrale database
-                </h2>
-                <p>
+              <section id="centrale-database">
+                <h2 className="font-extrabold text-3xl mt-24 mb-8">Het probleem van de centrale database</h2>
+                <p className="text-lg leading-relaxed mb-8">
                   Traditionele shops renderen vanaf een centrale server. <strong>Elke klik wacht op server, database en HTML-build.</strong> Hoe meer plugins, hoe zwaarder de lijn.
                 </p>
-                <h3 className="text-foreground">Waarom dit traag is</h3>
-                <p>
+                <h3 className="font-semibold text-2xl mt-14 mb-4">Waarom dit traag is</h3>
+                <p className="text-lg leading-relaxed mb-8">
                   Meer apps = meer latency. Meer thema&apos;s = grotere bundels. <strong>De bezoeker wacht, jij verliest omzet.</strong>
                 </p>
               </section>
 
-              <section id="edge-oplossing" className="space-y-4">
-                <h2 className="text-foreground">
-                  De oplossing: Edge-architectuur (Sitedesk Engine)
-                </h2>
-                <p>
+              <section id="edge-oplossing">
+                <h2 className="font-extrabold text-3xl mt-24 mb-8">De oplossing: Edge-architectuur (Sitedesk Engine)</h2>
+                <p className="text-lg leading-relaxed mb-8">
                   Wij deployen je shop op Cloudflare Edge. <strong>Niet één server, maar duizenden nodes dichter bij je bezoeker.</strong>
                 </p>
-                <ul>
-                  <li className="flex items-start gap-3">
+                <div className="pl-6 border-l-4 border-yellow-400 my-10 space-y-4">
+                  <div className="flex items-start gap-3">
                     <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
                     <span><strong>0ms gevoel:</strong> Assets staan al naast je bezoeker.</span>
-                  </li>
-                  <li className="flex items-start gap-3">
+                  </div>
+                  <div className="flex items-start gap-3">
                     <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
                     <span><strong>Geen database-calls:</strong> Data serveert direct vanaf de Edge.</span>
-                  </li>
-                  <li className="flex items-start gap-3">
+                  </div>
+                  <div className="flex items-start gap-3">
                     <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
                     <span><strong>Headless-snelheid:</strong> Frontend en Sheets-backend zijn ontkoppeld voor pure performance.</span>
-                  </li>
-                </ul>
+                  </div>
+                </div>
               </section>
 
-              <section id="rekensom" className="space-y-4">
-                <h2 className="text-foreground">
-                  De rekensom: wat levert 0ms op?
-                </h2>
-                <p>
+              <section id="rekensom">
+                <h2 className="font-extrabold text-3xl mt-24 mb-8">De rekensom: wat levert 0ms op?</h2>
+                <p className="text-lg leading-relaxed mb-8">
                   Stel je hebt een bescheiden shop. <strong>Alleen al op snelheid pak je elke maand duizenden euro’s terug.</strong>
                 </p>
-                <h3 className="text-foreground">Huidige situatie (4s)</h3>
-                <ul>
-                  <li>Bezoekers: 5.000</li>
-                  <li>Gemiddelde orderwaarde: €60,-</li>
-                  <li>Conversie: 1,5%</li>
-                  <li>Maandomzet: €4.500,-</li>
-                </ul>
-                <h3 className="text-foreground">Met Sitedesk Edge (0ms gevoel)</h3>
-                <ul>
-                  <li>Bezoekers: 5.000 (gelijk)</li>
-                  <li>Gemiddelde orderwaarde: €60,- (gelijk)</li>
-                  <li>Conversie: 2,2% (conservatief)</li>
-                  <li>Maandomzet: €6.600,-</li>
-                </ul>
-                <p>
+                <div className="bg-gray-50 p-8 rounded-xl my-12">
+                  <h3 className="font-semibold text-2xl mb-4">Huidige situatie (4s)</h3>
+                  <ul className="mb-6 space-y-2 list-none pl-6">
+                    <li>Bezoekers: 5.000</li>
+                    <li>Gemiddelde orderwaarde: €60,-</li>
+                    <li>Conversie: 1,5%</li>
+                    <li>Maandomzet: €4.500,-</li>
+                  </ul>
+                  <h3 className="font-semibold text-2xl mb-4">Met Sitedesk Edge (0ms gevoel)</h3>
+                  <ul className="space-y-2 list-none pl-6">
+                    <li>Bezoekers: 5.000 (gelijk)</li>
+                    <li>Gemiddelde orderwaarde: €60,- (gelijk)</li>
+                    <li>Conversie: 2,2% (conservatief)</li>
+                    <li>Maandomzet: €6.600,-</li>
+                  </ul>
+                </div>
+                <p className="text-lg leading-relaxed mb-8">
                   <strong>Resultaat:</strong> +€2.100 per maand (+€25.200 per jaar) puur door techniek. Geen Shopify app-fees van €50/maand en geen losse developer-uren meer.
                 </p>
               </section>
 
               <section
                 id="cta-breakout"
-                className="rounded-3xl border border-primary/20 bg-gradient-to-r from-primary/15 via-primary/10 to-accent/10 p-8 space-y-4"
+                className="bg-black text-white p-10 rounded-2xl my-16 text-center"
               >
-                <h2 className="text-foreground text-3xl font-extrabold">Pilot Deal: 0ms of niets</h2>
-                <p className="text-lg text-muted-foreground">
+                <h2 className="font-extrabold text-3xl">Pilot Deal: 0ms of niets</h2>
+                <p className="text-lg leading-relaxed mt-4">
                   €1.000 eenmalig, €150 p/m. Inclusief hosting, onbeperkt support én doorontwikkeling. <strong>Verdient zichzelf in maand 1 terug.</strong>
                 </p>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-col sm:flex-row justify-center gap-3 mt-6">
                   <Button asChild variant="hero" size="lg">
                     <a href="/#contact">Plan je Speed-Check</a>
                   </Button>
-                  <Button asChild variant="outline" size="lg" className="border-accent text-accent hover:bg-accent/10">
+                  <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
                     <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
                       WhatsApp direct
                     </a>
@@ -325,37 +319,39 @@ const BlogPost = () => {
                 </div>
               </section>
 
-              <section id="waarom-sitedesk" className="space-y-4">
-                <h2 className="text-foreground">
-                  Waarom Sitedesk de logische investering is
-                </h2>
-                <p>
+              <section id="waarom-sitedesk">
+                <h2 className="font-extrabold text-3xl mt-24 mb-8">Waarom Sitedesk de logische investering is</h2>
+                <p className="text-lg leading-relaxed mb-8">
                   Een nieuwe shop voelt vaak als een kostenpost. <strong>Wij zien het als het verwijderen van een blok aan je been.</strong> Onze Pilot Deal verdient zichzelf direct terug en verlaagt je hoofdpijn-belasting.
                 </p>
-                <ul className="space-y-2">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="text-success mt-1" size={18} />
+                <div className="pl-6 border-left-4 border-yellow-400 my-10 space-y-4">
+                  <div className="flex items-start gap-3">
+                    <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
                     <span>Geen server-onderhoud.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="text-success mt-1" size={18} />
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
                     <span>Geen trage admin-dashboards: beheer alles in Google Sheets.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="text-success mt-1" size={18} />
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <svg aria-hidden="true" className="mt-1 w-4 h-4 text-[#FFB800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
                     <span>Wij zijn je tech-team: wij bouwen, beheren en optimaliseren.</span>
-                  </li>
-                </ul>
+                  </div>
+                </div>
               </section>
 
-              <section id="klaar-edge" className="space-y-4">
-                <h2 className="text-foreground">
-                  Klaar voor 0ms? Zo pakken we het aan
-                </h2>
-                <p>
+              <section id="klaar-edge">
+                <h2 className="font-extrabold text-3xl mt-24 mb-8">Klaar voor 0ms? Zo pakken we het aan</h2>
+                <p className="text-lg leading-relaxed mb-8">
                   <strong>Snelheid is het verschil tussen winnen en verliezen.</strong> Wil je weten hoeveel omzet je nu laat liggen?
                 </p>
-                <p>
+                <p className="text-lg leading-relaxed mb-8">
                   <a href="/#contact" className="text-accent font-semibold">Plan een gratis Speed-Check</a> of{" "}
                   <a href="https://wa.me/31640326650" className="text-accent font-semibold">stuur een WhatsApp</a>. We laten je zien wat 0ms voor jouw merk doet.
                 </p>
