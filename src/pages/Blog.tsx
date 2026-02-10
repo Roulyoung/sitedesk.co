@@ -4,87 +4,7 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, CalendarDays, Tag } from "lucide-react";
-
-type BlogPost = {
-  title: string;
-  slug: string;
-  excerpt: string;
-  date: string;
-  tags: string[];
-};
-
-const allPosts: BlogPost[] = [
-  {
-    title: "Edge-first e-commerce: waarom laadtijd de nieuwe merkbeleving is",
-    slug: "edge-first-ecommerce",
-    excerpt: "Ontdek hoe een edge-architectuur je conversie verhoogt en hostingkosten verlaagt.",
-    date: "2026-02-01",
-    tags: ["Edge", "Performance", "E-commerce"],
-  },
-  {
-    title: "Google Sheets als CMS: zo beheer je 10.000 SKU's zonder developers",
-    slug: "sheets-cms-sku",
-    excerpt: "Praktische tips om grote catalogi te beheren vanuit Sheets met realtime sync.",
-    date: "2026-01-25",
-    tags: ["Sheets", "Operations", "CMS"],
-  },
-  {
-    title: "Stripe Lean Checkout: verdubbel je mobiele conversie",
-    slug: "stripe-lean-checkout",
-    excerpt: "Een breakdown van een ultra-snelle checkout flow die frictie minimaliseert.",
-    date: "2026-01-18",
-    tags: ["Checkout", "Stripe", "CRO"],
-  },
-  {
-    title: "Migreren van WooCommerce: wat je in week 1 geregeld moet hebben",
-    slug: "migreren-woocommerce",
-    excerpt: "Een checklist voor een soepele migratie zonder omzetverlies.",
-    date: "2026-01-10",
-    tags: ["Migratie", "WooCommerce"],
-  },
-  {
-    title: "Shopify app-fees vs. headless vast bedrag: de echte TCO",
-    slug: "shopify-tco",
-    excerpt: "We rekenen de verborgen kosten door en vergelijken met een managed headless stack.",
-    date: "2025-12-20",
-    tags: ["Kosten", "Shopify", "TCO"],
-  },
-  {
-    title: "CRO in 5 dagen: welke quick wins elke shop kan doen",
-    slug: "cro-quick-wins",
-    excerpt: "Snelle A/B-ideeën die direct impact maken op je conversie.",
-    date: "2025-12-05",
-    tags: ["CRO", "Optimalisatie"],
-  },
-  {
-    title: "Zero trust voor webshops: zo bescherm je klantdata op de Edge",
-    slug: "zero-trust-webshops",
-    excerpt: "Beveiligingsprincipes die je kunt toepassen zonder complexiteit voor je team.",
-    date: "2025-11-15",
-    tags: ["Security", "Edge"],
-  },
-  {
-    title: "Black Friday zonder stress: autoscaling zonder servers",
-    slug: "black-friday-stress",
-    excerpt: "Hoe je piekverkeer opvangt zonder servers warm te draaien.",
-    date: "2025-11-01",
-    tags: ["Scaling", "Events"],
-  },
-  {
-    title: "Productfeeds en marketplaces: zo houd je prijzen realtime gelijk",
-    slug: "productfeeds-marketplaces",
-    excerpt: "Synchroniseer prijzen en voorraad over kanalen zonder inconsistencies.",
-    date: "2025-10-20",
-    tags: ["Integraties", "Feeds"],
-  },
-];
-
-const PAGE_SIZE = 6;
-
-const paginate = (items: BlogPost[], page: number, perPage: number) => {
-  const start = (page - 1) * perPage;
-  return items.slice(start, start + perPage);
-};
+import { blogPosts, PAGE_SIZE, paginate, type BlogPost } from "@/lib/blogData";
 
 const Pagination = ({ page, totalPages, onChange }: { page: number; totalPages: number; onChange: (page: number) => void }) => {
   if (totalPages <= 1) return null;
@@ -125,8 +45,8 @@ const Pagination = ({ page, totalPages, onChange }: { page: number; totalPages: 
 
 const Blog = () => {
   const [page, setPage] = useState(1);
-  const totalPages = useMemo(() => Math.max(1, Math.ceil(allPosts.length / PAGE_SIZE)), []);
-  const posts = useMemo(() => paginate(allPosts, page, PAGE_SIZE), [page]);
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(blogPosts.length / PAGE_SIZE)), []);
+  const posts = useMemo(() => paginate(blogPosts, page, PAGE_SIZE), [page]);
 
   return (
     <div className="min-h-screen bg-background">
