@@ -195,14 +195,14 @@ const BlogPost = () => {
           </div>
 
           <div className="mt-10 grid lg:grid-cols-[1fr,280px] gap-10">
-            <section className="space-y-10 text-lg md:text-xl leading-relaxed md:leading-8 max-w-3xl">
+            <section className="article-body space-y-10 text-lg md:text-xl leading-[1.75] max-w-[680px] [&_p]:mb-7 [&_p]:text-foreground [&_strong]:text-foreground [&_h2]:mt-20 [&_h2]:mb-6 [&_h2]:text-3xl [&_h2]:font-extrabold [&_h3]:mt-10 [&_h3]:mb-4 [&_h3]:text-2xl [&_h3]:font-semibold [&_ul]:my-8 [&_ol]:my-8 [&_li]:mb-4 [&_blockquote]:my-12 [&_blockquote]:pl-8 [&_blockquote]:border-l-4 [&_blockquote]:border-accent [&_blockquote]:text-xl [&_blockquote]:italic">
               <p>
                 Je opent een webshop op je telefoon. Je ziet een wit scherm. Eén seconde gaat voorbij... twee seconden... drie...
                 <strong> Je bent weg, toch?</strong> In 2026 is de online consument ongeduldiger dan ooit. <strong>Snelheid is niet langer nice-to-have; het is de fundering van je winstgevendheid.</strong>
               </p>
 
               <section id="hard-cijfers" className="space-y-4">
-                <h2 className="mt-16 text-3xl font-extrabold text-foreground border-b border-accent/40 pb-2 mb-4">
+                <h2 className="text-foreground">
                   De harde cijfers: elke seconde telt
                 </h2>
                 <p>
@@ -232,20 +232,20 @@ const BlogPost = () => {
               </section>
 
               <section id="centrale-database" className="space-y-4">
-                <h2 className="mt-16 text-3xl font-extrabold text-foreground border-b border-accent/40 pb-2 mb-4">
+                <h2 className="text-foreground">
                   Het probleem van de centrale database
                 </h2>
                 <p>
                   Traditionele shops renderen vanaf een centrale server. <strong>Elke klik wacht op server, database en HTML-build.</strong> Hoe meer plugins, hoe zwaarder de lijn.
                 </p>
-                <h3 className="mt-10 text-2xl font-semibold text-foreground mb-4">Waarom dit traag is</h3>
+                <h3 className="text-foreground">Waarom dit traag is</h3>
                 <p>
                   Meer apps = meer latency. Meer thema&apos;s = grotere bundels. <strong>De bezoeker wacht, jij verliest omzet.</strong>
                 </p>
               </section>
 
               <section id="edge-oplossing" className="space-y-4">
-                <h2 className="mt-16 text-3xl font-extrabold text-foreground border-b border-accent/40 pb-2 mb-4">
+                <h2 className="text-foreground">
                   De oplossing: Edge-architectuur (Sitedesk Engine)
                 </h2>
                 <p>
@@ -268,20 +268,20 @@ const BlogPost = () => {
               </section>
 
               <section id="rekensom" className="space-y-4">
-                <h2 className="mt-16 text-3xl font-extrabold text-foreground border-b border-accent/40 pb-2 mb-4">
+                <h2 className="text-foreground">
                   De rekensom: wat levert 0ms op?
                 </h2>
                 <p>
                   Stel je hebt een bescheiden shop. <strong>Alleen al op snelheid pak je elke maand duizenden euro’s terug.</strong>
                 </p>
-                <h3 className="mt-10 text-2xl font-semibold text-foreground mb-4">Huidige situatie (4s)</h3>
+                <h3 className="text-foreground">Huidige situatie (4s)</h3>
                 <ul className="space-y-2">
                   <li>Bezoekers: 5.000</li>
                   <li>Gemiddelde orderwaarde: €60,-</li>
                   <li>Conversie: 1,5%</li>
                   <li>Maandomzet: €4.500,-</li>
                 </ul>
-                <h3 className="mt-10 text-2xl font-semibold text-foreground mb-4">Met Sitedesk Edge (0ms gevoel)</h3>
+                <h3 className="text-foreground">Met Sitedesk Edge (0ms gevoel)</h3>
                 <ul className="space-y-2">
                   <li>Bezoekers: 5.000 (gelijk)</li>
                   <li>Gemiddelde orderwaarde: €60,- (gelijk)</li>
@@ -297,7 +297,7 @@ const BlogPost = () => {
                 id="cta-breakout"
                 className="rounded-3xl border border-primary/20 bg-gradient-to-r from-primary/15 via-primary/10 to-accent/10 p-8 space-y-4"
               >
-                <h2 className="text-3xl font-extrabold text-foreground">Pilot Deal: 0ms of niets</h2>
+                <h2 className="text-foreground text-3xl font-extrabold">Pilot Deal: 0ms of niets</h2>
                 <p className="text-lg text-muted-foreground">
                   €1.000 eenmalig, €150 p/m. Inclusief hosting, onbeperkt support én doorontwikkeling. <strong>Verdient zichzelf in maand 1 terug.</strong>
                 </p>
@@ -314,7 +314,7 @@ const BlogPost = () => {
               </section>
 
               <section id="waarom-sitedesk" className="space-y-4">
-                <h2 className="mt-16 text-3xl font-extrabold text-foreground border-b border-accent/40 pb-2 mb-4">
+                <h2 className="text-foreground">
                   Waarom Sitedesk de logische investering is
                 </h2>
                 <p>
@@ -337,7 +337,7 @@ const BlogPost = () => {
               </section>
 
               <section id="klaar-edge" className="space-y-4">
-                <h2 className="mt-16 text-3xl font-extrabold text-foreground border-b border-accent/40 pb-2 mb-4">
+                <h2 className="text-foreground">
                   Klaar voor 0ms? Zo pakken we het aan
                 </h2>
                 <p>
