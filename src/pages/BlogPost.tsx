@@ -6,6 +6,7 @@ import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, Tag, ArrowLeft, ArrowRight, Share2 } from "lucide-react";
 import { posts, PAGE_SIZE, paginate, type ContentBlock } from "@/lib/blogData";
+import { Helmet } from "react-helmet-async";
 
 const BlogPost = () => {
   const { slug } = useParams();
@@ -17,6 +18,7 @@ const BlogPost = () => {
   const current = posts.find((p) => p.id === slug) ?? posts[0];
   const otherPosts = posts.filter((p) => p.id !== current.id);
   const [page, setPage] = useState(initialPage);
+  const [activeHeading, setActiveHeading] = useState<string | null>(null);
   const totalPages = useMemo(() => Math.max(1, Math.ceil(otherPosts.length / PAGE_SIZE) || 1), [otherPosts.length]);
   const listing = useMemo(() => paginate(otherPosts, page, PAGE_SIZE), [page, otherPosts]);
 
@@ -24,45 +26,41 @@ const BlogPost = () => {
   const description = current.excerpt;
   const publishedDate = new Date(current.date).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
   const readingTime = current.readingTime ?? "6 min";
+  const canonical = `https://sitedesk.co${location.pathname}`;
+  const isBrowser = typeof window !== "undefined";
 
-  useEffect(() => {
-    document.title = `${title} | Sitedesk Blog`;
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute("content", description);
-    } else {
-      const newMeta = document.createElement("meta");
-      newMeta.name = "description";
-      newMeta.content = description;
-      document.head.appendChild(newMeta);
-    }
+  const slugify = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
 
-    const ldJson = {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      headline: title,
-      datePublished: current.date,
-      dateModified: current.date,
-      author: { "@type": "Organization", name: "Sitedesk" },
-      publisher: {
-        "@type": "Organization",
-        name: "Sitedesk",
-        logo: { "@type": "ImageObject", url: "https://sitedesk.co/icon-sitedesk.png" },
-      },
-      description,
-      mainEntityOfPage: { "@type": "WebPage", "@id": window.location.href },
-    };
-
-    const scriptId = "structured-data-article";
-    let script = document.getElementById(scriptId) as HTMLScriptElement | null;
-    if (!script) {
-      script = document.createElement("script");
-      script.id = scriptId;
-      script.type = "application/ld+json";
-      document.head.appendChild(script);
-    }
-    script.textContent = JSON.stringify(ldJson);
-  }, [title, description, current.date]);
+  const headingIds = useMemo(() => {
+    let count = 0;
+    return current.content.map((block) => {
+      if (block.type === "h2") {
+        const id = `${slugify(block.value)}-${count}`;
+        count += 1;
+        return id;
+      }
+      return null;
+    });
+  }, [current.content]);
+  const ldJson = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    datePublished: current.date,
+    dateModified: current.date,
+    author: { "@type": "Organization", name: "Sitedesk" },
+    publisher: {
+      "@type": "Organization",
+      name: "Sitedesk",
+      logo: { "@type": "ImageObject", url: "https://sitedesk.co/icon-sitedesk.png" },
+    },
+    description,
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
+  };
 
   const handleBack = () => navigate(`/blog?page=${page}`);
 
@@ -93,11 +91,42 @@ const BlogPost = () => {
     );
   };
 
+  useEffect(() => {
+    if (!isBrowser) return;
+    const targets = headingIds
+      .map((id) => (id ? document.getElementById(id) : null))
+      .filter((el): el is Element => Boolean(el));
+    if (!targets.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveHeading(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: "-40% 0px -40% 0px", threshold: [0, 1] },
+    );
+
+    targets.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [headingIds, isBrowser]);
+
+  const handleTocClick = (id: string) => {
+    if (!isBrowser) return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    const y = el.getBoundingClientRect().top + window.scrollY - 96;
+    window.scrollTo({ top: y, behavior: "smooth" });
+    setActiveHeading(id);
+  };
+
   const renderBlock = (block: ContentBlock, idx: number) => {
     switch (block.type) {
       case "h2":
         return (
-          <h2 key={idx} className="font-extrabold text-3xl mt-24 mb-8">
+          <h2 key={idx} id={headingIds[idx] ?? undefined} className="font-extrabold text-3xl mt-24 mb-8 scroll-mt-28">
             {block.value}
           </h2>
         );
@@ -108,26 +137,50 @@ const BlogPost = () => {
           </p>
         );
       case "calc_box":
+        if (!block.data) return null;
+        const hasColumns =
+          (block.data.leftItems && block.data.leftItems.length > 0) ||
+          (block.data.rightItems && block.data.rightItems.length > 0);
+        const singleItems = block.data.items && block.data.items.length > 0 ? block.data.items : null;
         return (
           <div key={idx} className="bg-gray-50 p-8 rounded-xl my-12">
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="font-semibold text-2xl mb-4">{block.data.leftTitle}</h3>
+            {block.data.title && <h3 className="font-semibold text-2xl mb-6">{block.data.title}</h3>}
+            {hasColumns ? (
+              <div className="grid md:grid-cols-2 gap-8">
+                {(block.data.leftItems?.length || block.data.leftTitle) && (
+                  <div>
+                    {block.data.leftTitle && <h4 className="font-semibold text-xl mb-4">{block.data.leftTitle}</h4>}
+                    {block.data.leftItems && (
+                      <ul className="space-y-2 list-none pl-6">
+                        {block.data.leftItems.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+                {(block.data.rightItems?.length || block.data.rightTitle) && (
+                  <div>
+                    {block.data.rightTitle && <h4 className="font-semibold text-xl mb-4">{block.data.rightTitle}</h4>}
+                    {block.data.rightItems && (
+                      <ul className="space-y-2 list-none pl-6">
+                        {block.data.rightItems.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              singleItems && (
                 <ul className="space-y-2 list-none pl-6">
-                  {block.data.leftItems.map((item) => (
+                  {singleItems.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
                 </ul>
-              </div>
-              <div>
-                <h3 className="font-semibold text-2xl mb-4">{block.data.rightTitle}</h3>
-                <ul className="space-y-2 list-none pl-6">
-                  {block.data.rightItems.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+              )
+            )}
             {block.data.summary && (
               <p className="text-lg leading-relaxed mt-6">
                 <strong>{block.data.summary}</strong>
@@ -161,6 +214,16 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>{`${title} | Sitedesk Blog`}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonical} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={canonical} />
+        <script type="application/ld+json">{JSON.stringify(ldJson)}</script>
+      </Helmet>
       <Header />
       <main className="pt-24">
         <article className="container mx-auto max-w-5xl pb-20">
@@ -225,13 +288,26 @@ const BlogPost = () => {
                 <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Inhoudsopgave</h3>
                 <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
                   {current.content
-                    .filter((c) => c.type === "h2")
-                    .map((c, i) => (
-                      <span key={`${(c as any).value}-${i}`} className="flex items-center gap-2 rounded-lg px-2 py-1">
-                        <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-                        {(c as any).value}
-                      </span>
-                    ))}
+                    .map((c, i) => ({ block: c, id: headingIds[i] }))
+                    .filter((item) => item.block.type === "h2" && item.id)
+                    .map((item, i) => {
+                      const active = activeHeading ? activeHeading === item.id : i === 0;
+                      return (
+                        <button
+                          key={`${(item.block as any).value}-${item.id}`}
+                          onClick={() => item.id && handleTocClick(item.id)}
+                          className={`flex items-center gap-2 rounded-lg px-2 py-1 text-left transition-colors ${
+                            active ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          <span
+                            className={`h-1.5 w-1.5 rounded-full ${active ? "bg-accent" : "bg-border"}`}
+                            aria-hidden
+                          />
+                          {(item.block as any).value}
+                        </button>
+                      );
+                    })}
                 </nav>
               </div>
             </aside>

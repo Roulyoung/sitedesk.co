@@ -67,14 +67,23 @@ export default {
     const session = event.data.object;
     const customer = session.customer_details;
     const addr = customer?.address;
-    const address = addr
-      ? `${addr.line1 ?? ""} ${addr.line2 ?? ""}, ${addr.postal_code ?? ""} ${addr.city ?? ""}, ${addr.country ?? ""}`.trim()
-      : "";
+  const address = addr
+    ? `${addr.line1 ?? ""} ${addr.line2 ?? ""}, ${addr.postal_code ?? ""} ${addr.city ?? ""}, ${addr.country ?? ""}`.trim()
+    : "";
 
-    const meta = session.metadata || {};
-    const productId = meta.productId || meta.ProductID || "N/A";
-    const amountTotal = (session.amount_total ?? 0) / 100;
-    const transactionId = session.payment_intent?.toString() ?? session.id;
+  const orderDatetime = new Date().toLocaleString("nl-NL", {
+    timeZone: "Europe/Amsterdam",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const meta = session.metadata || {};
+  const productId = meta.productId || meta.ProductID || "N/A";
+  const amountTotal = (session.amount_total ?? 0) / 100;
+  const transactionId = session.payment_intent?.toString() ?? session.id;
 
     try {
       const token = await getGoogleAccessToken(env);
@@ -82,7 +91,7 @@ export default {
         token,
         sheetId: env.SHEET_ID,
         values: [
-          new Date().toISOString(),
+          orderDatetime,
           customer?.name || "Anoniem",
           customer?.email || "Geen e-mail",
           address,
@@ -144,6 +153,9 @@ async function getGoogleAccessToken(env) {
 }
 
 async function appendOrderRow({ token, sheetId, values }) {
+  // Write header row if sheet is empty
+  await ensureHeaderRow({ token, sheetId });
+
   const res = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(SHEET_RANGE)}:append?valueInputOption=USER_ENTERED`,
     {
@@ -175,6 +187,35 @@ function base64url(input) {
   let str = "";
   for (let i = 0; i < bytes.length; i++) str += String.fromCharCode(bytes[i]);
   return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+async function ensureHeaderRow({ token, sheetId }) {
+  try {
+    const range = SHEET_RANGE.split("!")[0] + "!A1:G1";
+    const res = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?majorDimension=ROWS`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
+    const data = await res.json();
+    const hasHeader = Array.isArray(data?.values) && data.values.length > 0;
+    if (hasHeader) return;
+    const headerValues = [["Datum/Tijd", "Naam", "Email", "Adres", "ProductID", "Bedrag", "Transactie"]];
+    await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ values: headerValues }),
+      },
+    );
+  } catch {
+    // ignore header errors
+  }
 }
 
 async function handleGetProducts(env, req) {
@@ -223,6 +264,12 @@ async function handleCreateCheckoutSession(req, env) {
       return new Response("Cart is leeg", { status: 400 });
     }
 
+    const totalCents = cart.reduce((sum, item) => {
+      const amountCents = Math.round(item.price * 100) || item.amountCents || 0;
+      return sum + (Number.isFinite(amountCents) ? amountCents * (item.quantity && item.quantity > 0 ? item.quantity : 1) : 0);
+    }, 0);
+    const productName = cart[0]?.name || "Product";
+
     const lineItems = cart.map((item) => {
       const quantity = item.quantity && item.quantity > 0 ? item.quantity : 1;
       const amountCents = Math.round(item.price * 100) || item.amountCents || 0;
@@ -246,8 +293,18 @@ async function handleCreateCheckoutSession(req, env) {
       env.STRIPE_SECRET_KEY,
       STRIPE_API_VERSION ? { apiVersion: STRIPE_API_VERSION } : {},
     );
-    const successUrl = env.CHECKOUT_SUCCESS_URL || "https://sitedesk.co/success";
+    const successBase = env.CHECKOUT_SUCCESS_URL || "https://sitedesk.co/success";
     const cancelUrl = env.CHECKOUT_CANCEL_URL || "https://sitedesk.co/cancel";
+    const successUrl = (() => {
+      try {
+        const url = new URL(successBase);
+        url.searchParams.set("product", productName);
+        url.searchParams.set("amount", (totalCents / 100).toFixed(2));
+        return url.toString();
+      } catch {
+        return successBase;
+      }
+    })();
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",

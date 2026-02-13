@@ -17,11 +17,14 @@ const Header = () => {
   const location = useLocation();
   const [prevPath, setPrevPath] = useState(location.pathname);
 
+  const isBrowser = typeof window !== "undefined";
+
   const handleNavClick = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
     to: string,
     type: "route" | "hash",
   ) => {
+    if (!isBrowser) return;
     if (type !== "hash") return;
     const url = new URL(to, window.location.origin);
     const targetId = url.hash.replace("#", "");
@@ -33,15 +36,17 @@ const Header = () => {
   };
 
   const isActive = (to: string, type: "route" | "hash") => {
+    const origin = isBrowser ? window.location.origin : "https://sitedesk.co";
     if (type === "hash") {
-      const url = new URL(to, window.location.origin);
+      const url = new URL(to, origin);
       return location.pathname === url.pathname && location.hash === url.hash;
     }
-    const url = new URL(to, window.location.origin);
+    const url = new URL(to, origin);
     return location.pathname === url.pathname;
   };
 
   const scrollToHash = (targetId: string) => {
+    if (!isBrowser) return;
     const el = document.getElementById(targetId);
     if (!el) return;
     const y = el.getBoundingClientRect().top + window.scrollY - 96; // offset for fixed header
@@ -50,6 +55,7 @@ const Header = () => {
 
   // Ensure hash navigation works after route changes
   useEffect(() => {
+    if (!isBrowser) return;
     if (location.pathname !== prevPath && !location.hash) {
       window.scrollTo({ top: 0, behavior: "auto" });
       setPrevPath(location.pathname);

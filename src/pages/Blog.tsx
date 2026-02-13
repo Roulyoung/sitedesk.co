@@ -71,7 +71,7 @@ const Blog = () => {
           <div className="grid md:grid-cols-2 gap-8">
             {visiblePosts.map((post) => (
               <article
-                key={post.slug}
+                key={post.id}
                 className="p-6 rounded-2xl border border-border bg-card shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3">
@@ -79,20 +79,22 @@ const Blog = () => {
                   <span>{new Date(post.date).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })}</span>
                 </div>
                 <h2 className="text-xl font-semibold text-foreground mb-2">
-                  <a href={`/blog/${post.slug}`} className="hover:text-accent transition-colors">
+                  <a href={`/blog/${post.id}`} className="hover:text-accent transition-colors">
                     {post.title}
                   </a>
                 </h2>
                 <p className="text-muted-foreground mb-4">{post.excerpt}</p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {post.tags.map((tag) => (
-                    <span key={tag} className="text-xs px-3 py-1 rounded-full bg-secondary/60 text-muted-foreground border border-border">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                {post.tags && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {post.tags.map((tag) => (
+                      <span key={tag} className="text-xs px-3 py-1 rounded-full bg-secondary/60 text-muted-foreground border border-border">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <Button asChild variant="heroOutline" size="sm">
-                  <a href={`/blog/${post.slug}`}>Lees meer</a>
+                  <a href={`/blog/${post.id}`}>Lees meer</a>
                 </Button>
               </article>
             ))}

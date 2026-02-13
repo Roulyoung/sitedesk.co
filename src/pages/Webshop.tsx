@@ -1,4 +1,5 @@
-﻿import { useEffect } from "react";
+import { useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -71,6 +72,11 @@ const benefitCards = [
 ];
 
 const Webshop = () => {
+  const pageTitle = "Supersnelle Webshop op Edge | €1.000 setup + €150 p/m | Sitedesk";
+  const pageDescription =
+    "Sitedesk bouwt, host en onderhoudt supersnelle webshops op Edge. Inclusief Google Sheets CMS, Stripe checkout en support. Early Adopter: €1.000 setup + €150 p/m lifetime.";
+  const canonicalUrl = "https://sitedesk.co/";
+  const imageUrl = "https://sitedesk.co/icon-sitedesk.png";
   useEffect(() => {
     const ids = ["techniek", "aanbod", "sheets", "contact"];
     const observer = new IntersectionObserver(
@@ -114,6 +120,23 @@ const Webshop = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:site_name" content="Sitedesk" />
+        <meta property="og:locale" content="nl_NL" />
+        <meta property="og:image" content={imageUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={imageUrl} />
+      </Helmet>
       <Header />
       <main className="pt-20 md:pt-24 space-y-24 md:space-y-32">
         {/* Hero */}

@@ -1,0 +1,10 @@
+Codex session log (high-density)
+
+2026-02-16
+- Swapped homepage focus to webshops; rebuilt nav/footer consistency; CTA focus on call/WhatsApp; added demo link to /shop; anchors fixed for in-page hashes.
+- Implemented data-driven blog system (src/lib/blogData.ts) with posts array and block-based content; BlogPost.tsx template renders blocks; Blog.tsx listing with pagination.
+- Added/updated posts: 0ms laadtijd, WooCommerce risico, verborgen-kosten-woocommerce-webshop-stagnatie, future-proof-webshop-langetermijninvestering (TCO calc + CTA).
+- Added blog SEO/UX features: hero copy updates, TOC sidebar, author box (Roeland), pagination for related/more articles; CTA copy standardized (€1.000/€150).
+- Implemented React SSR/SSG pipeline: entry-ssr.tsx with StaticRouter + Helmet; prerender script writes static HTML per route/blog slug; hydrateRoot in main.tsx; Vite config updated for SSR bundling; build script runs client + SSR + prerender.
+- Header made SSR-safe (guards for window/document).
+- TOC restored to clickable + active state via heading ids and IntersectionObserver; smooth-scroll anchors; H2 scroll-mt spacing.
