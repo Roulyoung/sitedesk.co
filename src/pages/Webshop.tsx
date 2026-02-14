@@ -52,6 +52,49 @@ const benefitCards = [
   },
 ];
 
+const comparisonRows = [
+  {
+    feature: "Laadtijd",
+    sitedesk: "0ms",
+    shopify: "2.5s - 5s",
+    woocommerce: "3s - 10s+",
+    magento: "3s - 8s",
+    prestashop: "3s - 7s",
+  },
+  {
+    feature: "PageSpeed mobiel",
+    sitedesk: "90 - 100",
+    shopify: "40 - 60",
+    woocommerce: "20 - 50",
+    magento: "25 - 55",
+    prestashop: "30 - 60",
+  },
+  {
+    feature: "Beheer",
+    sitedesk: "Google Sheets (real-time)",
+    shopify: "Dashboard + apps",
+    woocommerce: "WP-Admin + plugins",
+    magento: "Complex admin panel",
+    prestashop: "Backoffice + modules",
+  },
+  {
+    feature: "Doorontwikkeling",
+    sitedesk: "Inclusief in maandbedrag",
+    shopify: "Apps + developers",
+    woocommerce: "Developer + plugin onderhoud",
+    magento: "Developer team nodig",
+    prestashop: "Module stack + developer",
+  },
+  {
+    feature: "Veiligheid",
+    sitedesk: "Edge + beperkt aanvalsoppervlak",
+    shopify: "SaaS afhankelijk",
+    woocommerce: "Plugin en hosting risico",
+    magento: "Patch management zwaar",
+    prestashop: "Module kwetsbaarheden mogelijk",
+  },
+];
+
 const Webshop = () => {
   const pageTitle = "Supersnelle Webshop op Edge | €1.000 setup + €150 p/m | Sitedesk";
   const pageDescription =
@@ -61,8 +104,10 @@ const Webshop = () => {
   const [monthlyRevenue, setMonthlyRevenue] = useState(10000);
   const [currentLoadTime, setCurrentLoadTime] = useState(4);
   const [monthlyVisitors, setMonthlyVisitors] = useState("");
+  const [contactStatus, setContactStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [contactError, setContactError] = useState("");
+  const [reportStatus, setReportStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [reportError, setReportError] = useState("");
-  const [reportSuccess, setReportSuccess] = useState(false);
 
   const currentLossPercent = useMemo(() => getConversionLossPercent(currentLoadTime), [currentLoadTime]);
   const missedMonthlyRevenue = useMemo(
@@ -97,7 +142,7 @@ const Webshop = () => {
     [monthlyRevenue],
   );
   useEffect(() => {
-    const ids = ["techniek", "omzetverlies", "aanbod", "sheets", "contact"];
+    const ids = ["techniek", "omzetverlies", "concurrentievergelijking", "aanbod", "sheets", "contact"];
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries.find((entry) => entry.isIntersecting);
@@ -130,14 +175,46 @@ const Webshop = () => {
     }
   };
 
-  const handleContactSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    trackLead();
-    form.reset();
+  const postLead = async (payload: Record<string, string>) => {
+    const res = await fetch("/submit", {
+      method: "POST",
+      mode: "cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data?.message || "Versturen mislukt. Probeer opnieuw.");
+    }
   };
 
-  const handleReportSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleContactSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const payload = {
+      leadType: "contact",
+      name: formData.get("name")?.toString().trim() ?? "",
+      email: formData.get("email")?.toString().trim() ?? "",
+      message: formData.get("message")?.toString().trim() ?? "",
+      company: formData.get("company")?.toString().trim() ?? "",
+    };
+
+    setContactStatus("sending");
+    setContactError("");
+    try {
+      await postLead(payload);
+      trackLead();
+      setContactStatus("success");
+      form.reset();
+    } catch (err) {
+      setContactStatus("error");
+      setContactError(err instanceof Error ? err.message : "Versturen mislukt. Probeer opnieuw.");
+    }
+  };
+
+  const handleReportSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
@@ -146,33 +223,51 @@ const Webshop = () => {
     const phone = String(formData.get("phone") ?? "").trim();
 
     if (!url) {
-      setReportSuccess(false);
+      setReportStatus("error");
       setReportError("Vul je shop URL in.");
       return;
     }
 
     if (!email && !phone) {
-      setReportSuccess(false);
+      setReportStatus("error");
       setReportError("Vul minimaal e-mail of telefoonnummer in.");
       return;
     }
 
-    const message =
-      `Gratis speedrapport aanvraag:%0A` +
-      `URL: ${encodeURIComponent(url)}%0A` +
-      `E-mail: ${encodeURIComponent(email || "-")}%0A` +
-      `Telefoon: ${encodeURIComponent(phone || "-")}%0A` +
-      `Huidige laadtijd: ${encodeURIComponent(`${currentLoadTime.toFixed(1)}s`)}%0A` +
-      `Geschat omzetverlies p/m: ${encodeURIComponent(formatCurrency(missedMonthlyRevenue))}`;
+    const payload = {
+      leadType: "calculator",
+      name: "Calculator lead",
+      email,
+      phone,
+      shopUrl: url,
+      monthlyRevenue: String(monthlyRevenue),
+      currentLoadTime: currentLoadTime.toFixed(1),
+      estimatedLoss: formatCurrency(missedMonthlyRevenue),
+      message: [
+        "Calculator lead aanvraag",
+        `Shop URL: ${url}`,
+        `Telefoon: ${phone || "-"}`,
+        `E-mail: ${email || "-"}`,
+        `Maandelijkse omzet: ${formatCurrency(monthlyRevenue)}`,
+        `Huidige laadtijd: ${currentLoadTime.toFixed(1)} seconden`,
+        `Geschat omzetverlies p/m: ${formatCurrency(missedMonthlyRevenue)}`,
+      ].join("\n"),
+      company: "",
+    };
 
-    trackLead();
-    if (typeof window !== "undefined") {
-      window.open(`https://wa.me/31640326650?text=${message}`, "_blank", "noopener,noreferrer");
-    }
-
+    setReportStatus("sending");
     setReportError("");
-    setReportSuccess(true);
-    form.reset();
+
+    try {
+      await postLead(payload);
+      trackLead();
+      setReportStatus("success");
+      form.reset();
+      setMonthlyVisitors("");
+    } catch (err) {
+      setReportStatus("error");
+      setReportError(err instanceof Error ? err.message : "Versturen mislukt. Probeer opnieuw.");
+    }
   };
 
   return (
@@ -560,6 +655,10 @@ const Webshop = () => {
                   We vergelijken jouw huidige shop met een Sitedesk Edge shop en laten exact zien waar je omzet laat liggen.
                 </p>
                 <form onSubmit={handleReportSubmit} className="grid md:grid-cols-2 gap-3">
+                  <div className="hidden">
+                    <label htmlFor="company">Bedrijfsnaam (laat leeg)</label>
+                    <input id="company" name="company" type="text" />
+                  </div>
                   <input
                     type="url"
                     name="shopUrl"
@@ -578,18 +677,66 @@ const Webshop = () => {
                     placeholder="Telefoon (optioneel)"
                     className="rounded-lg border border-primary-foreground/30 bg-primary-foreground/10 px-4 py-3 text-primary-foreground placeholder:text-primary-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary-foreground/60"
                   />
-                  <Button type="submit" variant="heroOutline" size="lg" className="border-primary-foreground text-primary-foreground">
-                    Vraag gratis rapport aan
+                  <Button
+                    type="submit"
+                    variant="heroOutline"
+                    size="lg"
+                    className="border-primary-foreground text-primary-foreground"
+                    disabled={reportStatus === "sending"}
+                  >
+                    {reportStatus === "sending" ? "Verzenden..." : "Vraag gratis rapport aan"}
                   </Button>
                 </form>
                 {reportError && <p className="text-sm mt-3 text-primary-foreground">{reportError}</p>}
-                {reportSuccess && (
+                {reportStatus === "success" && (
                   <p className="text-sm mt-3 text-primary-foreground">
-                    Klaar. We hebben WhatsApp geopend met je aanvraaggegevens.
+                    Aanvraag ontvangen. We nemen snel contact met je op.
                   </p>
                 )}
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Concurrentievergelijking */}
+        <section id="concurrentievergelijking" className="container mx-auto scroll-mt-28">
+          <div className="text-center max-w-4xl mx-auto mb-10">
+            <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider mb-3">
+              Concurrentievergelijking
+            </span>
+            <h3 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Sitedesk vs Shopify, WooCommerce, Magento en PrestaShop
+            </h3>
+            <p className="text-lg text-muted-foreground">
+              Een snel overzicht van performance, beheer en operationele complexiteit.
+            </p>
+          </div>
+
+          <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-xl">
+            <table className="min-w-[980px] w-full text-sm md:text-base">
+              <thead className="bg-secondary/60">
+                <tr>
+                  <th className="p-4 text-left font-semibold text-foreground">Kenmerk</th>
+                  <th className="p-4 text-left font-semibold text-success">Sitedesk</th>
+                  <th className="p-4 text-left font-semibold text-muted-foreground">Shopify</th>
+                  <th className="p-4 text-left font-semibold text-muted-foreground">WooCommerce</th>
+                  <th className="p-4 text-left font-semibold text-muted-foreground">Magento</th>
+                  <th className="p-4 text-left font-semibold text-muted-foreground">PrestaShop</th>
+                </tr>
+              </thead>
+              <tbody>
+                {comparisonRows.map((row) => (
+                  <tr key={row.feature} className="border-t border-border align-top">
+                    <td className="p-4 font-semibold text-foreground">{row.feature}</td>
+                    <td className="p-4 text-success font-semibold bg-success/5">{row.sitedesk}</td>
+                    <td className="p-4 text-muted-foreground">{row.shopify}</td>
+                    <td className="p-4 text-muted-foreground">{row.woocommerce}</td>
+                    <td className="p-4 text-muted-foreground">{row.magento}</td>
+                    <td className="p-4 text-muted-foreground">{row.prestashop}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </section>
 
@@ -866,13 +1013,17 @@ const Webshop = () => {
               </div>
             </div>
             <form className="space-y-4" onSubmit={handleContactSubmit}>
+              <div className="hidden">
+                <label htmlFor="contact-company">Bedrijfsnaam (laat leeg)</label>
+                <input id="contact-company" name="company" type="text" />
+              </div>
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="naam">
+                <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="name">
                   Naam
                 </label>
                 <input
-                  id="naam"
-                  name="naam"
+                  id="name"
+                  name="name"
                   type="text"
                   required
                   className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
@@ -893,24 +1044,30 @@ const Webshop = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="bericht">
+                <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="message">
                   Bericht
                 </label>
                 <textarea
-                  id="bericht"
-                  name="bericht"
+                  id="message"
+                  name="message"
                   rows={4}
                   className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
                   placeholder="Vertel kort over je shop of huidige laadtijd."
                   required
                 />
               </div>
-              <Button type="submit" variant="hero" size="lg" className="w-full">
-                Plan gratis speed-check
+              <Button type="submit" variant="hero" size="lg" className="w-full" disabled={contactStatus === "sending"}>
+                {contactStatus === "sending" ? "Verzenden..." : "Plan gratis speed-check"}
               </Button>
               <p className="text-xs text-muted-foreground">
                 We reageren binnen 1 werkdag. Geen verplichtingen, wel directe inzichten in je snelheid.
               </p>
+              <div className="text-sm" aria-live="polite">
+                {contactStatus === "success" && (
+                  <span className="text-success">Bericht ontvangen. We nemen snel contact op.</span>
+                )}
+                {contactStatus === "error" && <span className="text-destructive">{contactError}</span>}
+              </div>
             </form>
           </div>
         </section>

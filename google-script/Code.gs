@@ -1,89 +1,157 @@
-// Google Apps Script for contact form: stores to Sheet and sends email.
-// Uses a shared secret to block unauthorized calls.
+// Google Apps Script for Sitedesk leads.
+// Handles two lead types:
+// 1) contact (name, email, message)
+// 2) calculator (shopUrl + email or phone + calculator metrics)
 
-const SECRET = 'CHANGE_ME_SECRET_TOKEN'; // replace with a strong random string
-const DEST_EMAIL = 'rdo90@live.nl';
-const FROM_NAME = 'Sitedesk Contact';
-const FROM_EMAIL = 'no-reply@sitedesk.co'; // use a domain-aligned sender to avoid spam filtering
+const SECRET = "OHUASDFIHUO87AIHUASDF&^^^&%kuhA123";
+const DEST_EMAIL = "rdo90@live.nl";
+const FROM_NAME = "Sitedesk Leads";
+const SHEET_NAME = "Leads";
 
 function doPost(e) {
-  const headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-  };
-
   try {
     if (!e || !e.postData || !e.postData.contents) {
-      return jsonResponse({ error: "No post data" }, 400, headers);
+      return jsonResponse({ ok: false, error: "No post data" });
     }
 
-    const data = JSON.parse(e.postData.contents || "{}");
-    const secret = data.secret || "";
-    if (secret !== SECRET) {
-      return jsonResponse({ error: "Forbidden" }, 403, headers);
+    var data = JSON.parse(e.postData.contents || "{}");
+    if ((data.secret || "") !== SECRET) {
+      return jsonResponse({ ok: false, error: "Forbidden" });
     }
 
-    const name = (data.name || "").toString().trim();
-    const email = (data.email || "").toString().trim();
-    const message = (data.message || "").toString().trim();
-    const honeypot = (data.company || "").toString().trim();
+    var leadType = toText(data.leadType || "contact").toLowerCase();
+    var name = toText(data.name);
+    var email = toText(data.email);
+    var message = toText(data.message);
+    var company = toText(data.company);
+    var phone = toText(data.phone);
+    var shopUrl = toText(data.shopUrl);
+    var monthlyRevenue = toText(data.monthlyRevenue);
+    var currentLoadTime = toText(data.currentLoadTime);
+    var estimatedLoss = toText(data.estimatedLoss);
 
-    if (honeypot) {
-      return jsonResponse({ message: "OK" }, 200, headers);
+    if (company) {
+      return jsonResponse({ ok: true, message: "Ignored honeypot" });
     }
 
-    if (!name || !email || !message) {
-      return jsonResponse({ error: "Validation failed" }, 400, headers);
+    if (leadType === "calculator") {
+      if (!shopUrl || (!email && !phone)) {
+        return jsonResponse({ ok: false, error: "Validation failed" });
+      }
+      if (!name) name = "Calculator lead";
+      if (!message) {
+        message = [
+          "Calculator lead aanvraag",
+          "Shop URL: " + (shopUrl || "-"),
+          "Telefoon: " + (phone || "-"),
+          "E-mail: " + (email || "-"),
+          "Maandelijkse omzet: " + (monthlyRevenue || "-"),
+          "Huidige laadtijd: " + (currentLoadTime || "-"),
+          "Geschat omzetverlies p/m: " + (estimatedLoss || "-"),
+        ].join("\n");
+      }
+    } else {
+      if (!name || !email || !message) {
+        return jsonResponse({ ok: false, error: "Validation failed" });
+      }
     }
 
-    // Store in active sheet
-    const sheet = SpreadsheetApp.getActiveSheet();
-    sheet.appendRow([new Date(), name, email, message]);
+    var sheet = getLeadSheet_();
+    sheet.appendRow([
+      new Date(),
+      leadType,
+      name,
+      email,
+      phone,
+      shopUrl,
+      monthlyRevenue,
+      currentLoadTime,
+      estimatedLoss,
+      message,
+    ]);
 
-    // Send email
-    MailApp.sendEmail({
-      to: DEST_EMAIL,
-      replyTo: email,
-      subject: `Nieuw bericht van ${name}`,
+    var subject =
+      leadType === "calculator"
+        ? "Nieuwe calculator lead: " + (shopUrl || name)
+        : "Nieuw contactbericht van " + name;
+
+    var htmlBody =
+      "<p><strong>Type:</strong> " + escapeHtml(leadType) + "</p>" +
+      "<p><strong>Naam:</strong> " + escapeHtml(name || "-") + "</p>" +
+      "<p><strong>E-mail:</strong> " + escapeHtml(email || "-") + "</p>" +
+      "<p><strong>Telefoon:</strong> " + escapeHtml(phone || "-") + "</p>" +
+      "<p><strong>Shop URL:</strong> " + escapeHtml(shopUrl || "-") + "</p>" +
+      "<p><strong>Maandelijkse omzet:</strong> " + escapeHtml(monthlyRevenue || "-") + "</p>" +
+      "<p><strong>Huidige laadtijd:</strong> " + escapeHtml(currentLoadTime || "-") + "</p>" +
+      "<p><strong>Geschat verlies p/m:</strong> " + escapeHtml(estimatedLoss || "-") + "</p>" +
+      "<p><strong>Bericht:</strong><br>" + escapeHtml(message || "-").replace(/\n/g, "<br>") + "</p>";
+
+    var mailOptions = {
       name: FROM_NAME,
-      htmlBody: `<p><strong>Naam:</strong> ${escapeHtml(name)}</p>
-                 <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-                 <p><strong>Bericht:</strong><br>${escapeHtml(message).replace(/\n/g, "<br>")}</p>`,
+      htmlBody: htmlBody,
       noReply: false,
-      from: FROM_EMAIL,
-    });
+      replyTo: email || undefined,
+    };
+    MailApp.sendEmail(DEST_EMAIL, subject, message || "-", mailOptions);
 
-    return jsonResponse({ message: "Received" }, 200, headers);
+    return jsonResponse({ ok: true, message: "Received" });
   } catch (err) {
-    return jsonResponse({ error: err && err.message ? err.message : String(err) }, 500, headers);
+    return jsonResponse({
+      ok: false,
+      error: err && err.message ? err.message : String(err),
+    });
   }
 }
 
-function doOptions(e) {
-  return jsonResponse({}, 204, {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-  });
+function jsonResponse(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(
+    ContentService.MimeType.JSON,
+  );
 }
 
-function jsonResponse(obj, status, headers) {
-  return ContentService.createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders(headers)
-    .setResponseCode(status);
+function getLeadSheet_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow([
+      "timestamp",
+      "leadType",
+      "name",
+      "email",
+      "phone",
+      "shopUrl",
+      "monthlyRevenue",
+      "currentLoadTime",
+      "estimatedLoss",
+      "message",
+    ]);
+  }
+
+  return sheet;
+}
+
+function toText(value) {
+  return value == null ? "" : String(value).trim();
 }
 
 function escapeHtml(input) {
-  return input.replace(/[<>&'"]/g, (c) => {
+  var text = toText(input);
+  return text.replace(/[<>&'"]/g, function (c) {
     switch (c) {
-      case "<": return "&lt;";
-      case ">": return "&gt;";
-      case "&": return "&amp;";
-      case "'": return "&#39;";
-      case '"': return "&quot;";
-      default: return c;
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case "&":
+        return "&amp;";
+      case "'":
+        return "&#39;";
+      case '"':
+        return "&quot;";
+      default:
+        return c;
     }
   });
 }

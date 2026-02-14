@@ -51,10 +51,16 @@ export const onRequest: PagesFunction = async (context) => {
       });
     }
 
-    const name = (body?.name ?? "").toString();
-    const email = (body?.email ?? "").toString();
-    const message = (body?.message ?? "").toString();
-    const honeypot = (body?.company ?? "").toString();
+    const leadType = (body?.leadType ?? "contact").toString().trim().toLowerCase();
+    const name = (body?.name ?? "").toString().trim();
+    const email = (body?.email ?? "").toString().trim();
+    const message = (body?.message ?? "").toString().trim();
+    const honeypot = (body?.company ?? "").toString().trim();
+    const phone = (body?.phone ?? "").toString().trim();
+    const shopUrl = (body?.shopUrl ?? "").toString().trim();
+    const monthlyRevenue = (body?.monthlyRevenue ?? "").toString().trim();
+    const currentLoadTime = (body?.currentLoadTime ?? "").toString().trim();
+    const estimatedLoss = (body?.estimatedLoss ?? "").toString().trim();
 
     // Honeypot
     if (honeypot) {
@@ -64,29 +70,76 @@ export const onRequest: PagesFunction = async (context) => {
       });
     }
 
-    if (!name || !email || !message) {
+    const isCalculatorLead = leadType === "calculator";
+    if (isCalculatorLead) {
+      if (!shopUrl || (!email && !phone)) {
+        return new Response(JSON.stringify({ message: "Validation failed" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+        });
+      }
+    } else if (!name || !email || !message) {
       return new Response(JSON.stringify({ message: "Validation failed" }), {
         status: 400,
         headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
       });
     }
 
+    const resolvedName = isCalculatorLead ? name || "Calculator lead" : name;
+    const resolvedEmail = email || "";
+    const resolvedMessage =
+      isCalculatorLead && !message
+        ? [
+            "Calculator lead aanvraag",
+            `Shop URL: ${shopUrl || "-"}`,
+            `Telefoon: ${phone || "-"}`,
+            `E-mail: ${resolvedEmail || "-"}`,
+            `Maandelijkse omzet: ${monthlyRevenue || "-"}`,
+            `Huidige laadtijd: ${currentLoadTime || "-"}`,
+            `Geschat omzetverlies p/m: ${estimatedLoss || "-"}`,
+          ].join("\n")
+        : message;
+
     const upstream = await fetch(APPS_SCRIPT_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, message, secret: CONTACT_SECRET }),
+      body: JSON.stringify({
+        leadType,
+        name: resolvedName,
+        email: resolvedEmail,
+        message: resolvedMessage,
+        phone,
+        shopUrl,
+        monthlyRevenue,
+        currentLoadTime,
+        estimatedLoss,
+        company: honeypot,
+        secret: CONTACT_SECRET,
+      }),
     });
 
     const text = await upstream.text();
+    let upstreamJson: any = null;
+    try {
+      upstreamJson = text ? JSON.parse(text) : null;
+    } catch {
+      upstreamJson = null;
+    }
 
-    if (!upstream.ok) {
+    if (!upstream.ok || (upstreamJson && upstreamJson.ok === false)) {
       return new Response(
-        text || JSON.stringify({ message: "Delivery failed", detail: upstream.statusText }),
-        { status: upstream.status, headers: { "Content-Type": "application/json", ...corsHeaders(origin) } }
+        JSON.stringify({
+          message: upstreamJson?.error || "Delivery failed",
+          detail: upstreamJson?.detail || text || upstream.statusText,
+        }),
+        {
+          status: upstream.ok ? 502 : upstream.status,
+          headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+        },
       );
     }
 
-    return new Response(text || JSON.stringify({ message: "Received" }), {
+    return new Response(JSON.stringify({ message: "Received" }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
     });
