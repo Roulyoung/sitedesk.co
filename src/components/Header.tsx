@@ -5,6 +5,7 @@ import { Menu, X, MessageCircle } from "lucide-react";
 
 const navLinks = [
   { to: "/#techniek", label: "Techniek", type: "hash" as const },
+  { to: "/#omzetverlies", label: "Calculator", type: "hash" as const },
   { to: "/#aanbod", label: "Aanbod", type: "hash" as const },
   { to: "/#sheets", label: "Sheets", type: "hash" as const },
   { to: "/shop", label: "Demo", type: "route" as const },

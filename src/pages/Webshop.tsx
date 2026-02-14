@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -11,7 +11,6 @@ import {
   ShieldCheck,
   Sparkles,
   Zap,
-  XCircle,
 } from "lucide-react";
 
 declare global {
@@ -20,38 +19,20 @@ declare global {
   }
 }
 
-const comparisonRows = [
-  {
-    feature: "Laadtijd",
-    sitedesk: "0ms",
-    shopify: "2.5s - 5s",
-    woocommerce: "3s - 10s+",
-  },
-  {
-    feature: "PageSpeed Score",
-    sitedesk: "100/100",
-    shopify: "40 - 60",
-    woocommerce: "20 - 50",
-  },
-  {
-    feature: "Beheer",
-    sitedesk: "Google Sheets (real-time)",
-    shopify: "Complexe dashboard + apps",
-    woocommerce: "WP-Admin (traag)",
-  },
-  {
-    feature: "Veiligheid",
-    sitedesk: "Hacker-proof (Edge)",
-    shopify: "SaaS afhankelijk",
-    woocommerce: "Database kwetsbaar",
-  },
-  {
-    feature: "Kosten",
-    sitedesk: "Vast maandbedrag",
-    shopify: "Hoge app-fees + % omzet",
-    woocommerce: "Hosting + onderhoud + plugins",
-  },
-];
+const benchmarkLoadTimes = [0, 2, 4, 6] as const;
+
+const getConversionLossPercent = (seconds: number) => {
+  if (seconds <= 0) return 0;
+  if (seconds <= 4) return Math.round(seconds * 6);
+  return Math.min(70, Math.round(24 + (seconds - 4) * 8));
+};
+
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("nl-NL", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(Math.max(0, value));
 
 const benefitCards = [
   {
@@ -77,8 +58,46 @@ const Webshop = () => {
     "Sitedesk bouwt, host en onderhoudt supersnelle webshops op Edge. Inclusief Google Sheets CMS, Stripe checkout en support. Early Adopter: €1.000 setup + €150 p/m lifetime.";
   const canonicalUrl = "https://sitedesk.co/";
   const imageUrl = "https://sitedesk.co/icon-sitedesk.png";
+  const [monthlyRevenue, setMonthlyRevenue] = useState(10000);
+  const [currentLoadTime, setCurrentLoadTime] = useState(4);
+  const [monthlyVisitors, setMonthlyVisitors] = useState("");
+  const [reportError, setReportError] = useState("");
+  const [reportSuccess, setReportSuccess] = useState(false);
+
+  const currentLossPercent = useMemo(() => getConversionLossPercent(currentLoadTime), [currentLoadTime]);
+  const missedMonthlyRevenue = useMemo(
+    () => monthlyRevenue * (currentLossPercent / 100),
+    [monthlyRevenue, currentLossPercent],
+  );
+  const missedDailyRevenue = useMemo(() => missedMonthlyRevenue / 30, [missedMonthlyRevenue]);
+
+  const monthlyVisitorsValue = useMemo(() => {
+    if (!monthlyVisitors.trim()) return 0;
+    const parsed = Number(monthlyVisitors);
+    return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
+  }, [monthlyVisitors]);
+
+  const estimatedLostVisitors = useMemo(() => {
+    if (!monthlyVisitorsValue) return 0;
+    return Math.round(monthlyVisitorsValue * (currentLossPercent / 100));
+  }, [monthlyVisitorsValue, currentLossPercent]);
+
+  const benchmarkRows = useMemo(
+    () =>
+      benchmarkLoadTimes.map((seconds) => {
+        const lossPercent = getConversionLossPercent(seconds);
+        const missedRevenue = monthlyRevenue * (lossPercent / 100);
+        return {
+          label: seconds === 0 ? "0ms (Sitedesk)" : seconds === 6 ? "6+ seconden" : `${seconds} seconden`,
+          lossLabel: seconds === 0 ? "0%" : seconds === 6 ? `-${lossPercent}%+` : `-${lossPercent}%`,
+          missedLabel: seconds === 0 ? "EUR 0 (maximale winst)" : formatCurrency(missedRevenue),
+          isSitedesk: seconds === 0,
+        };
+      }),
+    [monthlyRevenue],
+  );
   useEffect(() => {
-    const ids = ["techniek", "aanbod", "sheets", "contact"];
+    const ids = ["techniek", "omzetverlies", "aanbod", "sheets", "contact"];
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries.find((entry) => entry.isIntersecting);
@@ -115,6 +134,44 @@ const Webshop = () => {
     event.preventDefault();
     const form = event.currentTarget;
     trackLead();
+    form.reset();
+  };
+
+  const handleReportSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const url = String(formData.get("shopUrl") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
+    const phone = String(formData.get("phone") ?? "").trim();
+
+    if (!url) {
+      setReportSuccess(false);
+      setReportError("Vul je shop URL in.");
+      return;
+    }
+
+    if (!email && !phone) {
+      setReportSuccess(false);
+      setReportError("Vul minimaal e-mail of telefoonnummer in.");
+      return;
+    }
+
+    const message =
+      `Gratis speedrapport aanvraag:%0A` +
+      `URL: ${encodeURIComponent(url)}%0A` +
+      `E-mail: ${encodeURIComponent(email || "-")}%0A` +
+      `Telefoon: ${encodeURIComponent(phone || "-")}%0A` +
+      `Huidige laadtijd: ${encodeURIComponent(`${currentLoadTime.toFixed(1)}s`)}%0A` +
+      `Geschat omzetverlies p/m: ${encodeURIComponent(formatCurrency(missedMonthlyRevenue))}`;
+
+    trackLead();
+    if (typeof window !== "undefined") {
+      window.open(`https://wa.me/31640326650?text=${message}`, "_blank", "noopener,noreferrer");
+    }
+
+    setReportError("");
+    setReportSuccess(true);
     form.reset();
   };
 
@@ -376,60 +433,164 @@ const Webshop = () => {
           </div>
         </section>
 
-        {/* Comparison table */}
-        <section id="vergelijking" className="container mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-12">
+        {/* Omzetverlies calculator */}
+        <section id="omzetverlies" className="container mx-auto scroll-mt-28">
+          <div className="text-center max-w-4xl mx-auto mb-10">
             <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider mb-3">
-              De vergelijking
+              Conversie verlies calculator
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Sitedesk vs. de rest
+              Hoeveel omzet verlies jij aan de concurrent door een trage webshop?
             </h2>
             <p className="text-lg text-muted-foreground">
-              Laat je e-commerce niet vertragen door legacy platforms. Zie direct het verschil.
+              Onderzoek van onder andere Google en Amazon laat zien dat extra laadtijd direct conversie kost.
+              53% van mobiele bezoekers haakt af als een pagina langer dan 3 seconden laadt.
+            </p>
+            <p className="text-sm text-muted-foreground mt-3">
+              Bron:{" "}
+              <a
+                href="https://think.storage.googleapis.com/docs/mobile-page-speed-new-industry-benchmarks.pdf"
+                target="_blank"
+                rel="noreferrer"
+                className="text-accent hover:underline"
+              >
+                Google mobile page speed benchmarks
+              </a>
             </p>
           </div>
 
-          <div className="bg-card border border-border rounded-2xl shadow-xl overflow-hidden">
-            <div className="grid grid-cols-4 bg-secondary/60 text-sm md:text-base font-semibold">
-              <div className="p-4 md:p-6 text-foreground">Kenmerk</div>
-              <div className="p-4 md:p-6 text-center text-foreground">Sitedesk</div>
-              <div className="p-4 md:p-6 text-center text-muted-foreground border-x border-border">
-                Shopify (Advanced)
+          <div className="grid xl:grid-cols-5 gap-6 items-start">
+            <div className="xl:col-span-2 bg-card border border-border rounded-2xl shadow-xl p-6 space-y-5">
+              <h3 className="text-xl font-bold text-foreground">Vul je cijfers in</h3>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-foreground" htmlFor="monthlyRevenue">
+                  Huidige maandelijkse omzet
+                </label>
+                <input
+                  id="monthlyRevenue"
+                  type="number"
+                  min={0}
+                  step={500}
+                  value={monthlyRevenue}
+                  onChange={(event) => setMonthlyRevenue(Math.max(0, Number(event.target.value) || 0))}
+                  className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+                />
               </div>
-              <div className="p-4 md:p-6 text-center text-muted-foreground">WooCommerce</div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-foreground" htmlFor="loadTimeRange">
+                  Huidige laadtijd in seconden
+                </label>
+                <input
+                  id="loadTimeRange"
+                  type="range"
+                  min={0}
+                  max={8}
+                  step={0.5}
+                  value={currentLoadTime}
+                  onChange={(event) => setCurrentLoadTime(Number(event.target.value))}
+                  className="w-full accent-accent"
+                />
+                <div className="text-sm text-muted-foreground">
+                  Ingesteld op <span className="font-semibold text-foreground">{currentLoadTime.toFixed(1)} seconden</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-foreground" htmlFor="monthlyVisitors">
+                  Maandelijkse bezoekers (optioneel)
+                </label>
+                <input
+                  id="monthlyVisitors"
+                  type="number"
+                  min={0}
+                  step={100}
+                  value={monthlyVisitors}
+                  onChange={(event) => setMonthlyVisitors(event.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+                  placeholder="Bijv. 25000"
+                />
+              </div>
+
+              <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+                <p className="text-sm text-muted-foreground">Geschatte misgelopen omzet per maand</p>
+                <p className="text-3xl font-extrabold text-destructive">{formatCurrency(missedMonthlyRevenue)}</p>
+                <p className="text-sm text-muted-foreground">Dat is ongeveer {formatCurrency(missedDailyRevenue)} per dag.</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Huidig verlies bij {currentLoadTime.toFixed(1)} seconden: <span className="font-semibold text-foreground">-{currentLossPercent}%</span>
+                </p>
+                {monthlyVisitorsValue > 0 && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Geschat aantal verloren bezoekers per maand:{" "}
+                    <span className="font-semibold text-foreground">{estimatedLostVisitors.toLocaleString("nl-NL")}</span>
+                  </p>
+                )}
+              </div>
             </div>
 
-            {comparisonRows.map((row, index) => (
-              <div
-                key={row.feature}
-                className={`grid grid-cols-4 text-sm md:text-base ${
-                  index !== comparisonRows.length - 1 ? "border-t border-border" : ""
-                }`}
-              >
-                <div className="p-4 md:p-6 font-medium text-foreground">{row.feature}</div>
-                <div className="p-4 md:p-6 text-center bg-success/5 border-x border-success/20 relative">
-                  <div className="absolute inset-0 bg-success/5 blur-xl" aria-hidden />
-                  <div className="relative inline-flex items-center gap-2 text-foreground font-semibold">
-                    <CheckCircle2 className="text-success" size={18} />
-                    <span>{row.sitedesk}</span>
-                  </div>
+            <div className="xl:col-span-3 space-y-6">
+              <div className="bg-card border border-border rounded-2xl shadow-xl overflow-hidden">
+                <div className="grid grid-cols-3 bg-secondary/60 text-sm md:text-base font-semibold">
+                  <div className="p-4 md:p-5 text-foreground">Laadtijd</div>
+                  <div className="p-4 md:p-5 text-center text-foreground">Conversie verlies</div>
+                  <div className="p-4 md:p-5 text-right text-foreground">Misgelopen omzet p/m</div>
                 </div>
-                <div className="p-4 md:p-6 text-center border-x border-border flex items-center justify-center gap-2">
-                  <XCircle className="text-destructive" size={18} />
-                  <span>{row.shopify}</span>
-                </div>
-                <div className="p-4 md:p-6 text-center flex items-center justify-center gap-2">
-                  <XCircle className="text-destructive" size={18} />
-                  <span>{row.woocommerce}</span>
-                </div>
-              </div>
-            ))}
-          </div>
 
-          <p className="text-sm text-muted-foreground text-center mt-4">
-            Wist je dat 40% van je bezoekers afhaakt na 3 seconden wachten? Met Sitedesk heb je die discussie nooit meer.
-          </p>
+                {benchmarkRows.map((row) => (
+                  <div key={row.label} className="grid grid-cols-3 border-t border-border text-sm md:text-base">
+                    <div className={`p-4 md:p-5 ${row.isSitedesk ? "text-success font-semibold" : "text-foreground"}`}>
+                      {row.label}
+                    </div>
+                    <div className={`p-4 md:p-5 text-center ${row.isSitedesk ? "text-success font-semibold" : "text-destructive font-semibold"}`}>
+                      {row.lossLabel}
+                    </div>
+                    <div className={`p-4 md:p-5 text-right ${row.isSitedesk ? "text-success font-semibold" : "text-destructive font-semibold"}`}>
+                      {row.missedLabel}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-primary text-primary-foreground rounded-2xl p-6 md:p-8 shadow-xl">
+                <h3 className="text-2xl font-bold mb-2">
+                  Wil je een gratis rapport voor jouw shop?
+                </h3>
+                <p className="text-primary-foreground/85 mb-5">
+                  We vergelijken jouw huidige shop met een Sitedesk Edge shop en laten exact zien waar je omzet laat liggen.
+                </p>
+                <form onSubmit={handleReportSubmit} className="grid md:grid-cols-2 gap-3">
+                  <input
+                    type="url"
+                    name="shopUrl"
+                    placeholder="https://jouwshop.nl"
+                    className="rounded-lg border border-primary-foreground/30 bg-primary-foreground/10 px-4 py-3 text-primary-foreground placeholder:text-primary-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary-foreground/60"
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="E-mail (optioneel)"
+                    className="rounded-lg border border-primary-foreground/30 bg-primary-foreground/10 px-4 py-3 text-primary-foreground placeholder:text-primary-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary-foreground/60"
+                  />
+                  <input
+                    type="tel"
+                    name="phone"
+                    placeholder="Telefoon (optioneel)"
+                    className="rounded-lg border border-primary-foreground/30 bg-primary-foreground/10 px-4 py-3 text-primary-foreground placeholder:text-primary-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary-foreground/60"
+                  />
+                  <Button type="submit" variant="heroOutline" size="lg" className="border-primary-foreground text-primary-foreground">
+                    Vraag gratis rapport aan
+                  </Button>
+                </form>
+                {reportError && <p className="text-sm mt-3 text-primary-foreground">{reportError}</p>}
+                {reportSuccess && (
+                  <p className="text-sm mt-3 text-primary-foreground">
+                    Klaar. We hebben WhatsApp geopend met je aanvraaggegevens.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* Benefits grid */}
