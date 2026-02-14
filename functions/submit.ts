@@ -86,7 +86,8 @@ export const onRequest: PagesFunction = async (context) => {
     }
 
     const resolvedName = isCalculatorLead ? name || "Calculator lead" : name;
-    const resolvedEmail = email || "";
+    // Keep backward compatibility with older Apps Script versions that require email.
+    const resolvedEmail = email || (isCalculatorLead ? "no-email@sitedesk.co" : "");
     const resolvedMessage =
       isCalculatorLead && !message
         ? [

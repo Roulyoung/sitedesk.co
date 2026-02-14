@@ -218,7 +218,8 @@ const Webshop = () => {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const url = String(formData.get("shopUrl") ?? "").trim();
+    const rawUrl = String(formData.get("shopUrl") ?? "").trim();
+    const url = rawUrl && /^https?:\/\//i.test(rawUrl) ? rawUrl : rawUrl ? `https://${rawUrl}` : "";
     const email = String(formData.get("email") ?? "").trim();
     const phone = String(formData.get("phone") ?? "").trim();
 
@@ -252,7 +253,7 @@ const Webshop = () => {
         `Huidige laadtijd: ${currentLoadTime.toFixed(1)} seconden`,
         `Geschat omzetverlies p/m: ${formatCurrency(missedMonthlyRevenue)}`,
       ].join("\n"),
-      company: "",
+      company: String(formData.get("company") ?? "").trim(),
     };
 
     setReportStatus("sending");
@@ -660,9 +661,9 @@ const Webshop = () => {
                     <input id="company" name="company" type="text" />
                   </div>
                   <input
-                    type="url"
+                    type="text"
                     name="shopUrl"
-                    placeholder="https://jouwshop.nl"
+                    placeholder="jouwshop.nl of https://jouwshop.nl"
                     className="rounded-lg border border-primary-foreground/30 bg-primary-foreground/10 px-4 py-3 text-primary-foreground placeholder:text-primary-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary-foreground/60"
                   />
                   <input
