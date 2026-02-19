@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { addToCart as addToCartStore, loadCart, type CartItem } from "@/lib/cart";
 import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from "react-helmet-async";
@@ -222,17 +222,34 @@ const ProductPage = () => {
           <title>{seoTitle}</title>
           <meta name="description" content={seoDescription} />
           <link rel="canonical" href={canonical} />
+          <link rel="preconnect" href="https://stripe-webhook.rdo90.workers.dev" />
+          <link rel="dns-prefetch" href="//stripe-webhook.rdo90.workers.dev" />
+          <link rel="preconnect" href="https://imagedelivery.net" />
+          <link rel="dns-prefetch" href="//imagedelivery.net" />
           <meta property="og:title" content={seoTitle} />
           <meta property="og:description" content={seoDescription} />
           <meta property="og:type" content="product" />
           <meta property="og:url" content={canonical} />
         </Helmet>
         <Header />
-        <main className="flex-1 flex items-center justify-center">
-          <Loader2 className="animate-spin text-primary" size={40} />
+        <main className="flex-1 bg-gradient-to-b from-gray-50 via-white to-gray-50">
+          <section className="container mx-auto px-4 py-12">
+            <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur rounded-3xl shadow-xl overflow-hidden border border-border animate-pulse">
+              <div className="grid md:grid-cols-2">
+                <div className="aspect-square bg-gray-200" />
+                <div className="p-8 lg:p-10 space-y-5">
+                  <div className="h-6 w-1/3 rounded bg-gray-200" />
+                  <div className="h-10 w-4/5 rounded bg-gray-200" />
+                  <div className="h-10 w-1/3 rounded bg-gray-200" />
+                  <div className="h-20 w-full rounded bg-gray-200" />
+                  <div className="h-11 w-full rounded bg-gray-200" />
+                </div>
+              </div>
+            </div>
+          </section>
         </main>
         <Footer />
-        <FloatingContact />
+        <FloatingContact className="bottom-24 md:bottom-6" />
       </div>
     );
   }
@@ -245,6 +262,8 @@ const ProductPage = () => {
           <meta name="description" content="Deze productpagina is niet beschikbaar. Bekijk het volledige aanbod in de shop." />
           <link rel="canonical" href={canonical} />
           <meta name="robots" content="noindex, follow" />
+          <link rel="preconnect" href="https://stripe-webhook.rdo90.workers.dev" />
+          <link rel="dns-prefetch" href="//stripe-webhook.rdo90.workers.dev" />
         </Helmet>
         <Header />
         <main className="flex-1 flex items-center justify-center px-4">
@@ -271,6 +290,10 @@ const ProductPage = () => {
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />
         <link rel="canonical" href={canonical} />
+        <link rel="preconnect" href="https://stripe-webhook.rdo90.workers.dev" />
+        <link rel="dns-prefetch" href="//stripe-webhook.rdo90.workers.dev" />
+        <link rel="preconnect" href="https://imagedelivery.net" />
+        <link rel="dns-prefetch" href="//imagedelivery.net" />
         <meta property="og:title" content={seoTitle} />
         <meta property="og:description" content={seoDescription} />
         <meta property="og:type" content="product" />
@@ -288,13 +311,13 @@ const ProductPage = () => {
         <div className="flex gap-2">
           <button
             onClick={handleAddToCart}
-            className="px-3 py-2 rounded-lg border border-border text-foreground"
+            className="min-h-12 px-4 py-3 rounded-lg border border-border text-foreground touch-manipulation"
           >
             In mand
           </button>
           <button
             onClick={handleCheckout}
-            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground"
+            className="min-h-12 px-4 py-3 rounded-lg bg-primary text-primary-foreground touch-manipulation"
           >
             Koop nu
           </button>
@@ -304,7 +327,7 @@ const ProductPage = () => {
         <section className="container mx-auto px-4 py-12">
           <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur rounded-3xl shadow-xl overflow-hidden border border-border">
             <div className="grid md:grid-cols-2">
-              <div className="bg-gray-100 relative">
+              <div className="bg-gray-100 relative aspect-square">
                 <img
                   src={
                     selectedImage ||
@@ -313,7 +336,12 @@ const ProductPage = () => {
                     "https://dummyimage.com/800x600/edf2f7/1a202c&text=Product"
                   }
                   alt={product.name}
-                  className="object-cover w-full h-full max-h-[560px] transition"
+                  width={768}
+                  height={768}
+                  decoding="async"
+                  loading="eager"
+                  fetchPriority="high"
+                  className="object-cover w-full h-full transition"
                 />
               </div>
               <div className="p-8 lg:p-10 space-y-5">
@@ -410,6 +438,11 @@ const ProductPage = () => {
                       <img
                         src={img}
                         alt={`${product.name} thumb ${i + 1}`}
+                        width={96}
+                        height={96}
+                        loading="lazy"
+                        decoding="async"
+                        fetchPriority="low"
                         className="h-full w-full object-cover rounded-lg"
                       />
                     </button>
@@ -421,7 +454,7 @@ const ProductPage = () => {
         </section>
       </main>
       <Footer />
-      <FloatingContact />
+      <FloatingContact className="bottom-24 md:bottom-6" />
     </div>
   );
 };

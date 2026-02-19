@@ -20,12 +20,14 @@ Apply this checklist:
 - Keep critical CSS lean; defer non-critical CSS.
 - Avoid adding new font/network chains.
 - Prefer system fonts unless self-hosted fonts are required.
+- Add `preconnect`/`dns-prefetch` for required API/image origins used in first render.
 
 2) JS payload and execution
 - Eliminate unused runtime providers/libraries on critical path.
 - Lazy-load non-critical UI (toasts, overlays, etc).
 - Keep route hydration stable (SSR and client route trees must match).
 - Avoid long main-thread tasks.
+- Avoid loading non-critical media on first paint (e.g. gallery thumbnails below the fold).
 
 3) Third-party scripts
 - Defer GTM/analytics until first user interaction.
@@ -38,6 +40,7 @@ Apply this checklist:
 - Ensure every form control has an explicit accessible name:
   - use `<label htmlFor>` + matching control `id` for `input`, `select`, `textarea`
   - if a visible label is not possible, add `aria-label` or `aria-labelledby`
+- Ensure mobile tap targets are >= 48x48 CSS px and not overlapping fixed controls.
 
 5) Visual token safety
 - Prefer token-level changes (`--muted-foreground`, `--accent`, etc) over one-off overrides.
@@ -57,6 +60,13 @@ Apply this checklist:
   - `title`, `meta description`, `canonical`, OG/Twitter basics.
 - Provide safe fallback metadata during loading state (before API data resolves).
 - On "not found" states, set `meta robots="noindex,follow"` to avoid indexing invalid detail URLs.
+
+9) Image + CLS hardening (critical on product detail pages)
+- Set explicit `width` and `height` on content images.
+- Reserve image area using fixed ratio containers (e.g. `aspect-square`) to prevent layout jumps.
+- LCP image: `loading="eager"`, `fetchpriority="high"`, avoid lazy loading.
+- Non-critical gallery images: `loading="lazy"`, `fetchpriority="low"`, `decoding="async"`.
+- Replace spinner-only loading screens with layout-matched skeletons to reduce CLS.
 
 Validation required:
 - `npm run build` passes.
