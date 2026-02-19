@@ -35,6 +35,9 @@ Apply this checklist:
 - Enforce heading order with no skipped levels.
 - Ensure keyboard navigation and ARIA states for interactive controls.
 - Ensure color contrast meets WCAG AA for all text.
+- Ensure every form control has an explicit accessible name:
+  - use `<label htmlFor>` + matching control `id` for `input`, `select`, `textarea`
+  - if a visible label is not possible, add `aria-label` or `aria-labelledby`
 
 5) Visual token safety
 - Prefer token-level changes (`--muted-foreground`, `--accent`, etc) over one-off overrides.

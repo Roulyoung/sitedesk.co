@@ -556,8 +556,9 @@ const Shop = () => {
           </div>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <div className="flex items-center gap-2 flex-wrap">
-              <label className="text-sm text-muted-foreground">Sorteer op:</label>
+              <label htmlFor="shop-sort" className="text-sm text-muted-foreground">Sorteer op:</label>
               <select
+                id="shop-sort"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
