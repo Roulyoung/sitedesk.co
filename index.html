@@ -1,8 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="nl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      html { scroll-behavior: smooth; }
+      body { margin: 0; background: #f8fafc; color: #0f172a; font-family: Inter, system-ui, sans-serif; }
+      #root { min-height: 100vh; }
+    </style>
     <title>Supersnelle Webshop op Edge | €1.000 setup + €150 p/m | Sitedesk</title>
     <meta
       name="description"
@@ -29,14 +34,64 @@
     <meta name="twitter:image" content="https://sitedesk.co/icon-sitedesk.png" />
     <link rel="canonical" href="https://sitedesk.co/" />
     <link rel="icon" type="image/png" href="/icon-sitedesk.png" />
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16878177204"></script>
+    <link rel="preload" as="image" href="/icon-sitedesk.png" fetchpriority="high" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+    </noscript>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "AW-16878177204");
+      (function (w, d) {
+        var initialized = false;
+        var events = ["pointerdown", "keydown", "scroll", "touchstart"];
+
+        w.dataLayer = w.dataLayer || [];
+        w.gtag =
+          w.gtag ||
+          function () {
+            w.dataLayer.push(arguments);
+          };
+
+        function initGtag() {
+          if (initialized) return;
+          initialized = true;
+
+          var script = d.createElement("script");
+          script.async = true;
+          script.src = "https://www.googletagmanager.com/gtag/js?id=AW-16878177204";
+          script.onload = function () {
+            w.gtag("js", new Date());
+            w.gtag("config", "AW-16878177204");
+          };
+          d.head.appendChild(script);
+
+          events.forEach(function (eventName) {
+            w.removeEventListener(eventName, initGtag);
+          });
+        }
+
+        events.forEach(function (eventName) {
+          w.addEventListener(eventName, initGtag, { passive: true, once: true });
+        });
+
+        w.addEventListener(
+          "load",
+          function () {
+            if ("requestIdleCallback" in w) {
+              w.requestIdleCallback(initGtag, { timeout: 4000 });
+              return;
+            }
+            w.setTimeout(initGtag, 3500);
+          },
+          { once: true },
+        );
+      })(window, document);
     </script>
   </head>
   <body>

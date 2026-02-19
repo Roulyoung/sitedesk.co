@@ -63,8 +63,7 @@ const Hero = () => {
           </div>
 
           {/* Visual */}
-          <div className="relative animate-fade-up stagger-2">
-            <div className="relative z-10">
+          <div className="relative z-10 animate-fade-up stagger-2">
               {/* Browser mockup */}
               <div className="bg-card rounded-2xl shadow-xl overflow-hidden border border-border">
                 {/* Browser header */}
@@ -129,7 +128,6 @@ const Hero = () => {
                   </div>
                 </div>
               </div>
-            </div>
           </div>
         </div>
       </div>
