@@ -121,6 +121,11 @@ Output:
 - Wire variant names through env vars (`VITE_CF_IMAGE_MAIN_VARIANT`, `VITE_CF_IMAGE_THUMB_VARIANT`).
 - Verify Lighthouse “Image delivery” improvement by checking that thumbnail requests are served from the thumb variant, not `public`.
 
+9. Product LCP strategy (critical for mobile score)
+- Do not block product rendering on client-side product fetch.
+- Seed product template with prerendered product payload (`window.__PRERENDER_PRODUCTS__`) so hero image and price render in initial HTML.
+- Keep runtime fetch as fallback only when prerender seed is missing.
+
 ## Cloudflare Settings Checklist (Post-Deploy)
 
 1. Disable Email Obfuscation

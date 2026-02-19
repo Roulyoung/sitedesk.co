@@ -47,6 +47,18 @@ const getProductRoutes = async () => {
 };
 
 const productRoutes = await getProductRoutes();
+const productRowsForPrerender = ENABLE_PRODUCT_PRERENDER
+  ? await (async () => {
+      try {
+        const res = await fetch(PRODUCTS_ENDPOINT, { headers: { Accept: "application/json" } });
+        if (!res.ok) return [];
+        const payload = await res.json();
+        return Array.isArray(payload?.products) ? payload.products : [];
+      } catch {
+        return [];
+      }
+    })()
+  : [];
 const routes = [...new Set([...staticRoutes, ...blogRoutes, ...productRoutes])];
 console.log(`[prerender] static=${staticRoutes.length}, blog=${blogRoutes.length}, product=${productRoutes.length}`);
 
@@ -58,9 +70,13 @@ const ensureDir = async (filePath) => {
 for (const route of routes) {
   const url = route;
   const { html, head } = await render(url);
+  const productBootstrap =
+    route.startsWith("/product/") && productRowsForPrerender.length > 0
+      ? `<script>window.__PRERENDER_PRODUCTS__=${JSON.stringify(productRowsForPrerender).replace(/</g, "\\u003c")};</script>`
+      : "";
 
   let page = template.replace('<div id="root"></div>', `<div id="root">${html}</div>`);
-  page = page.replace("</head>", `${head}</head>`);
+  page = page.replace("</head>", `${head}${productBootstrap}</head>`);
 
   const outPath =
     route === "/"

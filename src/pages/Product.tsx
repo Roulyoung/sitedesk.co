@@ -41,6 +41,63 @@ const parsePriceToCents = (value: string) => {
   return Math.round(numeric * 100);
 };
 
+const mapProductRow = (row: any, idx: number): Product => {
+  const name =
+    row.name ||
+    row.naam ||
+    row.omschrijving ||
+    row.description ||
+    row.slug ||
+    `Product ${idx + 1}`;
+  const rawPrice = row.sale_price || row.sale || row.price || row.prijs || "0";
+  const priceCents = parsePriceToCents(String(rawPrice));
+  const slug = (row.slug || row.id || name || `item-${idx}`).toString();
+  const image =
+    row.image ||
+    row.image1 ||
+    row.image2 ||
+    row.image3 ||
+    row.image4 ||
+    row.image5 ||
+    "";
+  const images = [row.image, row.image1, row.image2, row.image3, row.image4, row.image5]
+    .map((v: string) => v?.toString())
+    .filter(Boolean);
+  const tags = ["tag1", "tag2", "tag3", "tag4", "tag5"]
+    .map((t) => (row[t] || "").toString().trim())
+    .filter(Boolean);
+  const deliveryCostCents = parsePriceToCents(String(row.delivery_cost || row.verzendkosten || "0"));
+  const deliveryTime = row.delivery_time || row.delivery || "1-2 dagen";
+  const stock = row.stock || row.voorraad || "";
+  return {
+    id: slug,
+    slug,
+    name: name.toString(),
+    description: row.description || row.omschrijving || "",
+    priceCents,
+    priceDisplay: formatPrice(priceCents),
+    image: image || "",
+    images,
+    category: row.category || "",
+    tags,
+    stripe_link: row.stripe_link || "",
+    price_id: row.price_id || "",
+    delivery_time: deliveryTime,
+    delivery_cost: deliveryCostCents.toString(),
+    stock,
+  };
+};
+
+const getPrerenderProducts = (): Product[] => {
+  try {
+    const seeded = (globalThis as any).__PRERENDER_PRODUCTS__;
+    if (!Array.isArray(seeded)) return [];
+    return seeded.map((row: any, idx: number) => mapProductRow(row, idx));
+  } catch {
+    return [];
+  }
+};
+
 const withCloudflareVariant = (src: string | undefined, variant: string) => {
   if (!src) return "";
   if (!variant || variant === "public") return src;
@@ -63,14 +120,18 @@ const ProductPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>(() => getPrerenderProducts());
+  const [loading, setLoading] = useState(() => getPrerenderProducts().length === 0);
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [mainVariantFailed, setMainVariantFailed] = useState(false);
   const [failedThumbs, setFailedThumbs] = useState<Record<string, true>>({});
 
   useEffect(() => {
+    if (products.length > 0) {
+      setLoading(false);
+      return;
+    }
     const fetchProducts = async () => {
       try {
         const res = await fetch(PRODUCTS_ENDPOINT);
@@ -82,53 +143,7 @@ const ProductPage = () => {
         } catch (_err) {
           throw new Error("Onverwachte serverrespons (geen geldige JSON)");
         }
-        const mapped: Product[] =
-          data?.products?.map((row: any, idx: number) => {
-            const name =
-              row.name ||
-              row.naam ||
-              row.omschrijving ||
-              row.description ||
-              row.slug ||
-              `Product ${idx + 1}`;
-            const rawPrice = row.sale_price || row.sale || row.price || row.prijs || "0";
-            const priceCents = parsePriceToCents(String(rawPrice));
-            const slug = (row.slug || row.id || name || `item-${idx}`).toString();
-            const image =
-              row.image ||
-              row.image1 ||
-              row.image2 ||
-              row.image3 ||
-              row.image4 ||
-              row.image5 ||
-              "";
-            const images = [row.image, row.image1, row.image2, row.image3, row.image4, row.image5]
-              .map((v: string) => v?.toString())
-              .filter(Boolean);
-            const tags = ["tag1", "tag2", "tag3", "tag4", "tag5"]
-              .map((t) => (row[t] || "").toString().trim())
-              .filter(Boolean);
-            const deliveryCostCents = parsePriceToCents(String(row.delivery_cost || row.verzendkosten || "0"));
-            const deliveryTime = row.delivery_time || row.delivery || "1-2 dagen";
-            const stock = row.stock || row.voorraad || "";
-            return {
-              id: slug,
-              slug,
-              name: name.toString(),
-              description: row.description || row.omschrijving || "",
-              priceCents,
-              priceDisplay: formatPrice(priceCents),
-              image: image || "",
-              images,
-              category: row.category || "",
-              tags,
-              stripe_link: row.stripe_link || "",
-              price_id: row.price_id || "",
-              delivery_time: deliveryTime,
-              delivery_cost: deliveryCostCents.toString(),
-              stock,
-            };
-          }) || [];
+        const mapped: Product[] = data?.products?.map((row: any, idx: number) => mapProductRow(row, idx)) || [];
         setProducts(mapped);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Onbekende fout");
@@ -137,7 +152,7 @@ const ProductPage = () => {
       }
     };
     fetchProducts();
-  }, []);
+  }, [products.length]);
 
   const product = useMemo(
     () => {
