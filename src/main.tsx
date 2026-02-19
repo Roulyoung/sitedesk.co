@@ -2,7 +2,7 @@ import { createRoot, hydrateRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AppProviders } from "./AppProviders";
-import { AppRoutesClient } from "./routes/AppRoutes.client";
+import { AppRoutesSSR } from "./routes/AppRoutes.ssr";
 import "./index.css";
 
 const container = document.getElementById("root");
@@ -32,7 +32,7 @@ const app = (
   <HelmetProvider>
     <AppProviders>
       <BrowserRouter>
-        <AppRoutesClient />
+        <AppRoutesSSR />
       </BrowserRouter>
     </AppProviders>
   </HelmetProvider>
