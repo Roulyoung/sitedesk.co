@@ -29,8 +29,8 @@ type Product = {
 const PRODUCTS_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/products";
 const CHECKOUT_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/create-checkout-session";
 const CLOUDFLARE_IMAGE_HOST = "imagedelivery.net";
-const CF_MAIN_IMAGE_VARIANT = import.meta.env.VITE_CF_IMAGE_MAIN_VARIANT || "public";
-const CF_THUMB_IMAGE_VARIANT = import.meta.env.VITE_CF_IMAGE_THUMB_VARIANT || "public";
+const CF_MAIN_IMAGE_VARIANT = import.meta.env.VITE_CF_IMAGE_MAIN_VARIANT || "productmain";
+const CF_THUMB_IMAGE_VARIANT = import.meta.env.VITE_CF_IMAGE_THUMB_VARIANT || "productthumb";
 
 const formatPrice = (cents: number) =>
   new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(cents / 100);
@@ -249,10 +249,6 @@ const ProductPage = () => {
           <title>{seoTitle}</title>
           <meta name="description" content={seoDescription} />
           <link rel="canonical" href={canonical} />
-          <link rel="preconnect" href="https://stripe-webhook.rdo90.workers.dev" />
-          <link rel="dns-prefetch" href="//stripe-webhook.rdo90.workers.dev" />
-          <link rel="preconnect" href="https://imagedelivery.net" />
-          <link rel="dns-prefetch" href="//imagedelivery.net" />
           <meta property="og:title" content={seoTitle} />
           <meta property="og:description" content={seoDescription} />
           <meta property="og:type" content="product" />
@@ -276,7 +272,7 @@ const ProductPage = () => {
           </section>
         </main>
         <Footer />
-        <FloatingContact className="bottom-24 md:bottom-6" />
+        <FloatingContact className="hidden md:flex" />
       </div>
     );
   }
@@ -289,8 +285,6 @@ const ProductPage = () => {
           <meta name="description" content="Deze productpagina is niet beschikbaar. Bekijk het volledige aanbod in de shop." />
           <link rel="canonical" href={canonical} />
           <meta name="robots" content="noindex, follow" />
-          <link rel="preconnect" href="https://stripe-webhook.rdo90.workers.dev" />
-          <link rel="dns-prefetch" href="//stripe-webhook.rdo90.workers.dev" />
         </Helmet>
         <Header />
         <main className="flex-1 flex items-center justify-center px-4">
@@ -306,7 +300,7 @@ const ProductPage = () => {
           </div>
         </main>
         <Footer />
-        <FloatingContact />
+        <FloatingContact className="hidden md:flex" />
       </div>
     );
   }
@@ -317,10 +311,6 @@ const ProductPage = () => {
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />
         <link rel="canonical" href={canonical} />
-        <link rel="preconnect" href="https://stripe-webhook.rdo90.workers.dev" />
-        <link rel="dns-prefetch" href="//stripe-webhook.rdo90.workers.dev" />
-        <link rel="preconnect" href="https://imagedelivery.net" />
-        <link rel="dns-prefetch" href="//imagedelivery.net" />
         <meta property="og:title" content={seoTitle} />
         <meta property="og:description" content={seoDescription} />
         <meta property="og:type" content="product" />
@@ -492,7 +482,7 @@ const ProductPage = () => {
         </section>
       </main>
       <Footer />
-      <FloatingContact className="bottom-24 md:bottom-6" />
+      <FloatingContact className="hidden md:flex" />
     </div>
   );
 };

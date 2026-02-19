@@ -21,6 +21,7 @@ Apply this checklist:
 - Avoid adding new font/network chains.
 - Prefer system fonts unless self-hosted fonts are required.
 - Add `preconnect`/`dns-prefetch` for required API/image origins used in first render.
+- Keep origin preconnect links centralized (global template) to avoid duplicate per-route injections.
 
 2) JS payload and execution
 - Eliminate unused runtime providers/libraries on critical path.
