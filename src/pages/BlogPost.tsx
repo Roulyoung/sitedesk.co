@@ -149,7 +149,7 @@ const BlogPost = () => {
               <div className="grid md:grid-cols-2 gap-8">
                 {(block.data.leftItems?.length || block.data.leftTitle) && (
                   <div>
-                    {block.data.leftTitle && <h4 className="font-semibold text-xl mb-4">{block.data.leftTitle}</h4>}
+                    {block.data.leftTitle && <h3 className="font-semibold text-xl mb-4">{block.data.leftTitle}</h3>}
                     {block.data.leftItems && (
                       <ul className="space-y-2 list-none pl-6">
                         {block.data.leftItems.map((item) => (
@@ -161,7 +161,7 @@ const BlogPost = () => {
                 )}
                 {(block.data.rightItems?.length || block.data.rightTitle) && (
                   <div>
-                    {block.data.rightTitle && <h4 className="font-semibold text-xl mb-4">{block.data.rightTitle}</h4>}
+                    {block.data.rightTitle && <h3 className="font-semibold text-xl mb-4">{block.data.rightTitle}</h3>}
                     {block.data.rightItems && (
                       <ul className="space-y-2 list-none pl-6">
                         {block.data.rightItems.map((item) => (
@@ -279,6 +279,7 @@ const BlogPost = () => {
           </div>
 
           <div className="mt-10 grid lg:grid-cols-[1fr,280px] gap-10">
+            <h2 className="sr-only">Artikelinhoud</h2>
             <section className="article-body max-w-[720px] mx-auto text-lg leading-relaxed text-foreground space-y-12">
               {current.content.map((block, idx) => renderBlock(block, idx))}
             </section>
@@ -315,7 +316,7 @@ const BlogPost = () => {
 
           <section className="mt-16 space-y-6">
             <div className="rounded-2xl border border-border bg-card/80 p-6">
-              <h4 className="text-lg font-semibold text-foreground">Geschreven door</h4>
+              <h3 className="text-lg font-semibold text-foreground">Geschreven door</h3>
               <p className="text-foreground font-bold">Roeland</p>
               <p className="text-muted-foreground text-sm">E-commerce Architect bij Sitedesk</p>
               <p className="text-muted-foreground mt-2">
@@ -325,7 +326,7 @@ const BlogPost = () => {
 
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h4 className="text-xl font-semibold text-foreground">Gerelateerde artikelen</h4>
+                <h3 className="text-xl font-semibold text-foreground">Gerelateerde artikelen</h3>
               </div>
               <p className="text-sm text-muted-foreground">Binnenkort vind je hier onze meest relevante artikelen.</p>
             </div>
@@ -343,11 +344,11 @@ const BlogPost = () => {
                     <CalendarDays className="w-4 h-4" />
                     <span>{new Date(post.date).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })}</span>
                   </div>
-                  <h4 className="text-lg font-semibold text-foreground mb-2">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
                     <a href={`/blog/${post.id}?page=${page}`} className="hover:text-accent transition-colors">
                       {post.title}
                     </a>
-                  </h4>
+                  </h3>
                   <p className="text-sm text-muted-foreground mb-3">{post.excerpt}</p>
                   {post.tags && (
                     <div className="flex flex-wrap gap-2">

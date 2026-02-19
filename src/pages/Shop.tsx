@@ -592,6 +592,8 @@ const Shop = () => {
         )}
 
         {!loading && !error && filteredProducts.length > 0 && (
+          <>
+          <h2 className="sr-only">Productoverzicht</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProducts.map((product) => (
               <div
@@ -670,6 +672,7 @@ const Shop = () => {
               </div>
             ))}
           </div>
+          </>
         )}
         {!loading && !error && filteredProducts.length === 0 && (
         <div className="text-center text-muted-foreground bg-card border border-border rounded-2xl p-10">
@@ -680,7 +683,7 @@ const Shop = () => {
         {/* Cart Summary */}
         <div id="winkelmand" className="mt-12 bg-card border border-border rounded-2xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold text-foreground">Winkelmand</h3>
+            <h2 className="text-xl font-semibold text-foreground">Winkelmand</h2>
             <span className="text-sm text-muted-foreground">
               {cart.length} item{cart.length === 1 ? "" : "s"}
             </span>

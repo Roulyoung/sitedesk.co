@@ -4,6 +4,7 @@ const Footer = () => {
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="container mx-auto py-16">
+        <h2 className="sr-only">Footer navigatie</h2>
         <div className="grid md:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="md:col-span-2">
@@ -39,7 +40,7 @@ const Footer = () => {
 
           {/* Oplossingen */}
           <div>
-            <h4 className="font-semibold mb-4">Onze Oplossingen</h4>
+            <h3 className="font-semibold mb-4">Onze Oplossingen</h3>
             <ul className="space-y-2 text-primary-foreground/70">
               <li>
                 <a href="/" className="hover:text-primary-foreground transition-colors">
@@ -56,7 +57,7 @@ const Footer = () => {
 
           {/* Navigatie */}
           <div>
-            <h4 className="font-semibold mb-4">Navigatie</h4>
+            <h3 className="font-semibold mb-4">Navigatie</h3>
             <ul className="space-y-2 text-primary-foreground/70">
               <li>
                 <a href="/#contact" className="hover:text-primary-foreground transition-colors">
@@ -73,7 +74,7 @@ const Footer = () => {
 
           {/* Legal */}
           <div>
-            <h4 className="font-semibold mb-4">Juridisch</h4>
+            <h3 className="font-semibold mb-4">Juridisch</h3>
             <ul className="space-y-2 text-primary-foreground/70">
               <li>
                 <a href="#" className="hover:text-primary-foreground transition-colors">

@@ -415,10 +415,10 @@ const Webshop = () => {
               </ul>
             </div>
             <div className="bg-card border border-border rounded-2xl p-6 shadow-lg">
-              <p className="text-sm font-semibold text-foreground mb-4">Sitedesk Edge vs. traditionele stack</p>
+              <h3 className="text-sm font-semibold text-foreground mb-4">Sitedesk Edge vs. traditionele stack</h3>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="p-4 rounded-xl bg-secondary/70 border border-border">
-                  <h4 className="font-semibold text-foreground mb-2">Sitedesk Edge</h4>
+                  <h3 className="font-semibold text-foreground mb-2">Sitedesk Edge</h3>
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li>• Altijd dichtbij de bezoeker, direct geleverd</li>
                     <li>• Geen wachttijd: content staat al klaar</li>
@@ -427,7 +427,7 @@ const Webshop = () => {
                   </ul>
                 </div>
                 <div className="p-4 rounded-xl bg-destructive/5 border border-destructive/30">
-                  <h4 className="font-semibold text-foreground mb-2">Shopify / Woo</h4>
+                  <h3 className="font-semibold text-foreground mb-2">Shopify / Woo</h3>
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li>• Routes lopen via een drukke centrale omgeving</li>
                     <li>• Extra apps en thema’s vertragen alles</li>
@@ -762,7 +762,7 @@ const Webshop = () => {
                   <div className="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center mb-4">
                     <benefit.icon size={18} />
                   </div>
-                  <h4 className="text-lg font-semibold text-foreground mb-2">{benefit.title}</h4>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">{benefit.title}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">{benefit.copy}</p>
                 </div>
               ))}
