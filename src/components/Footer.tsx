@@ -1,4 +1,4 @@
-import { Mail, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -24,10 +24,6 @@ const Footer = () => {
               volledig beheerd voor slechts €1 per dag.
             </p>
             <div className="space-y-2 text-sm text-primary-foreground/70">
-              <div className="flex items-center gap-2">
-                <Mail size={16} />
-                <span>info@sitedesk.co</span>
-              </div>
               <div className="flex items-start gap-2">
                 <MapPin size={16} className="mt-0.5" />
                 <div>

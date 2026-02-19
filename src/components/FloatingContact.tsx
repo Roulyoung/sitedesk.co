@@ -7,7 +7,7 @@ const FloatingContact = () => {
         href="https://wa.me/31640326650"
         target="_blank"
         rel="noreferrer"
-        className="inline-flex items-center gap-2 bg-green-500 text-white px-4 py-3 rounded-full shadow-lg shadow-green-500/30 hover:scale-105 transition-transform"
+        className="inline-flex items-center gap-2 bg-emerald-700 text-white px-4 py-3 rounded-full shadow-lg shadow-emerald-700/30 hover:scale-105 transition-transform"
       >
         <MessageCircle size={18} />
         App ons

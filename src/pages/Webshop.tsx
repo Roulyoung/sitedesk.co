@@ -436,7 +436,7 @@ const Webshop = () => {
                   </ul>
                 </div>
               </div>
-              <div className="mt-4 p-4 rounded-xl bg-success/10 text-success text-sm">
+              <div className="mt-4 p-4 rounded-xl bg-success/10 text-foreground text-sm">
                 0ms gevoel: Edge delivery + lean JS bundels. Geen plugins, geen warm-up.
               </div>
             </div>
@@ -635,13 +635,13 @@ const Webshop = () => {
 
                 {benchmarkRows.map((row) => (
                   <div key={row.label} className="grid grid-cols-3 border-t border-border text-sm md:text-base">
-                    <div className={`p-4 md:p-5 ${row.isSitedesk ? "text-success font-semibold" : "text-foreground"}`}>
+                    <div className={`p-4 md:p-5 ${row.isSitedesk ? "text-foreground font-semibold" : "text-foreground"}`}>
                       {row.label}
                     </div>
-                    <div className={`p-4 md:p-5 text-center ${row.isSitedesk ? "text-success font-semibold" : "text-destructive font-semibold"}`}>
+                    <div className={`p-4 md:p-5 text-center ${row.isSitedesk ? "text-foreground font-semibold" : "text-foreground font-semibold"}`}>
                       {row.lossLabel}
                     </div>
-                    <div className={`p-4 md:p-5 text-right ${row.isSitedesk ? "text-success font-semibold" : "text-destructive font-semibold"}`}>
+                    <div className={`p-4 md:p-5 text-right ${row.isSitedesk ? "text-foreground font-semibold" : "text-foreground font-semibold"}`}>
                       {row.missedLabel}
                     </div>
                   </div>
@@ -718,7 +718,7 @@ const Webshop = () => {
               <thead className="bg-secondary/60">
                 <tr>
                   <th className="p-4 text-left font-semibold text-foreground">Kenmerk</th>
-                  <th className="p-4 text-left font-semibold text-success">Sitedesk</th>
+                  <th className="p-4 text-left font-semibold text-foreground">Sitedesk</th>
                   <th className="p-4 text-left font-semibold text-muted-foreground">Shopify</th>
                   <th className="p-4 text-left font-semibold text-muted-foreground">WooCommerce</th>
                   <th className="p-4 text-left font-semibold text-muted-foreground">Magento</th>
@@ -729,7 +729,7 @@ const Webshop = () => {
                 {comparisonRows.map((row) => (
                   <tr key={row.feature} className="border-t border-border align-top">
                     <td className="p-4 font-semibold text-foreground">{row.feature}</td>
-                    <td className="p-4 text-success font-semibold bg-success/5">{row.sitedesk}</td>
+                    <td className="p-4 text-foreground font-semibold bg-success/5">{row.sitedesk}</td>
                     <td className="p-4 text-muted-foreground">{row.shopify}</td>
                     <td className="p-4 text-muted-foreground">{row.woocommerce}</td>
                     <td className="p-4 text-muted-foreground">{row.magento}</td>
@@ -782,7 +782,7 @@ const Webshop = () => {
                 <div className="bg-card text-foreground rounded-2xl p-6 shadow-lg border border-border">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-sm font-semibold text-accent">Pilot Aanbod</span>
-                    <span className="text-xs bg-accent/20 text-accent px-3 py-1 rounded-full">Nog 7 plekken</span>
+                    <span className="text-xs bg-accent/20 text-foreground px-3 py-1 rounded-full">Nog 7 plekken</span>
                   </div>
                   <div className="space-y-2">
                     <p className="text-muted-foreground line-through">€2.500 setup</p>
@@ -873,7 +873,7 @@ const Webshop = () => {
               <div className="rounded-xl border border-border overflow-hidden">
                 <div className="bg-secondary/70 px-4 py-2 flex items-center justify-between text-xs text-muted-foreground">
                   <span>products.csv (live)</span>
-                  <span className="text-success font-semibold">Synced • 1s</span>
+                  <span className="text-foreground font-semibold">Synced • 1s</span>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -895,7 +895,7 @@ const Webshop = () => {
                           <td className="px-3 py-2">{row.name}</td>
                           <td className="px-3 py-2">{row.price}</td>
                           <td className="px-3 py-2">{row.stock}</td>
-                          <td className="px-3 py-2 text-success flex items-center gap-2">
+                          <td className="px-3 py-2 text-foreground flex items-center gap-2">
                             <CheckCircle2 size={14} className="text-success" /> {row.status}
                           </td>
                         </tr>
