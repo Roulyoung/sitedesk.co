@@ -44,6 +44,11 @@ Apply this checklist:
 - Avoid dependencies on Cloudflare-injected scripts where possible.
 - Confirm no robots/content-signal injection issues.
 
+7) Canonical hygiene (critical for SEO >= 100)
+- Never keep a route-specific canonical in static `index.html` for prerendered SPA routes.
+- Set exactly one canonical per route with `Helmet` (`https://<domain>/<route>/` preferred for consistency).
+- Ensure there are no conflicting canonicals between static head tags and route-level tags.
+
 Validation required:
 - `npm run build` passes.
 - Lighthouse desktop + mobile runs attached.
@@ -80,6 +85,11 @@ Output:
   - `--success`
   - `--destructive`
 - Then patch specific low-contrast utility classes if needed.
+
+6. Canonical tags must be route-owned
+- Keep canonical out of global static head template.
+- Define canonical in each page component that should index.
+- If Lighthouse SEO reports `Document does not have a valid rel=canonical`, check for duplicate/conflicting canonical URLs first.
 
 ## Cloudflare Settings Checklist (Post-Deploy)
 

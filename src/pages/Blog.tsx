@@ -59,7 +59,7 @@ const Blog = () => {
   const title = "Blog | Sitedesk";
   const description =
     "Praktische inzichten over edge-performance, CRO, checkout en schaalbare e-commerce architectuur.";
-  const canonical = "https://sitedesk.co/blog";
+  const canonical = "https://sitedesk.co/blog/";
 
   return (
     <div className="min-h-screen bg-background">
