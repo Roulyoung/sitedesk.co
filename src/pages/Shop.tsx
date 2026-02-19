@@ -6,6 +6,7 @@ import FloatingContact from "@/components/FloatingContact";
 import { Link, useSearchParams } from "react-router-dom";
 import { addToCart as addToCartStore, loadCart, updateQuantity as updateQtyStore, type CartItem } from "@/lib/cart";
 import { useToast } from "@/components/ui/use-toast";
+import { Helmet } from "react-helmet-async";
 
 type Product = {
   name: string;
@@ -56,6 +57,10 @@ const normalizePrice = (value: string) => {
 
 const Shop = () => {
   const { toast } = useToast();
+  const title = "Shop | Sitedesk";
+  const description =
+    "Bekijk producten, filter op categorie en reken direct af via een snelle Stripe checkout op Sitedesk.";
+  const canonical = "https://sitedesk.co/shop/";
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -423,6 +428,17 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonical} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={canonical} />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+      </Helmet>
       <Header />
       <main className="container mx-auto py-20 md:py-28">
         <div className="text-center mb-12">
