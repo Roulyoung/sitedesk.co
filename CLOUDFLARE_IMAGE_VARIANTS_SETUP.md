@@ -10,15 +10,17 @@ Cloudflare Dashboard -> `Images` -> `Variants` -> create:
 - Width: `768`
 - Height: `768`
 - Fit: `cover`
-- Quality: `78` (start point)
-- Format: `auto` (if available)
 
 2. `product-thumb`
 - Width: `160`
 - Height: `160`
 - Fit: `cover`
-- Quality: `60`
-- Format: `auto` (if available)
+
+If your Cloudflare UI does not allow `-` in names, use:
+- `productmain`
+- `productthumb`
+
+If Quality/Format fields are not visible in your plan/UI, skip them.
 
 ## 2) Configure app env vars
 
@@ -27,6 +29,13 @@ In your deploy environment (and local `.env` if needed):
 ```bash
 VITE_CF_IMAGE_MAIN_VARIANT=product-main
 VITE_CF_IMAGE_THUMB_VARIANT=product-thumb
+```
+
+If you used names without hyphens:
+
+```bash
+VITE_CF_IMAGE_MAIN_VARIANT=productmain
+VITE_CF_IMAGE_THUMB_VARIANT=productthumb
 ```
 
 Current code fallback behavior:
