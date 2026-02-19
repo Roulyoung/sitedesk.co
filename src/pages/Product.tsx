@@ -28,6 +28,9 @@ type Product = {
 
 const PRODUCTS_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/products";
 const CHECKOUT_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/create-checkout-session";
+const CLOUDFLARE_IMAGE_HOST = "imagedelivery.net";
+const CF_MAIN_IMAGE_VARIANT = import.meta.env.VITE_CF_IMAGE_MAIN_VARIANT || "public";
+const CF_THUMB_IMAGE_VARIANT = import.meta.env.VITE_CF_IMAGE_THUMB_VARIANT || "public";
 
 const formatPrice = (cents: number) =>
   new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(cents / 100);
@@ -36,6 +39,23 @@ const parsePriceToCents = (value: string) => {
   const numeric = parseFloat(value.replace(/[^\d.,-]/g, "").replace(",", "."));
   if (!Number.isFinite(numeric) || numeric <= 0) return 0;
   return Math.round(numeric * 100);
+};
+
+const withCloudflareVariant = (src: string | undefined, variant: string) => {
+  if (!src) return "";
+  if (!variant || variant === "public") return src;
+  try {
+    const url = new URL(src);
+    if (!url.hostname.includes(CLOUDFLARE_IMAGE_HOST)) return src;
+    const segments = url.pathname.split("/").filter(Boolean);
+    // Expected path: /<account_hash>/<image_id>/<variant>
+    if (segments.length < 3) return src;
+    segments[2] = variant;
+    url.pathname = `/${segments.join("/")}`;
+    return url.toString();
+  } catch {
+    return src;
+  }
 };
 
 const ProductPage = () => {
@@ -47,6 +67,8 @@ const ProductPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [mainVariantFailed, setMainVariantFailed] = useState(false);
+  const [failedThumbs, setFailedThumbs] = useState<Record<string, true>>({});
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -133,6 +155,8 @@ const ProductPage = () => {
     if (product) {
       const primary = product.image || product.images?.[0] || null;
       setSelectedImage(primary);
+      setMainVariantFailed(false);
+      setFailedThumbs({});
     }
   }, [product]);
 
@@ -141,6 +165,9 @@ const ProductPage = () => {
   const seoDescription = product?.description?.trim()
     ? product.description.trim().slice(0, 155)
     : "Bekijk productinformatie, prijs, levering en reken direct af via Sitedesk.";
+  const selectedMainSrc = selectedImage || product?.image || product?.images?.find(Boolean) || "https://dummyimage.com/800x600/edf2f7/1a202c&text=Product";
+  const mainVariantSrc = withCloudflareVariant(selectedMainSrc, CF_MAIN_IMAGE_VARIANT);
+  const resolvedMainSrc = mainVariantFailed ? selectedMainSrc : mainVariantSrc;
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -329,18 +356,18 @@ const ProductPage = () => {
             <div className="grid md:grid-cols-2">
               <div className="bg-gray-100 relative aspect-square">
                 <img
-                  src={
-                    selectedImage ||
-                    product.image ||
-                    product.images?.find(Boolean) ||
-                    "https://dummyimage.com/800x600/edf2f7/1a202c&text=Product"
-                  }
+                  src={resolvedMainSrc}
                   alt={product.name}
                   width={768}
                   height={768}
                   decoding="async"
                   loading="eager"
                   fetchPriority="high"
+                  onError={(e) => {
+                    if (mainVariantFailed) return;
+                    setMainVariantFailed(true);
+                    (e.currentTarget as HTMLImageElement).src = selectedMainSrc;
+                  }}
                   className="object-cover w-full h-full transition"
                 />
               </div>
@@ -435,16 +462,27 @@ const ProductPage = () => {
                         selectedImage === img ? "ring-2 ring-primary border-primary" : "border-border"
                       }`}
                     >
+                      {(() => {
+                        const variantThumb = withCloudflareVariant(img, CF_THUMB_IMAGE_VARIANT);
+                        const src = failedThumbs[img] ? img : variantThumb;
+                        return (
                       <img
-                        src={img}
+                        src={src}
                         alt={`${product.name} thumb ${i + 1}`}
                         width={96}
                         height={96}
                         loading="lazy"
                         decoding="async"
                         fetchPriority="low"
+                        onError={(e) => {
+                          if (failedThumbs[img]) return;
+                          setFailedThumbs((prev) => ({ ...prev, [img]: true }));
+                          (e.currentTarget as HTMLImageElement).src = img;
+                        }}
                         className="h-full w-full object-cover rounded-lg"
                       />
+                        );
+                      })()}
                     </button>
                   ))}
                 </div>

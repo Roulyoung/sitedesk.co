@@ -67,6 +67,7 @@ Apply this checklist:
 - LCP image: `loading="eager"`, `fetchpriority="high"`, avoid lazy loading.
 - Non-critical gallery images: `loading="lazy"`, `fetchpriority="low"`, `decoding="async"`.
 - Replace spinner-only loading screens with layout-matched skeletons to reduce CLS.
+- Use Cloudflare Images variants for product media (`product-main`, `product-thumb`) and keep runtime fallback to original URLs when variant is unavailable.
 
 Validation required:
 - `npm run build` passes.
@@ -113,6 +114,11 @@ Output:
 7. Dynamic pages may not be prerendered by default
 - If scores are low on `/product/:id`, ensure metadata is injected by the template itself and not dependent on static prerender only.
 - If needed for top SKUs, extend prerender route generation to include a stable list of product slugs.
+
+8. Product image CDN strategy
+- Create dedicated Cloudflare variants for main image and thumbnails.
+- Wire variant names through env vars (`VITE_CF_IMAGE_MAIN_VARIANT`, `VITE_CF_IMAGE_THUMB_VARIANT`).
+- Verify Lighthouse “Image delivery” improvement by checking that thumbnail requests are served from the thumb variant, not `public`.
 
 ## Cloudflare Settings Checklist (Post-Deploy)
 
