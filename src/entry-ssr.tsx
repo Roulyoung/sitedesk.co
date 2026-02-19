@@ -2,7 +2,7 @@ import React from "react";
 import { renderToString } from "react-dom/server";
 import { StaticRouter } from "react-router-dom/server";
 import { HelmetProvider } from "react-helmet-async";
-import { AppProviders, createQueryClient } from "./AppProviders";
+import { AppProviders } from "./AppProviders";
 import { AppRoutesSSR } from "./routes/AppRoutes.ssr";
 import { posts } from "./lib/blogData";
 
@@ -10,11 +10,10 @@ export { posts };
 
 export async function render(url: string) {
   const helmetContext: Record<string, unknown> = {};
-  const queryClient = createQueryClient();
 
   const app = (
     <HelmetProvider context={helmetContext}>
-      <AppProviders client={queryClient}>
+      <AppProviders>
         <StaticRouter location={url}>
           <AppRoutesSSR />
         </StaticRouter>

@@ -15,16 +15,22 @@ const scheduleNonCriticalStyles = () => {
 
   const start = () => {
     if ("requestIdleCallback" in window) {
-      window.requestIdleCallback(loadNonCriticalStyles, { timeout: 2500 });
+      window.requestIdleCallback(loadNonCriticalStyles, { timeout: 6000 });
       return;
     }
-    window.setTimeout(loadNonCriticalStyles, 1500);
+    window.setTimeout(loadNonCriticalStyles, 5000);
   };
 
   if (document.readyState === "complete") {
     start();
     return;
   }
+  const events = ["pointerdown", "keydown", "touchstart", "scroll"] as const;
+  const onInteraction = () => {
+    start();
+    events.forEach((name) => window.removeEventListener(name, onInteraction));
+  };
+  events.forEach((name) => window.addEventListener(name, onInteraction, { passive: true, once: true }));
   window.addEventListener("load", start, { once: true });
 };
 

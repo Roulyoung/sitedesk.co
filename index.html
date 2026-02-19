@@ -49,7 +49,7 @@
     <script>
       (function (w, d) {
         var initialized = false;
-        var events = ["pointerdown", "keydown", "scroll", "touchstart"];
+        var events = ["pointerdown", "keydown", "touchstart"];
 
         w.dataLayer = w.dataLayer || [];
         w.gtag =
@@ -80,17 +80,6 @@
           w.addEventListener(eventName, initGtag, { passive: true, once: true });
         });
 
-        w.addEventListener(
-          "load",
-          function () {
-            if ("requestIdleCallback" in w) {
-              w.requestIdleCallback(initGtag, { timeout: 4000 });
-              return;
-            }
-            w.setTimeout(initGtag, 3500);
-          },
-          { once: true },
-        );
       })(window, document);
     </script>
   </head>

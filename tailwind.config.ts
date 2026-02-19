@@ -2,7 +2,31 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./index.html",
+    "./src/main.tsx",
+    "./src/App.tsx",
+    "./src/AppProviders.tsx",
+    "./src/entry-ssr.tsx",
+    "./src/routes/**/*.{ts,tsx}",
+    "./src/pages/**/*.{ts,tsx}",
+    "./src/components/*.tsx",
+    "./src/hooks/**/*.{ts,tsx}",
+    "./src/lib/**/*.{ts,tsx}",
+    "./src/components/ui/accordion.tsx",
+    "./src/components/ui/badge.tsx",
+    "./src/components/ui/button.tsx",
+    "./src/components/ui/card.tsx",
+    "./src/components/ui/input.tsx",
+    "./src/components/ui/label.tsx",
+    "./src/components/ui/table.tsx",
+    "./src/components/ui/textarea.tsx",
+    "./src/components/ui/toast.tsx",
+    "./src/components/ui/toaster.tsx",
+    "./src/components/ui/tooltip.tsx",
+    "./src/components/ui/use-toast.ts",
+    "./src/components/ui/sonner.tsx",
+  ],
   prefix: "",
   theme: {
     container: {

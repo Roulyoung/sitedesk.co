@@ -25,7 +25,6 @@ export default defineConfig(({ mode, isSsrBuild }) => ({
           ? undefined
           : {
               "router-vendor": ["react-router-dom", "react-helmet-async"],
-              "query-vendor": ["@tanstack/react-query"],
               "icons-vendor": ["lucide-react"],
             },
       },
