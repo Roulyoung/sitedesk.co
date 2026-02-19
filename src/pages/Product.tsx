@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { addToCart as addToCartStore, loadCart, type CartItem } from "@/lib/cart";
 import { useToast } from "@/components/ui/use-toast";
+import { Helmet } from "react-helmet-async";
 
 type Product = {
   id: string;
@@ -39,6 +40,7 @@ const parsePriceToCents = (value: string) => {
 
 const ProductPage = () => {
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
@@ -134,6 +136,12 @@ const ProductPage = () => {
     }
   }, [product]);
 
+  const canonical = `https://sitedesk.co${location.pathname}`;
+  const seoTitle = product ? `${product.name} | Shop | Sitedesk` : "Product | Sitedesk";
+  const seoDescription = product?.description?.trim()
+    ? product.description.trim().slice(0, 155)
+    : "Bekijk productinformatie, prijs, levering en reken direct af via Sitedesk.";
+
   const handleAddToCart = () => {
     if (!product) return;
     const item: CartItem = {
@@ -210,6 +218,15 @@ const ProductPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
+        <Helmet>
+          <title>{seoTitle}</title>
+          <meta name="description" content={seoDescription} />
+          <link rel="canonical" href={canonical} />
+          <meta property="og:title" content={seoTitle} />
+          <meta property="og:description" content={seoDescription} />
+          <meta property="og:type" content="product" />
+          <meta property="og:url" content={canonical} />
+        </Helmet>
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <Loader2 className="animate-spin text-primary" size={40} />
@@ -223,6 +240,12 @@ const ProductPage = () => {
   if (!product || error) {
     return (
       <div className="min-h-screen flex flex-col">
+        <Helmet>
+          <title>Product niet gevonden | Sitedesk</title>
+          <meta name="description" content="Deze productpagina is niet beschikbaar. Bekijk het volledige aanbod in de shop." />
+          <link rel="canonical" href={canonical} />
+          <meta name="robots" content="noindex, follow" />
+        </Helmet>
         <Header />
         <main className="flex-1 flex items-center justify-center px-4">
           <div className="max-w-lg text-center space-y-4">
@@ -244,6 +267,17 @@ const ProductPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
+      <Helmet>
+        <title>{seoTitle}</title>
+        <meta name="description" content={seoDescription} />
+        <link rel="canonical" href={canonical} />
+        <meta property="og:title" content={seoTitle} />
+        <meta property="og:description" content={seoDescription} />
+        <meta property="og:type" content="product" />
+        <meta property="og:url" content={canonical} />
+        <meta name="twitter:title" content={seoTitle} />
+        <meta name="twitter:description" content={seoDescription} />
+      </Helmet>
       <Header />
       {/* Sticky CTA for mobile */}
       <div className="fixed bottom-0 left-0 right-0 z-20 bg-white/90 backdrop-blur md:hidden border-t border-border px-4 py-3 flex items-center justify-between gap-3">
@@ -367,6 +401,8 @@ const ProductPage = () => {
                       key={i}
                       type="button"
                       onClick={() => setSelectedImage(img)}
+                      aria-label={`Bekijk afbeelding ${i + 1} van ${product.name}`}
+                      aria-pressed={selectedImage === img}
                       className={`relative h-20 w-20 rounded-lg border transition ${
                         selectedImage === img ? "ring-2 ring-primary border-primary" : "border-border"
                       }`}

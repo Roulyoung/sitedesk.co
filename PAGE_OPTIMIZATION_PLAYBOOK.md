@@ -52,6 +52,12 @@ Apply this checklist:
 - Set exactly one canonical per route with `Helmet` (`https://<domain>/<route>/` preferred for consistency).
 - Ensure there are no conflicting canonicals between static head tags and route-level tags.
 
+8) Dynamic route SEO (product/blog detail templates)
+- Add route-level `Helmet` metadata on dynamic templates (`/product/:id`, `/blog/:slug`) for:
+  - `title`, `meta description`, `canonical`, OG/Twitter basics.
+- Provide safe fallback metadata during loading state (before API data resolves).
+- On "not found" states, set `meta robots="noindex,follow"` to avoid indexing invalid detail URLs.
+
 Validation required:
 - `npm run build` passes.
 - Lighthouse desktop + mobile runs attached.
@@ -93,6 +99,10 @@ Output:
 - Keep canonical out of global static head template.
 - Define canonical in each page component that should index.
 - If Lighthouse SEO reports `Document does not have a valid rel=canonical`, check for duplicate/conflicting canonical URLs first.
+
+7. Dynamic pages may not be prerendered by default
+- If scores are low on `/product/:id`, ensure metadata is injected by the template itself and not dependent on static prerender only.
+- If needed for top SKUs, extend prerender route generation to include a stable list of product slugs.
 
 ## Cloudflare Settings Checklist (Post-Deploy)
 
