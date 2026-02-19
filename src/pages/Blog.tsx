@@ -5,6 +5,15 @@ import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, CalendarDays, Tag } from "lucide-react";
 import { posts, PAGE_SIZE, paginate, type Post } from "@/lib/blogData";
+import { Helmet } from "react-helmet-async";
+
+const formatDate = (value: string) =>
+  new Intl.DateTimeFormat("nl-NL", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(value));
 
 const Pagination = ({ page, totalPages, onChange }: { page: number; totalPages: number; onChange: (page: number) => void }) => {
   if (totalPages <= 1) return null;
@@ -47,9 +56,22 @@ const Blog = () => {
   const [page, setPage] = useState(1);
   const totalPages = useMemo(() => Math.max(1, Math.ceil(posts.length / PAGE_SIZE)), []);
   const visiblePosts = useMemo(() => paginate(posts, page, PAGE_SIZE), [page]);
+  const title = "Blog | Sitedesk";
+  const description =
+    "Praktische inzichten over edge-performance, CRO, checkout en schaalbare e-commerce architectuur.";
+  const canonical = "https://sitedesk.co/blog";
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonical} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={canonical} />
+      </Helmet>
       <Header />
       <main className="pt-24">
         <section className="container mx-auto pb-12">
@@ -76,7 +98,7 @@ const Blog = () => {
               >
                 <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3">
                   <CalendarDays className="w-4 h-4" />
-                  <span>{new Date(post.date).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })}</span>
+                  <span suppressHydrationWarning>{formatDate(post.date)}</span>
                 </div>
                 <h2 className="text-xl font-semibold text-foreground mb-2">
                   <a href={`/blog/${post.id}`} className="hover:text-accent transition-colors">

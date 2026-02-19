@@ -93,7 +93,7 @@ const Footer = () => {
 
         {/* Bottom */}
         <div className="border-t border-primary-foreground/10 mt-12 pt-8 text-center text-sm text-primary-foreground/60">
-          <p>© {new Date().getFullYear()} Sitedesk.co. Alle rechten voorbehouden.</p>
+          <p suppressHydrationWarning>© {new Date().getFullYear()} Sitedesk.co. Alle rechten voorbehouden.</p>
         </div>
       </div>
     </footer>

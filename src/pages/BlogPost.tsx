@@ -8,6 +8,14 @@ import { CalendarDays, Tag, ArrowLeft, ArrowRight, Share2 } from "lucide-react";
 import { posts, PAGE_SIZE, paginate, type ContentBlock } from "@/lib/blogData";
 import { Helmet } from "react-helmet-async";
 
+const formatDate = (value: string) =>
+  new Intl.DateTimeFormat("nl-NL", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(value));
+
 const BlogPost = () => {
   const { slug } = useParams();
   const location = useLocation();
@@ -24,7 +32,7 @@ const BlogPost = () => {
 
   const title = current.title;
   const description = current.excerpt;
-  const publishedDate = new Date(current.date).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
+  const publishedDate = formatDate(current.date);
   const readingTime = current.readingTime ?? "6 min";
   const canonical = `https://sitedesk.co${location.pathname}`;
   const isBrowser = typeof window !== "undefined";
@@ -252,7 +260,7 @@ const BlogPost = () => {
               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 <span className="inline-flex items-center gap-2">
                   <CalendarDays className="w-4 h-4" />
-                  {publishedDate}
+                  <span suppressHydrationWarning>{publishedDate}</span>
                 </span>
                 {current.tags && (
                   <span className="inline-flex items-center gap-2">
@@ -342,7 +350,7 @@ const BlogPost = () => {
                 <article key={post.id} className="p-5 rounded-2xl border border-border bg-card shadow-sm">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
                     <CalendarDays className="w-4 h-4" />
-                    <span>{new Date(post.date).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })}</span>
+                    <span suppressHydrationWarning>{formatDate(post.date)}</span>
                   </div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">
                     <a href={`/blog/${post.id}?page=${page}`} className="hover:text-accent transition-colors">
