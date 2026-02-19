@@ -12,7 +12,43 @@ const { render, posts } = await import(pathToFileURL(ssrEntry).href);
 
 const staticRoutes = ["/", "/zakelijke-websites", "/shop", "/webshop", "/blog", "/over-ons"];
 const blogRoutes = posts.map((post) => `/blog/${post.id}`);
-const routes = [...new Set([...staticRoutes, ...blogRoutes])];
+
+const PRODUCTS_ENDPOINT =
+  process.env.PRERENDER_PRODUCTS_ENDPOINT || "https://stripe-webhook.rdo90.workers.dev/products";
+const PRODUCT_ROUTE_LIMIT = Number(process.env.PRERENDER_PRODUCT_LIMIT || "120");
+const ENABLE_PRODUCT_PRERENDER = process.env.PRERENDER_PRODUCTS !== "false";
+
+const normalizeSegment = (value) => encodeURIComponent(String(value).trim());
+
+const getProductRoutes = async () => {
+  if (!ENABLE_PRODUCT_PRERENDER) return [];
+  try {
+    const res = await fetch(PRODUCTS_ENDPOINT, {
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) {
+      console.warn(`[prerender] product fetch failed (${res.status}) from ${PRODUCTS_ENDPOINT}`);
+      return [];
+    }
+
+    const payload = await res.json();
+    const rows = Array.isArray(payload?.products) ? payload.products : [];
+    const routes = rows
+      .map((row) => row?.slug || row?.id || "")
+      .filter(Boolean)
+      .map((segment) => `/product/${normalizeSegment(segment)}`);
+
+    const unique = [...new Set(routes)];
+    return unique.slice(0, Math.max(0, PRODUCT_ROUTE_LIMIT));
+  } catch (error) {
+    console.warn(`[prerender] product fetch error from ${PRODUCTS_ENDPOINT}: ${error?.message || error}`);
+    return [];
+  }
+};
+
+const productRoutes = await getProductRoutes();
+const routes = [...new Set([...staticRoutes, ...blogRoutes, ...productRoutes])];
+console.log(`[prerender] static=${staticRoutes.length}, blog=${blogRoutes.length}, product=${productRoutes.length}`);
 
 const ensureDir = async (filePath) => {
   const dir = path.dirname(filePath);
