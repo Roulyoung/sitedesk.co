@@ -1,0 +1,53 @@
+# Sitedesk Clone + Update Factory
+
+## 1) One-time template setup
+
+1. Mark this repo as `Template repository` in GitHub.
+2. Keep workflow file: `.github/workflows/deploy.yml`.
+3. Keep config template: `sitedesk.config.example.json`.
+
+## 2) New client bootstrap (fast path)
+
+Use:
+
+```powershell
+.\scripts\bootstrap-customer.ps1 `
+  -NewRepoName "client-webshop" `
+  -GithubOwner "YOUR_GITHUB_USERNAME" `
+  -TemplateRepo "YOUR_GITHUB_USERNAME/sitedesk.co" `
+  -CloudflareAccountId "CF_ACCOUNT_ID" `
+  -CloudflarePagesProjectName "client-webshop" `
+  -CloudflareApiToken "CF_API_TOKEN"
+```
+
+This creates the repo from template and sets required GitHub Action secrets.
+
+## 3) Required GitHub secrets per client repo
+
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_PAGES_PROJECT_NAME`
+
+## 4) Google Sheets Script Properties per client
+
+- `GH_TOKEN` (classic PAT with `repo` + `workflow`, or fine-grained token with repository Actions write + Contents read/write)
+- `GH_OWNER`
+- `GH_REPO`
+- `CF_ZONE_ID`
+- `CF_API_TOKEN`
+
+## 5) Why update button may fail
+
+Common causes:
+- `GH_TOKEN` missing `workflow` permission.
+- Wrong `GH_OWNER` or `GH_REPO`.
+- Missing Cloudflare secrets in the repo.
+- Cloudflare Pages project name mismatch.
+
+## 6) Debug checklist
+
+1. In GitHub repo -> `Actions`, check workflow `Sitedesk Build and Deploy`.
+2. If no run appears, the dispatch call from Apps Script failed (token/owner/repo).
+3. If run appears but fails, read failing step:
+- `Validate Cloudflare secrets` means missing GitHub secrets.
+- `Deploy to Cloudflare Pages` means token/project/account mismatch.

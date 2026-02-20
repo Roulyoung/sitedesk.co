@@ -1,0 +1,18 @@
+{
+  "client": {
+    "name": "Client Name",
+    "domain": "example.com"
+  },
+  "github": {
+    "owner": "YOUR_GITHUB_USERNAME",
+    "repo": "client-webshop"
+  },
+  "cloudflare": {
+    "accountId": "YOUR_CLOUDFLARE_ACCOUNT_ID",
+    "zoneId": "YOUR_CLOUDFLARE_ZONE_ID",
+    "pagesProjectName": "client-webshop"
+  },
+  "googleSheets": {
+    "sheetId": "YOUR_GOOGLE_SHEET_ID"
+  }
+}

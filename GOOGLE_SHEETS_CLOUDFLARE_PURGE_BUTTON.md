@@ -64,6 +64,9 @@ function purgeCloudflareCache() {
 
 In Apps Script:
 - `Project Settings` -> `Script properties` -> add:
+  - `GH_TOKEN` = GitHub PAT (needs `repo` + `workflow` scope, or equivalent fine-grained permissions)
+  - `GH_OWNER` = GitHub owner/org name
+  - `GH_REPO` = repository name
   - `CF_ZONE_ID` = your zone id
   - `CF_API_TOKEN` = your API token
 
@@ -90,3 +93,16 @@ var payload = {
 ```
 
 This is safer and reduces global cache churn.
+
+## Troubleshooting Update Button
+
+If "Update Website" does nothing:
+
+1. Verify `GH_OWNER` and `GH_REPO` are exact.
+2. Verify `GH_TOKEN` has enough permissions to call:
+   - `POST /repos/{owner}/{repo}/dispatches`
+3. In GitHub -> `Actions`, check if workflow `Sitedesk Build and Deploy` started.
+4. If workflow started but deploy failed, verify repo secrets:
+   - `CLOUDFLARE_API_TOKEN`
+   - `CLOUDFLARE_ACCOUNT_ID`
+   - `CLOUDFLARE_PAGES_PROJECT_NAME`
