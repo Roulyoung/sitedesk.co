@@ -4,6 +4,8 @@ Related:
 - `ADMIN_HANDOVER.md`
 - `worker/TEST_AND_MODE_PROCEDURE.md`
 - `worker/SAFE_WRANGLER_DEPLOY.md`
+- `SECURITY_SECRETS_SETUP.md`
+- `CUSTOMER_KEYS_REGISTER_TEMPLATE.md`
 
 ## 1) One-time template setup
 
@@ -26,6 +28,10 @@ Use:
 ```
 
 This creates the repo from template and sets required GitHub Action secrets.
+
+Security note:
+- Keep raw secrets in vault/secret stores only.
+- Use `CUSTOMER_KEYS_REGISTER_TEMPLATE.md` to track metadata (never plaintext secrets).
 
 ## 3) Required GitHub secrets per client repo
 
