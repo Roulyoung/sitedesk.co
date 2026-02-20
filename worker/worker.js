@@ -14,6 +14,7 @@ const DEFAULT_ORDER_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
 const DEFAULT_RETRY_BASE_MS = 60 * 1000; // 1 min
 const MAX_RETRY_DELAY_MS = 60 * 60 * 1000; // 1 hour
 const DEFAULT_SYNC_BATCH_LIMIT = 25;
+const DEFAULT_ORDER_LIST_LIMIT = 25;
 
 export default {
   async fetch(req, env, ctx) {
@@ -56,10 +57,7 @@ export default {
     const stripeSig = req.headers.get("stripe-signature");
     if (!stripeSig) return new Response("Missing signature", { status: 400 });
 
-    const stripe = new Stripe(
-      env.STRIPE_SECRET_KEY,
-      STRIPE_API_VERSION ? { apiVersion: STRIPE_API_VERSION } : {},
-    );
+    const stripe = getStripeClient(env);
 
     let event;
     try {
@@ -111,6 +109,13 @@ export default {
     ctx.waitUntil(processDueOrderSyncs(env));
   },
 };
+
+function getStripeClient(env) {
+  return new Stripe(
+    env.STRIPE_SECRET_KEY,
+    STRIPE_API_VERSION ? { apiVersion: STRIPE_API_VERSION } : {},
+  );
+}
 
 async function getGoogleAccessToken(env) {
   const now = Math.floor(Date.now() / 1000);
@@ -374,21 +379,31 @@ async function syncOrderByKey(orderKey, env) {
 async function processDueOrderSyncs(env) {
   const kv = getOrdersKV(env);
   let cursor = undefined;
-  let processed = 0;
+  const stats = { processed: 0, synced: 0, failed: 0, skipped: 0 };
 
   do {
     const page = await kv.list({ prefix: ORDER_KEY_PREFIX, cursor, limit: 100 });
     for (const item of page.keys) {
-      if (processed >= DEFAULT_SYNC_BATCH_LIMIT) return;
+      if (stats.processed >= DEFAULT_SYNC_BATCH_LIMIT) return stats;
       try {
+        const beforeRaw = await kv.get(item.name);
         await syncOrderByKey(item.name, env);
+        const afterRaw = await kv.get(item.name);
+        const before = beforeRaw ? JSON.parse(beforeRaw) : null;
+        const after = afterRaw ? JSON.parse(afterRaw) : null;
+        if (before?.status === after?.status) stats.skipped += 1;
+        else if (after?.status === ORDER_STATUS_SYNCED) stats.synced += 1;
+        else if (after?.status === ORDER_STATUS_FAILED) stats.failed += 1;
       } catch {
         // Keep going; failed item is scheduled for retry.
+        stats.failed += 1;
       }
-      processed += 1;
+      stats.processed += 1;
     }
     cursor = page.list_complete ? undefined : page.cursor;
   } while (cursor);
+
+  return stats;
 }
 
 async function handleGetProducts(env, req) {
@@ -462,10 +477,7 @@ async function handleCreateCheckoutSession(req, env) {
       };
     });
 
-    const stripe = new Stripe(
-      env.STRIPE_SECRET_KEY,
-      STRIPE_API_VERSION ? { apiVersion: STRIPE_API_VERSION } : {},
-    );
+    const stripe = getStripeClient(env);
     const successBase = env.CHECKOUT_SUCCESS_URL || "https://sitedesk.co/success";
     const cancelUrl = env.CHECKOUT_CANCEL_URL || "https://sitedesk.co/cancel";
     const successUrl = (() => {
@@ -525,6 +537,20 @@ async function handleAdminRequest(req, env, url) {
 
   if (url.pathname === "/admin/products" && req.method === "POST") {
     return handleAdminCreateProduct(req, env);
+  }
+
+  if (url.pathname === "/admin/order-sync/status" && req.method === "GET") {
+    const limit = Number(url.searchParams.get("limit") || DEFAULT_ORDER_LIST_LIMIT);
+    return handleAdminOrderSyncStatus(env, limit);
+  }
+
+  if (url.pathname === "/admin/order-sync/run" && req.method === "POST") {
+    const stats = await processDueOrderSyncs(env);
+    return jsonResponse({ message: "Order sync run completed", stats });
+  }
+
+  if (url.pathname === "/admin/stripe-health" && req.method === "GET") {
+    return handleAdminStripeHealth(env);
   }
 
   // /admin/products/{rowNumber}
@@ -713,6 +739,90 @@ async function handleAdminImageUpload(req, env) {
   await prefillProductsCache(env);
 
   return jsonResponse({ imageId, imageUrl, updatedRow });
+}
+
+async function handleAdminStripeHealth(env) {
+  try {
+    const stripe = getStripeClient(env);
+    const account = await stripe.accounts.retrieve();
+    return jsonResponse({
+      ok: true,
+      stripe: {
+        accountId: account.id,
+        livemode: Boolean(account.livemode),
+        country: account.country || null,
+        email: account.email || null,
+      },
+      worker: {
+        hasWebhookSecret: Boolean(env.STRIPE_WEBHOOK_SECRET),
+        hasStripeSecret: Boolean(env.STRIPE_SECRET_KEY),
+      },
+    });
+  } catch (err) {
+    return jsonResponse(
+      {
+        ok: false,
+        error: err instanceof Error ? err.message : String(err),
+      },
+      500,
+    );
+  }
+}
+
+async function handleAdminOrderSyncStatus(env, limitRaw) {
+  try {
+    const kv = getOrdersKV(env);
+    const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 100) : DEFAULT_ORDER_LIST_LIMIT;
+    const page = await kv.list({ prefix: ORDER_KEY_PREFIX, limit: 500 });
+
+    const summary = {
+      total: 0,
+      pending_sync: 0,
+      synced: 0,
+      failed_sync: 0,
+      unknown: 0,
+    };
+    const items = [];
+
+    for (const key of page.keys) {
+      const raw = await kv.get(key.name);
+      if (!raw) continue;
+      const record = JSON.parse(raw);
+      summary.total += 1;
+      if (record.status === ORDER_STATUS_PENDING) summary.pending_sync += 1;
+      else if (record.status === ORDER_STATUS_SYNCED) summary.synced += 1;
+      else if (record.status === ORDER_STATUS_FAILED) summary.failed_sync += 1;
+      else summary.unknown += 1;
+
+      items.push({
+        key: record.key,
+        eventId: record.eventId,
+        status: record.status,
+        attempts: record.attempts || 0,
+        nextAttemptAt: record.nextAttemptAt || null,
+        syncedAt: record.syncedAt || null,
+        updatedAt: record.updatedAt || null,
+        lastError: record.lastError || null,
+      });
+    }
+
+    items.sort((a, b) => String(b.updatedAt || "").localeCompare(String(a.updatedAt || "")));
+
+    return jsonResponse({
+      ok: true,
+      summary,
+      items: items.slice(0, limit),
+      hasMore: items.length > limit,
+    });
+  } catch (err) {
+    return jsonResponse(
+      {
+        ok: false,
+        error: err instanceof Error ? err.message : String(err),
+      },
+      500,
+    );
+  }
 }
 
 async function verifyAdmin(req, env) {
