@@ -326,6 +326,7 @@ const ProductPage = () => {
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />
         <link rel="canonical" href={canonical} />
+        <link rel="preload" as="image" href={resolvedMainSrc} />
         <meta property="og:title" content={seoTitle} />
         <meta property="og:description" content={seoDescription} />
         <meta property="og:type" content="product" />
@@ -363,8 +364,8 @@ const ProductPage = () => {
                 <img
                   src={resolvedMainSrc}
                   alt={product.name}
-                  width={768}
-                  height={768}
+                  width={704}
+                  height={704}
                   decoding="async"
                   loading="eager"
                   fetchpriority="high"
