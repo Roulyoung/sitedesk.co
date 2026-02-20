@@ -393,7 +393,7 @@ const Shop = () => {
     }
     try {
       setError(null);
-      setCheckoutLoadingId(item.id);
+      setCheckoutLoadingId(product.id || product.name || "product");
       const res = await fetch(CHECKOUT_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

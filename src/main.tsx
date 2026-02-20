@@ -10,7 +10,8 @@ const container = document.getElementById("root");
 const bootstrap = async () => {
   if (!container) return;
 
-  const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
+  const rawPathname = typeof window !== "undefined" ? window.location.pathname : "/";
+  const pathname = rawPathname.length > 1 ? rawPathname.replace(/\/+$/, "") : rawPathname;
   const initialComponents = await loadInitialRouteComponents(pathname);
 
   const app = (

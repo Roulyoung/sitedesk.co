@@ -28,43 +28,46 @@ const LazyBlog = lazy(() => import("@/pages/Blog"));
 const LazyBlogPost = lazy(() => import("@/pages/BlogPost"));
 
 export const loadInitialRouteComponents = async (pathname: string): Promise<RouteComponents> => {
-  if (pathname === "/" || pathname === "/webshop") {
+  const normalizedPathname =
+    pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+
+  if (normalizedPathname === "/" || normalizedPathname === "/webshop") {
     const mod = await import("@/pages/Webshop");
     return { Webshop: mod.default };
   }
-  if (pathname === "/zakelijke-websites") {
+  if (normalizedPathname === "/zakelijke-websites") {
     const mod = await import("@/pages/Index");
     return { Index: mod.default };
   }
-  if (pathname === "/shop") {
+  if (normalizedPathname === "/shop") {
     const mod = await import("@/pages/Shop");
     return { Shop: mod.default };
   }
-  if (pathname.startsWith("/product/")) {
+  if (normalizedPathname.startsWith("/product/")) {
     const mod = await import("@/pages/Product");
     return { Product: mod.default };
   }
-  if (pathname === "/cart") {
+  if (normalizedPathname === "/cart") {
     const mod = await import("@/pages/Cart");
     return { Cart: mod.default };
   }
-  if (pathname === "/blog") {
+  if (normalizedPathname === "/blog") {
     const mod = await import("@/pages/Blog");
     return { Blog: mod.default };
   }
-  if (pathname.startsWith("/blog/")) {
+  if (normalizedPathname.startsWith("/blog/")) {
     const mod = await import("@/pages/BlogPost");
     return { BlogPost: mod.default };
   }
-  if (pathname === "/success") {
+  if (normalizedPathname === "/success") {
     const mod = await import("@/pages/Success");
     return { Success: mod.default };
   }
-  if (pathname === "/cancel") {
+  if (normalizedPathname === "/cancel") {
     const mod = await import("@/pages/Cancel");
     return { Cancel: mod.default };
   }
-  if (pathname.startsWith("/admin")) {
+  if (normalizedPathname.startsWith("/admin")) {
     const mod = await import("@/pages/Admin");
     return { Admin: mod.default };
   }
