@@ -28,6 +28,8 @@ type Product = {
 
 const PRODUCTS_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/products";
 const CHECKOUT_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/create-checkout-session";
+const IMAGE_DELIVERY_ORIGIN = "https://imagedelivery.net";
+const PRODUCTS_API_ORIGIN = "https://stripe-webhook.rdo90.workers.dev";
 
 const currency = new Intl.NumberFormat("nl-NL", {
   style: "currency",
@@ -432,6 +434,8 @@ const Shop = () => {
         <title>{title}</title>
         <meta name="description" content={description} />
         <link rel="canonical" href={canonical} />
+        <link rel="preconnect" href={IMAGE_DELIVERY_ORIGIN} crossOrigin="" />
+        <link rel="preconnect" href={PRODUCTS_API_ORIGIN} crossOrigin="" />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:type" content="website" />
@@ -597,8 +601,24 @@ const Shop = () => {
         </div>
 
         {loading && (
-          <div className="flex justify-center py-16">
-            <Loader2 className="animate-spin text-primary" size={40} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" aria-hidden="true">
+            {Array.from({ length: 6 }).map((_, idx) => (
+              <div
+                key={`shop-skeleton-${idx}`}
+                className="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col gap-4"
+              >
+                <div className="h-64 w-full rounded-lg bg-muted animate-pulse" />
+                <div className="space-y-2">
+                  <div className="h-6 w-4/5 rounded bg-muted animate-pulse" />
+                  <div className="h-5 w-1/3 rounded bg-muted animate-pulse" />
+                  <div className="h-4 w-2/3 rounded bg-muted animate-pulse" />
+                </div>
+                <div className="space-y-2">
+                  <div className="h-11 w-full rounded-lg bg-muted animate-pulse" />
+                  <div className="h-11 w-full rounded-lg bg-muted animate-pulse" />
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -612,7 +632,7 @@ const Shop = () => {
           <>
           <h2 className="sr-only">Productoverzicht</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProducts.map((product) => (
+            {filteredProducts.map((product, idx) => (
               <div
                 key={product.id || product.slug || product.name}
                 className="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col gap-4"
@@ -625,8 +645,12 @@ const Shop = () => {
                     <img
                       src={product.image}
                       alt={product.name || "Product"}
+                      width={384}
+                      height={384}
+                      decoding="async"
+                      fetchpriority={idx === 0 ? "high" : "low"}
                       className="object-cover h-64 w-full rounded-lg transition group-hover:opacity-90"
-                      loading="lazy"
+                      loading={idx === 0 ? "eager" : "lazy"}
                     />
                   ) : (
                     <div className="h-64 w-full rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm">
