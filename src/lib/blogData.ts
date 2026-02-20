@@ -312,6 +312,304 @@ export const posts: Post[] = [
   },
 ];
 
+export const postsEn: Post[] = [
+  {
+    id: "waarom-0ms-geen-luxe-is",
+    title: "Why a 0ms load time for your webshop is not a luxury, but a hard requirement",
+    excerpt: "Every second of delay costs direct revenue. Discover why edge architecture solves this permanently.",
+    date: "2026-02-10",
+    tags: ["Performance", "Edge", "CRO"],
+    readingTime: "6 min",
+    content: [
+      {
+        type: "text",
+        value:
+          "You open a webshop on your phone. You see a white screen. One second passes... two seconds... three... you are gone, right? In 2026, online shoppers are more impatient than ever. Speed is no longer a nice-to-have; it is the foundation of profitability.",
+      },
+      { type: "h2", value: "The hard numbers: every second matters" },
+      {
+        type: "text",
+        value:
+          "When we say slow performance costs revenue, we are not guessing. The data from major platforms is clear.",
+      },
+      { type: "text", value: "The 53% line: 53% of mobile visitors leave after 3 seconds of loading. (Google/SOASTA)" },
+      { type: "text", value: "Conversion killer: 1s load time = 3x higher conversion than 5s. (Portent)" },
+      { type: "text", value: "Amazon effect: every 100ms delay costs 1% revenue. (Amazon)" },
+      {
+        type: "text",
+        value:
+          "Conclusion: if your store runs at around 4 seconds, a large part of your marketing budget disappears before shoppers even see the checkout button.",
+      },
+      { type: "h2", value: "The central database problem" },
+      {
+        type: "text",
+        value:
+          "Traditional stores render from a central server. Every click waits for server response, database queries and HTML generation. The more plugins, the heavier the chain.",
+      },
+      { type: "text", value: "More apps means more latency. More themes means bigger bundles. Visitors wait, you lose revenue." },
+      { type: "h2", value: "The solution: edge architecture (Sitedesk Engine)" },
+      {
+        type: "text",
+        value:
+          "We deploy your store on Cloudflare Edge. Not one server, but thousands of nodes close to your visitors. Assets are already near the customer and data is served instantly.",
+      },
+      { type: "text", value: "Headless speed: frontend and Sheets backend are decoupled for pure performance." },
+      { type: "h2", value: "The math: what does 0ms deliver?" },
+      {
+        type: "calc_box",
+        data: {
+          leftTitle: "Current situation (4s)",
+          leftItems: ["Visitors: 5,000", "Average order value: EUR 60", "Conversion: 1.5%", "Monthly revenue: EUR 4,500"],
+          rightTitle: "With Sitedesk Edge (0ms feel)",
+          rightItems: ["Visitors: 5,000", "Average order value: EUR 60", "Conversion: 2.2% (conservative)", "Monthly revenue: EUR 6,600"],
+          summary: "Result: +EUR 2,100 per month (+EUR 25,200 per year) from technology alone.",
+        },
+      },
+      { type: "h2", value: "Why Sitedesk is the logical investment" },
+      {
+        type: "text",
+        value:
+          "A new webshop is often treated as a cost. We see it as removing a major bottleneck. Our Pilot Deal pays back quickly and removes technical stress.",
+      },
+      {
+        type: "text",
+        value:
+          "No server maintenance. No slow admin dashboards: manage everything in Google Sheets. We are your tech team: we build, maintain and optimize.",
+      },
+      { type: "h2", value: "Ready for 0ms? Here is how we do it" },
+      {
+        type: "text",
+        value:
+          "Speed is the difference between winning and losing. Want to know how much revenue you are leaking today? Book a free speed check or send us a WhatsApp message.",
+      },
+      {
+        type: "cta_box",
+        data: {
+          title: "Pilot Deal: 0ms or nothing",
+          body: "EUR 1,000 one-time, EUR 150 p/m. Includes hosting, unlimited support and continuous development. Typically pays back in month one.",
+        },
+      },
+      { type: "text", value: "Published by Sitedesk Performance Lab — We build the fastest edge e-commerce infrastructure." },
+    ],
+  },
+  {
+    id: "waarom-woocommerce-je-groei-belemmert",
+    title: "Why WooCommerce limits your growth (and why that is dangerous in the AI era)",
+    excerpt:
+      "WooCommerce looks free, but in 2026 it is a legacy tax: slow, vulnerable and expensive to maintain. Discover why edge architecture is the logical next step.",
+    date: "2026-02-14",
+    tags: ["WooCommerce", "Security", "Headless"],
+    readingTime: "7 min",
+    content: [
+      {
+        type: "text",
+        value:
+          "Your webshop probably started with WooCommerce. It is free, familiar and everyone uses it. But what looked like a safe choice is now a growth bottleneck for serious brands. In a market where AI raises the bar for speed and security, a traditional WordPress store is no longer a foundation, but a risk.",
+      },
+      { type: "h2", value: "The free illusion: the hidden legacy tax" },
+      {
+        type: "text",
+        value:
+          "The biggest myth in e-commerce is that WooCommerce is free. The plugin may cost nothing, but the infrastructure required to keep a heavy PHP stack fast is expensive. WooCommerce is monolithic: database, admin and storefront are tightly coupled.",
+      },
+      {
+        type: "text",
+        value:
+          "As your store grows, database bloat grows too. Every click needs heavy calls to a central server. That creates a slow TTFB, and search rankings and conversion suffer.",
+      },
+      { type: "h2", value: "The AI security paradox: why WordPress is a target" },
+      {
+        type: "text",
+        value:
+          "AI changed the attack landscape. Bots can scan the web 24/7 for known plugin vulnerabilities. Most WooCommerce stores run many third-party plugins, which creates constant weak links.",
+      },
+      {
+        type: "text",
+        value:
+          "Automated attacks can test thousands of exploit variations in seconds. The central server is the problem: it gives attackers a direct target. Sitedesk solves this by decoupling. Your storefront runs on edge infrastructure, while data stays in a protected backend such as Google Sheets.",
+      },
+      { type: "h2", value: "The math: WooCommerce vs Sitedesk Edge" },
+      {
+        type: "calc_box",
+        data: {
+          leftTitle: "WooCommerce maintenance",
+          leftItems: [
+            "Updates, security patches and plugin conflicts: 4 hours/month",
+            "Developer rate: EUR 90/hour",
+            "Total maintenance cost: EUR 360 p/m",
+          ],
+          rightTitle: "Sitedesk speed system",
+          rightItems: ["Fixed fee: EUR 150 p/m", "No maintenance, no update burden", "Edge performance included"],
+          summary: "Savings: EUR 2,520 per year in technical overhead, plus extra revenue from higher speed.",
+        },
+      },
+      { type: "h2", value: "The relief of a decoupled backend" },
+      {
+        type: "text",
+        value:
+          "The future of e-commerce is headless. We decouple frontend and backend. Why manage stock in a slow dashboard when you can update it in Google Sheets? It is faster, safer and AI-ready.",
+      },
+      { type: "h2", value: "Conclusion: are you ready to leave 2015 behind?" },
+      {
+        type: "text",
+        value:
+          "WooCommerce worked in the previous decade. But when shoppers expect instant loading and bots constantly probe for weaknesses, modern architecture is required. Sitedesk gives you that upgrade.",
+      },
+      {
+        type: "cta_box",
+        data: {
+          title: "Pilot Deal: move to edge now",
+          body: "EUR 1,000 one-time, EUR 150 p/m. We migrate products, set up your Google Sheets backend and launch your store on global edge infrastructure.",
+        },
+      },
+      { type: "text", value: "Published by Sitedesk Performance Lab — We build the fastest edge e-commerce infrastructure." },
+    ],
+  },
+  {
+    id: "verborgen-kosten-woocommerce-webshop-stagnatie",
+    title: "The hidden cost of WooCommerce: why your webshop growth stalls",
+    excerpt:
+      "In a market where AI sets the pace for speed and security, traditional WordPress commerce has become a risk. Learn why WooCommerce limits growth.",
+    date: "2026-02-11",
+    tags: ["E-commerce", "WooCommerce", "AI Security"],
+    readingTime: "5 min",
+    content: [
+      {
+        type: "text",
+        value:
+          "Your webshop likely started with WooCommerce. It is free, familiar and widely used. But in 2026, that old default has become a drag on serious growth. In an AI-driven market, traditional WordPress architecture is no longer a safe baseline.",
+      },
+      { type: "h2", value: "The free illusion: hidden legacy tax" },
+      {
+        type: "text",
+        value:
+          "WooCommerce itself is free, but performance-grade hosting, maintenance and plugin management are not. It is a monolith where storefront, admin and database are tightly coupled.",
+      },
+      {
+        type: "text",
+        value:
+          "As stores scale, database bloat and plugin complexity increase. Every user interaction triggers heavy server work. Slow TTFB and lower conversion are the predictable result.",
+      },
+      { type: "h2", value: "The AI security paradox: WordPress as a target" },
+      {
+        type: "text",
+        value:
+          "AI bots now scan continuously for plugin vulnerabilities. Typical WooCommerce setups rely on many external plugins, so there is nearly always a weak point.",
+      },
+      {
+        type: "text",
+        value:
+          "Automated exploitation is faster than ever. On central-server setups, attackers have clear targets. Sitedesk removes this exposure with edge decoupling, keeping storefront and backend separated.",
+      },
+      {
+        type: "calc_box",
+        data: {
+          title: "The numbers: WooCommerce vs Sitedesk Edge",
+          items: [
+            "WooCommerce maintenance (updates/fixes): EUR 360 p/m (4h at EUR 90).",
+            "Sitedesk speed system: EUR 150 p/m (all-in).",
+            "Savings: EUR 2,520 per year + far less technical stress.",
+          ],
+        },
+      },
+      { type: "h2", value: "The relief of a decoupled backend" },
+      {
+        type: "text",
+        value:
+          "Headless commerce decouples frontend from backend. Instead of fighting a slow dashboard, you manage catalog data in Google Sheets. It is faster, safer and easier to scale.",
+      },
+      { type: "h2", value: "Conclusion: are you ready to move on?" },
+      {
+        type: "text",
+        value:
+          "WooCommerce had its era, but today speed and resilience define growth. If you want a durable architecture, edge-first is the practical move.",
+      },
+      { type: "cta_box" },
+    ],
+  },
+  {
+    id: "future-proof-webshop-langetermijninvestering",
+    title: "Your webshop as a long-term investment: future-proof growth without technical debt",
+    excerpt:
+      "Why a decoupled headless webshop on the edge is the clearest way to avoid technical debt and accelerate growth.",
+    date: "2026-02-16",
+    tags: ["Headless", "Investment", "Technical Debt"],
+    readingTime: "6 min",
+    content: [
+      {
+        type: "text",
+        value:
+          "Many founders treat a new webshop as a recurring cost that needs a full rebuild every few years. Traditional stacks tie data, design and logic together. When design ages or performance drops, everything has to be rebuilt. Sitedesk breaks that cycle.",
+      },
+      { type: "h2", value: "Separate data from design" },
+      {
+        type: "text",
+        value:
+          "Future-proof commerce starts with decoupling. Keep data (products, pricing, orders) separate from presentation (what customers see).",
+      },
+      {
+        type: "text",
+        value:
+          "Design changes over time. In a decoupled store you can replace the frontend while keeping backend data intact. Your product structure remains portable and independent from one platform vendor.",
+      },
+      { type: "h2", value: "Avoid technical debt" },
+      {
+        type: "text",
+        value:
+          "Technical debt is the future cost of quick and fragile solutions today. Plugin-heavy stacks add debt every month. Edge-first architecture reduces this burden by design.",
+      },
+      {
+        type: "text",
+        value:
+          "No maintenance loop: fewer vulnerable extensions, fewer weekly break-fixes. Better scalability: whether you sell 10 or 10,000 products, structure and speed stay consistent.",
+      },
+      { type: "h2", value: "The math: replacement cost vs growth asset" },
+      {
+        type: "calc_box",
+        data: {
+          title: "Total cost of ownership (5 years)",
+          leftTitle: "Traditional shop (Magento/Woo)",
+          leftItems: [
+            "Build cost: EUR 2,500 - EUR 5,000",
+            "Monthly maintenance: EUR 150 - EUR 300",
+            "Major redesign after 3 years: EUR 2,000 (full rebuild)",
+            "Total 5-year cost: EUR 13,500 - EUR 25,000",
+          ],
+          rightTitle: "Sitedesk Edge investment",
+          rightItems: [
+            "Build cost: EUR 1,000 (Pilot Deal)",
+            "Monthly maintenance: EUR 0 (included in service)",
+            "Redesign after 3 years: EUR 500 (frontend only)",
+            "Total 5-year cost: around EUR 10,000",
+          ],
+          summary:
+            "The bigger gain is operational focus: less time fixing technology, more time driving marketing and sales.",
+        },
+      },
+      { type: "h2", value: "Ready for the future (and AI)" },
+      {
+        type: "text",
+        value:
+          "A future-proof store is also AI-ready. Sitedesk keeps your data clean and structured, so later integrations for recommendations and forecasting are straightforward.",
+      },
+      {
+        type: "text",
+        value:
+          "Investing in Sitedesk means investing in a foundation that improves as you grow, instead of a system that becomes heavier over time.",
+      },
+      {
+        type: "cta_box",
+        data: {
+          title: "Pilot Deal: build for growth, not debt",
+          body: "EUR 1,000 one-time, EUR 150 p/m. Includes hosting, maintenance and continuous development — the base for a future-proof, AI-ready webshop.",
+        },
+      },
+    ],
+  },
+];
+
+export const getPostsForLocale = (locale: string): Post[] => (locale === "en" ? postsEn : posts);
+
 export const PAGE_SIZE = 6;
 
 export const paginate = <T,>(items: T[], page: number, perPage: number): T[] => {

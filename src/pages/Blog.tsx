@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, CalendarDays, Tag } from "lucide-react";
-import { posts, PAGE_SIZE, paginate } from "@/lib/blogData";
+import { getPostsForLocale, PAGE_SIZE, paginate } from "@/lib/blogData";
 import { Helmet } from "react-helmet-async";
 import { getAlternateHrefLangs, getLocaleFromPath, stripLocaleFromPath, withLocalePath } from "@/lib/i18n";
 import { useLocation } from "react-router-dom";
@@ -55,11 +55,12 @@ const Blog = () => {
   const location = useLocation();
   const locale = getLocaleFromPath(location.pathname);
   const isEn = locale === "en";
+  const posts = useMemo(() => getPostsForLocale(locale), [locale]);
   const pathWithoutLocale = stripLocaleFromPath(location.pathname);
   const alternateLinks = getAlternateHrefLangs(pathWithoutLocale);
   const [page, setPage] = useState(1);
-  const totalPages = useMemo(() => Math.max(1, Math.ceil(posts.length / PAGE_SIZE)), []);
-  const visiblePosts = useMemo(() => paginate(posts, page, PAGE_SIZE), [page]);
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(posts.length / PAGE_SIZE)), [posts.length]);
+  const visiblePosts = useMemo(() => paginate(posts, page, PAGE_SIZE), [page, posts]);
   const title = "Blog | Sitedesk";
   const description = isEn
     ? "Practical insights on edge performance, CRO, checkout, and scalable e-commerce architecture."

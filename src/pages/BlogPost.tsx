@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, Tag, ArrowLeft, ArrowRight, Share2 } from "lucide-react";
-import { posts, PAGE_SIZE, paginate, type ContentBlock } from "@/lib/blogData";
+import { getPostsForLocale, PAGE_SIZE, paginate, type ContentBlock } from "@/lib/blogData";
 import { Helmet } from "react-helmet-async";
 import { getAlternateHrefLangs, getLocaleFromPath, stripLocaleFromPath, withLocalePath } from "@/lib/i18n";
 
@@ -23,6 +23,7 @@ const BlogPost = () => {
   const navigate = useNavigate();
   const locale = getLocaleFromPath(location.pathname);
   const isEn = locale === "en";
+  const posts = useMemo(() => getPostsForLocale(locale), [locale]);
   const pathWithoutLocale = stripLocaleFromPath(location.pathname);
   const alternateLinks = getAlternateHrefLangs(pathWithoutLocale);
   const searchParams = new URLSearchParams(location.search);
