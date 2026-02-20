@@ -366,7 +366,7 @@ const BlogPost = () => {
                     <span suppressHydrationWarning>{formatDate(post.date, isEn)}</span>
                   </div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">
-                    <a href={`/blog/${post.id}?page=${page}`} className="hover:text-accent transition-colors">
+                    <a href={`${withLocalePath(`/blog/${post.id}`, locale)}?page=${page}`} className="hover:text-accent transition-colors">
                       {post.title}
                     </a>
                   </h3>

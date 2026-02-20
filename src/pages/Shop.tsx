@@ -127,7 +127,7 @@ const Shop = () => {
               row.image5 ||
               "";
             const deliveryCostCents = parseShippingToCents(String(row.delivery_cost || row.verzendkosten || "0"));
-            const deliveryTime = row.delivery_time || row.delivery || "1-2 dagen";
+            const deliveryTime = row.delivery_time || row.delivery || (isEn ? "1-2 days" : "1-2 dagen");
             const stock = row.stock || row.voorraad || "";
             return {
               id: (slug || name || `item-${idx}`).toString(),
@@ -576,7 +576,7 @@ const Shop = () => {
             <div className="space-y-2">
               <label className="text-sm text-muted-foreground">Tags</label>
               <div className="flex flex-wrap gap-2 max-h-28 overflow-auto">
-                {tags.length === 0 && <span className="text-xs text-muted-foreground">Geen tags</span>}
+                {tags.length === 0 && <span className="text-xs text-muted-foreground">{isEn ? "No tags" : "Geen tags"}</span>}
                 {tags.map((tag) => {
                   const active = selectedTags.includes(tag);
                   const count = tagCounts[tag] || 0;
@@ -717,7 +717,7 @@ const Shop = () => {
                     </h3>
                     <p className="text-primary font-semibold">{product.price}</p>
                     <div className="text-sm text-muted-foreground flex flex-col gap-1">
-                      <span>{isEn ? "Delivery" : "Levering"}: {product.deliveryTime || "1-2 dagen"}</span>
+                      <span>{isEn ? "Delivery" : "Levering"}: {product.deliveryTime || (isEn ? "1-2 days" : "1-2 dagen")}</span>
                       {parsePriceToCents(product.delivery_cost || "0") > 0 ? (
                         <span>{isEn ? "Shipping" : "Verzendkosten"}: {currency.format(parsePriceToCents(product.delivery_cost || "0") / 100)}</span>
                       ) : (
