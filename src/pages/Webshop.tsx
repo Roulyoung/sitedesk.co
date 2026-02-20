@@ -13,7 +13,7 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
-import { getLocaleFromPath, withLocalePath } from "@/lib/i18n";
+import { getAlternateHrefLangs, getLocaleFromPath, stripLocaleFromPath, withLocalePath } from "@/lib/i18n";
 
 declare global {
   interface Window {
@@ -100,10 +100,12 @@ const comparisonRows = [
 const Webshop = () => {
   const location = useLocation();
   const locale = getLocaleFromPath(location.pathname);
+  const pathWithoutLocale = stripLocaleFromPath(location.pathname);
+  const alternateLinks = getAlternateHrefLangs(pathWithoutLocale);
   const pageTitle = "Supersnelle Webshop op Edge | €1.000 setup + €150 p/m | Sitedesk";
   const pageDescription =
     "Sitedesk bouwt, host en onderhoudt supersnelle webshops op Edge. Inclusief Google Sheets CMS, Stripe checkout en support. Early Adopter: €1.000 setup + €150 p/m lifetime.";
-  const canonicalUrl = "https://sitedesk.co/";
+  const canonicalUrl = `https://sitedesk.co${location.pathname}`;
   const imageUrl = "https://sitedesk.co/icon-sitedesk.png";
   const [monthlyRevenue, setMonthlyRevenue] = useState(10000);
   const [currentLoadTime, setCurrentLoadTime] = useState(4);
@@ -282,6 +284,9 @@ const Webshop = () => {
         <meta name="description" content={pageDescription} />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={canonicalUrl} />
+        {alternateLinks.map((alt) => (
+          <link key={alt.locale} rel="alternate" hrefLang={alt.locale} href={alt.href} />
+        ))}
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
         <meta property="og:type" content="website" />
