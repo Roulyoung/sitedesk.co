@@ -27,6 +27,10 @@ This creates the repo from template and sets required GitHub Action secrets.
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
 - `CLOUDFLARE_PAGES_PROJECT_NAME`
+- `STRIPE_SECRET_KEY` (set in Worker secret, mode-specific)
+- `STRIPE_WEBHOOK_SECRET` (set in Worker secret, mode-specific)
+- `GOOGLE_SERVICE_ACCOUNT_KEY` (set in Worker secret, mode-specific)
+- `ADMIN_PASSWORD` (set in Worker secret, mode-specific)
 
 ## 4) Google Sheets Script Properties per client
 
@@ -35,6 +39,19 @@ This creates the repo from template and sets required GitHub Action secrets.
 - `GH_REPO`
 - `CF_ZONE_ID`
 - `CF_API_TOKEN`
+
+## 4.1) Tenant Isolation Rules (Mandatory)
+
+For each new webshop client, isolate all tenant resources:
+
+- Separate GitHub repo.
+- Separate Cloudflare Pages project.
+- Separate Cloudflare zone/domain.
+- Separate Google Sheet.
+- Separate Google service account (or at minimum separate sheet access + dedicated credentials).
+- Separate Stripe account (recommended) or at least separate Stripe mode credentials + webhook endpoint secret.
+
+Do not reuse live secrets between clients.
 
 ## 5) Why update button may fail
 
@@ -51,3 +68,14 @@ Common causes:
 3. If run appears but fails, read failing step:
 - `Validate Cloudflare secrets` means missing GitHub secrets.
 - `Deploy to Cloudflare Pages` means token/project/account mismatch.
+
+## 7) Test vs Live Mode (Worker)
+
+Use mode-specific Worker deploy + secrets:
+
+- Test: `wrangler deploy --env test`
+- Live: `wrangler deploy --env live`
+
+Always verify mode via:
+- `GET /admin/stripe-health` (with admin bearer token)
+- Check `livemode` flag and account id before running real payments.
