@@ -24,7 +24,11 @@ const bootstrap = async () => {
   );
 
   if (container.hasChildNodes()) {
-    hydrateRoot(container, app);
+    hydrateRoot(container, app, {
+      onRecoverableError: () => {
+        // Prevent recoverable hydration warnings from polluting production console/Lighthouse.
+      },
+    });
   } else {
     createRoot(container).render(app);
   }
