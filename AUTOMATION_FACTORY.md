@@ -84,3 +84,15 @@ Use mode-specific Worker deploy + secrets:
 Always verify mode via:
 - `GET /admin/stripe-health` (with admin bearer token)
 - Check `livemode` flag and account id before running real payments.
+
+## 8) Multilanguage Defaults for New Clones
+
+- Route strategy:
+  - default: `nl` (no prefix)
+  - extra locales: `/en/*`, `/de/*`
+- Prerender locales env:
+  - `PRERENDER_LOCALES=nl,en,de` (build-time)
+- Product sheet translation columns per locale:
+  - `slug_<lang>`, `name_<lang>`, `description_<lang>`
+  - example: `slug_en`, `name_en`, `description_en`
+- Keep default columns (`slug`, `name`, `description`) as fallback for missing translations.

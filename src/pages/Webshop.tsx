@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -12,6 +13,7 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
+import { getLocaleFromPath, withLocalePath } from "@/lib/i18n";
 
 declare global {
   interface Window {
@@ -96,6 +98,8 @@ const comparisonRows = [
 ];
 
 const Webshop = () => {
+  const location = useLocation();
+  const locale = getLocaleFromPath(location.pathname);
   const pageTitle = "Supersnelle Webshop op Edge | €1.000 setup + €150 p/m | Sitedesk";
   const pageDescription =
     "Sitedesk bouwt, host en onderhoudt supersnelle webshops op Edge. Inclusief Google Sheets CMS, Stripe checkout en support. Early Adopter: €1.000 setup + €150 p/m lifetime.";
@@ -475,7 +479,7 @@ const Webshop = () => {
                   size="lg"
                   className="shadow-glow"
                 >
-                  <a href="/shop" data-umami-event="view-demo-shop">
+                  <a href={withLocalePath("/shop", locale)} data-umami-event="view-demo-shop">
                     Lanceer Demo Shop
                   </a>
                 </Button>
@@ -520,7 +524,7 @@ const Webshop = () => {
                   </div>
                   <div className="flex justify-end">
                     <Button asChild variant="hero" size="sm">
-                      <a href="/shop" data-umami-event="view-demo-shop">Naar demo</a>
+                      <a href={withLocalePath("/shop", locale)} data-umami-event="view-demo-shop">Naar demo</a>
                     </Button>
                   </div>
                 </div>
@@ -1080,3 +1084,4 @@ const Webshop = () => {
 };
 
 export default Webshop;
+

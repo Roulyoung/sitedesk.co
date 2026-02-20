@@ -8,10 +8,22 @@ import { addToCart as addToCartStore, loadCart, type CartItem } from "@/lib/cart
 import { validateCartBeforeCheckout } from "@/lib/checkoutValidation";
 import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from "react-helmet-async";
+import {
+  getAlternateHrefLangs,
+  getLocaleFromPath,
+  getLocalizedSlug,
+  getLocalizedValue,
+  stripLocaleFromPath,
+  SUPPORTED_LOCALES,
+  withLocalePath,
+  type SupportedLocale,
+} from "@/lib/i18n";
 
 type Product = {
   id: string;
   slug?: string;
+  slugByLocale: Partial<Record<SupportedLocale, string>>;
+  lookupKeys: string[];
   name: string;
   description?: string;
   priceCents: number;
@@ -42,8 +54,11 @@ const parsePriceToCents = (value: string) => {
   return Math.round(numeric * 100);
 };
 
-const mapProductRow = (row: any, idx: number): Product => {
+const mapProductRow = (row: any, idx: number, locale: SupportedLocale): Product => {
+  const localizedName = getLocalizedValue(row, "name", locale);
+  const localizedDescription = getLocalizedValue(row, "description", locale);
   const name =
+    localizedName ||
     row.name ||
     row.naam ||
     row.omschrijving ||
@@ -52,7 +67,12 @@ const mapProductRow = (row: any, idx: number): Product => {
     `Product ${idx + 1}`;
   const rawPrice = row.sale_price || row.sale || row.price || row.prijs || "0";
   const priceCents = parsePriceToCents(String(rawPrice));
-  const slug = (row.slug || row.id || name || `item-${idx}`).toString();
+  const slugByLocale: Partial<Record<SupportedLocale, string>> = {
+    nl: getLocalizedSlug(row, "nl"),
+    en: getLocalizedSlug(row, "en"),
+    de: getLocalizedSlug(row, "de"),
+  };
+  const slug = (slugByLocale[locale] || row.slug || row.id || name || `item-${idx}`).toString();
   const image =
     row.image ||
     row.image1 ||
@@ -70,11 +90,21 @@ const mapProductRow = (row: any, idx: number): Product => {
   const deliveryCostCents = parsePriceToCents(String(row.delivery_cost || row.verzendkosten || "0"));
   const deliveryTime = row.delivery_time || row.delivery || "1-2 dagen";
   const stock = row.stock || row.voorraad || "";
+  const lookupKeys = Array.from(
+    new Set(
+      [slug, slugByLocale.nl, slugByLocale.en, slugByLocale.de, row.slug, row.id, name]
+        .filter(Boolean)
+        .map((value) => String(value).toLowerCase().trim()),
+    ),
+  );
+
   return {
     id: slug,
     slug,
+    slugByLocale,
+    lookupKeys,
     name: name.toString(),
-    description: row.description || row.omschrijving || "",
+    description: localizedDescription || row.description || row.omschrijving || "",
     priceCents,
     priceDisplay: formatPrice(priceCents),
     image: image || "",
@@ -89,11 +119,11 @@ const mapProductRow = (row: any, idx: number): Product => {
   };
 };
 
-const getPrerenderProducts = (): Product[] => {
+const getPrerenderProducts = (locale: SupportedLocale): Product[] => {
   try {
     const seeded = (globalThis as any).__PRERENDER_PRODUCTS__;
     if (!Array.isArray(seeded)) return [];
-    return seeded.map((row: any, idx: number) => mapProductRow(row, idx));
+    return seeded.map((row: any, idx: number) => mapProductRow(row, idx, locale));
   } catch {
     return [];
   }
@@ -121,7 +151,10 @@ const ProductPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const initialProducts = useMemo(() => getPrerenderProducts(), []);
+  const locale = getLocaleFromPath(location.pathname);
+  const pathWithoutLocale = stripLocaleFromPath(location.pathname);
+  const alternateLinks = getAlternateHrefLangs(pathWithoutLocale);
+  const initialProducts = useMemo(() => getPrerenderProducts(locale), [locale]);
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [loading, setLoading] = useState(() => initialProducts.length === 0);
   const [error, setError] = useState<string | null>(null);
@@ -144,7 +177,7 @@ const ProductPage = () => {
         } catch (_err) {
           throw new Error("Onverwachte serverrespons (geen geldige JSON)");
         }
-        const mapped: Product[] = data?.products?.map((row: any, idx: number) => mapProductRow(row, idx)) || [];
+        const mapped: Product[] = data?.products?.map((row: any, idx: number) => mapProductRow(row, idx, locale)) || [];
         if (!cancelled) {
           setProducts(mapped);
           setError(null);
@@ -171,15 +204,14 @@ const ProductPage = () => {
       cancelled = true;
       window.removeEventListener("pageshow", onPageShow);
     };
-  }, [initialProducts]);
+  }, [initialProducts, locale]);
 
   const product = useMemo(
     () => {
       const lookup = (id || "").toString().toLowerCase();
       return products.find(
         (p) =>
-          p.id.toLowerCase() === lookup ||
-          (p.slug || "").toString().toLowerCase() === lookup,
+          p.lookupKeys.includes(lookup),
       );
     },
     [products, id],
@@ -195,6 +227,21 @@ const ProductPage = () => {
   }, [product]);
 
   const canonical = `https://sitedesk.co${location.pathname}`;
+  const localeAlternates = product
+    ? [
+        ...SUPPORTED_LOCALES.map((altLocale) => {
+          const localizedSlug = product.slugByLocale[altLocale] || product.slug || product.id;
+          return {
+            locale: altLocale,
+            href: `https://sitedesk.co${withLocalePath(`/product/${encodeURIComponent(localizedSlug)}`, altLocale)}`,
+          };
+        }),
+        {
+          locale: "x-default",
+          href: `https://sitedesk.co${withLocalePath(`/product/${encodeURIComponent(product.slugByLocale.nl || product.slug || product.id)}`, "nl")}`,
+        },
+      ]
+    : alternateLinks;
   const seoTitle = product ? `${product.name} | Shop | Sitedesk` : "Product | Sitedesk";
   const seoDescription = product?.description?.trim()
     ? product.description.trim().slice(0, 155)
@@ -220,7 +267,7 @@ const ProductPage = () => {
     const current = loadCart();
     addToCartStore(current, item);
     toast({ title: "Toegevoegd aan winkelmand", description: product.name });
-    navigate("/cart");
+    navigate(withLocalePath("/cart", locale));
   };
 
   const handleCheckout = async () => {
@@ -357,7 +404,7 @@ const ProductPage = () => {
             <h1 className="text-3xl font-semibold">Product niet gevonden</h1>
             <p className="text-muted-foreground">{error || "Controleer de link of ga terug naar de shop."}</p>
             <Link
-              to="/shop"
+              to={withLocalePath("/shop", locale)}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition"
             >
               Terug naar shop
@@ -376,6 +423,9 @@ const ProductPage = () => {
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />
         <link rel="canonical" href={canonical} />
+        {localeAlternates.map((alt) => (
+          <link key={alt.locale} rel="alternate" hrefLang={alt.locale} href={alt.href} />
+        ))}
         <link rel="preload" as="image" href={resolvedMainSrc} />
         <meta property="og:title" content={seoTitle} />
         <meta property="og:description" content={seoDescription} />
@@ -490,7 +540,7 @@ const ProductPage = () => {
                     <ArrowRight size={16} />
                   </button>
                   <Link
-                    to="/shop"
+                    to={withLocalePath("/shop", locale)}
                     className="inline-flex items-center gap-2 px-4 py-3 rounded-lg border border-border text-foreground hover:bg-muted transition"
                   >
                     Terug naar shop
@@ -498,7 +548,7 @@ const ProductPage = () => {
                 </div>
                 {error && <p className="text-sm text-destructive">{error}</p>}
                 <div className="pt-2">
-                  <Link to="/shop" className="text-sm text-gray-500 hover:text-primary">
+                  <Link to={withLocalePath("/shop", locale)} className="text-sm text-gray-500 hover:text-primary">
                     Verder winkelen
                   </Link>
                 </div>

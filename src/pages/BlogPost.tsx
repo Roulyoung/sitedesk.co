@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { CalendarDays, Tag, ArrowLeft, ArrowRight, Share2 } from "lucide-react";
 import { posts, PAGE_SIZE, paginate, type ContentBlock } from "@/lib/blogData";
 import { Helmet } from "react-helmet-async";
+import { getAlternateHrefLangs, getLocaleFromPath, stripLocaleFromPath, withLocalePath } from "@/lib/i18n";
 
 const formatDate = (value: string) =>
   new Intl.DateTimeFormat("nl-NL", {
@@ -20,6 +21,9 @@ const BlogPost = () => {
   const { slug } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const locale = getLocaleFromPath(location.pathname);
+  const pathWithoutLocale = stripLocaleFromPath(location.pathname);
+  const alternateLinks = getAlternateHrefLangs(pathWithoutLocale);
   const searchParams = new URLSearchParams(location.search);
   const initialPage = Number(searchParams.get("page")) || 1;
 
@@ -70,7 +74,7 @@ const BlogPost = () => {
     mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
   };
 
-  const handleBack = () => navigate(`/blog?page=${page}`);
+  const handleBack = () => navigate(`${withLocalePath("/blog", locale)}?page=${page}`);
 
   const Pagination = () => {
     if (totalPages <= 1) return null;
@@ -205,7 +209,7 @@ const BlogPost = () => {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-3 mt-6">
               <Button asChild variant="hero" size="lg">
-                <a href="/#contact">Plan je Speed-Check</a>
+                <a href={`${withLocalePath("/", locale)}#contact`}>Plan je Speed-Check</a>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
                 <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
@@ -226,6 +230,9 @@ const BlogPost = () => {
         <title>{`${title} | Sitedesk Blog`}</title>
         <meta name="description" content={description} />
         <link rel="canonical" href={canonical} />
+        {alternateLinks.map((alt) => (
+          <link key={alt.locale} rel="alternate" hrefLang={alt.locale} href={alt.href} />
+        ))}
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:type" content="article" />
@@ -275,7 +282,7 @@ const BlogPost = () => {
               </div>
               <div className="flex flex-wrap gap-3">
                 <Button asChild variant="hero" size="sm">
-                  <a href="/#contact">Plan een Speed-Check</a>
+                  <a href={`${withLocalePath("/", locale)}#contact`}>Plan een Speed-Check</a>
                 </Button>
                 <Button asChild variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10">
                   <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">

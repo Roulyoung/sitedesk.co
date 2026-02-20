@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { loadCart, updateQuantity as updateQtyStore, saveCart, clearCart, type CartItem } from "@/lib/cart";
 import { validateCartBeforeCheckout } from "@/lib/checkoutValidation";
 import { ArrowRight, Loader2, Minus, Plus, ShoppingBag, Trash } from "lucide-react";
+import { getLocaleFromPath, withLocalePath } from "@/lib/i18n";
 
 const CHECKOUT_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/create-checkout-session";
 
@@ -17,6 +18,8 @@ const currency = new Intl.NumberFormat("nl-NL", {
 
 const CartPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const locale = getLocaleFromPath(location.pathname);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -108,7 +111,7 @@ const CartPage = () => {
     }
   };
 
-  const handleContinueShopping = () => navigate("/shop");
+  const handleContinueShopping = () => navigate(withLocalePath("/shop", locale));
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -128,7 +131,7 @@ const CartPage = () => {
           {cart.length === 0 ? (
             <div className="bg-white border border-border rounded-2xl p-8 text-center shadow-sm">
               <p className="text-muted-foreground mb-4">Je mandje is leeg.</p>
-              <ButtonLink to="/shop" label="Verder winkelen" />
+              <ButtonLink to={withLocalePath("/shop", locale)} label="Verder winkelen" />
             </div>
           ) : (
             <div className="grid lg:grid-cols-[2fr_1fr] gap-8">

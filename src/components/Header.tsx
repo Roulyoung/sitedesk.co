@@ -1,7 +1,8 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, MessageCircle } from "lucide-react";
+import { getLocaleFromPath, withLocalePath } from "@/lib/i18n";
 
 const navLinks = [
   { to: "/#techniek", label: "Techniek", type: "hash" as const },
@@ -18,6 +19,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const [prevPath, setPrevPath] = useState(location.pathname);
+  const locale = getLocaleFromPath(location.pathname);
 
   const isBrowser = typeof window !== "undefined";
 
@@ -51,11 +53,10 @@ const Header = () => {
     if (!isBrowser) return;
     const el = document.getElementById(targetId);
     if (!el) return;
-    const y = el.getBoundingClientRect().top + window.scrollY - 96; // offset for fixed header
+    const y = el.getBoundingClientRect().top + window.scrollY - 96;
     window.scrollTo({ top: y, behavior: "smooth" });
   };
 
-  // Ensure hash navigation works after route changes
   useEffect(() => {
     if (!isBrowser) return;
     if (location.pathname !== prevPath && !location.hash) {
@@ -72,8 +73,7 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border/50">
       <div className="container mx-auto flex items-center justify-between h-16 md:h-20">
-        {/* Logo */}
-        <a href="/" className="flex items-center gap-2">
+        <a href={withLocalePath("/", locale)} className="flex items-center gap-2">
           <img
             src="/icon-sitedesk.png"
             alt="Sitedesk logo"
@@ -86,14 +86,17 @@ const Header = () => {
           <span className="text-muted-foreground text-sm">.co</span>
         </a>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => {
-            const active = isActive(link.to, link.type);
+            const resolvedTo =
+              link.type === "hash"
+                ? `${withLocalePath("/", locale)}${link.to.replace("/#", "#")}`
+                : withLocalePath(link.to, locale);
+            const active = isActive(resolvedTo, link.type);
             return (
               <NavLink
                 key={link.to}
-                to={link.to}
+                to={resolvedTo}
                 className={`text-sm font-medium transition-colors ${
                   active
                     ? "text-foreground border-b-2 border-accent pb-1"
@@ -101,7 +104,7 @@ const Header = () => {
                 }`}
                 onClick={(e) => {
                   setIsMenuOpen(false);
-                  handleNavClick(e, link.to, link.type);
+                  handleNavClick(e, resolvedTo, link.type);
                 }}
               >
                 {link.label}
@@ -110,7 +113,6 @@ const Header = () => {
           })}
         </nav>
 
-        {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-3">
           <Button asChild variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10">
             <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
@@ -119,11 +121,10 @@ const Header = () => {
             </a>
           </Button>
           <Button asChild variant="hero" size="default">
-            <a href="/#contact">Plan een call</a>
+            <a href={`${withLocalePath("/", locale)}#contact`}>Plan een call</a>
           </Button>
         </div>
 
-        {/* Mobile Menu Button */}
         <button
           className="md:hidden p-2 text-foreground"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -135,16 +136,19 @@ const Header = () => {
         </button>
       </div>
 
-      {/* Mobile Navigation */}
       {isMenuOpen && (
         <div id="mobile-nav" className="container mx-auto md:hidden py-4 border-t border-border/50 animate-fade-in">
           <nav className="flex flex-col gap-4">
             {navLinks.map((link) => {
-              const active = isActive(link.to, link.type);
+              const resolvedTo =
+                link.type === "hash"
+                  ? `${withLocalePath("/", locale)}${link.to.replace("/#", "#")}`
+                  : withLocalePath(link.to, locale);
+              const active = isActive(resolvedTo, link.type);
               return (
                 <NavLink
                   key={link.to}
-                  to={link.to}
+                  to={resolvedTo}
                   className={`text-base font-medium py-2 ${
                     active
                       ? "text-foreground border-b-2 border-accent pb-1"
@@ -152,7 +156,7 @@ const Header = () => {
                   }`}
                   onClick={(e) => {
                     setIsMenuOpen(false);
-                    handleNavClick(e, link.to, link.type);
+                    handleNavClick(e, resolvedTo, link.type);
                   }}
                 >
                   {link.label}
@@ -172,7 +176,7 @@ const Header = () => {
               </a>
             </Button>
             <Button asChild variant="hero" size="lg" className="mt-2" onClick={() => setIsMenuOpen(false)}>
-              <a href="/#contact">Plan een call</a>
+              <a href={`${withLocalePath("/", locale)}#contact`}>Plan een call</a>
             </Button>
           </nav>
         </div>

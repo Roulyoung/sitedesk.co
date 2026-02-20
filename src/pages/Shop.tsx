@@ -3,11 +3,19 @@ import { ArrowRight, Loader2, Plus, Minus, X, SlidersHorizontal, ShoppingCart } 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { addToCart as addToCartStore, loadCart, updateQuantity as updateQtyStore, type CartItem } from "@/lib/cart";
 import { validateCartBeforeCheckout } from "@/lib/checkoutValidation";
 import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from "react-helmet-async";
+import {
+  getAlternateHrefLangs,
+  getLocaleFromPath,
+  getLocalizedSlug,
+  getLocalizedValue,
+  stripLocaleFromPath,
+  withLocalePath,
+} from "@/lib/i18n";
 
 type Product = {
   name: string;
@@ -60,10 +68,14 @@ const normalizePrice = (value: string) => {
 
 const Shop = () => {
   const { toast } = useToast();
+  const location = useLocation();
+  const locale = getLocaleFromPath(location.pathname);
+  const pathWithoutLocale = stripLocaleFromPath(location.pathname);
   const title = "Shop | Sitedesk";
   const description =
     "Bekijk producten, filter op categorie en reken direct af via een snelle Stripe checkout op Sitedesk.";
-  const canonical = "https://sitedesk.co/shop/";
+  const canonical = `https://sitedesk.co${location.pathname}`;
+  const alternateLinks = getAlternateHrefLangs(pathWithoutLocale);
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -85,7 +97,10 @@ const Shop = () => {
         }
         const mapped =
           data?.products?.map((row: any, idx: number) => {
+            const localizedName = getLocalizedValue(row, "name", locale);
+            const localizedDescription = getLocalizedValue(row, "description", locale);
             const name =
+              localizedName ||
               row.name ||
               row.naam ||
               row.omschrijving ||
@@ -99,7 +114,7 @@ const Shop = () => {
             const tags = ["tag1", "tag2", "tag3", "tag4", "tag5"]
               .map((t) => (row[t] || "").toString().trim())
               .filter(Boolean);
-            const slug = (row.slug || row.id || "").toString();
+            const slug = (getLocalizedSlug(row, locale) || row.slug || row.id || "").toString();
             const image =
               row.image ||
               row.image1 ||
@@ -120,7 +135,7 @@ const Shop = () => {
               priceCents,
               image: image || "",
               stripe_link: row.stripe_link || "",
-              description: row.description || row.omschrijving || "",
+              description: localizedDescription || row.description || row.omschrijving || "",
               category: row.category || "",
               tags,
               delivery_time: deliveryTime,
@@ -138,7 +153,7 @@ const Shop = () => {
     };
 
     fetchProducts();
-  }, []);
+  }, [locale]);
 
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") || "");
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
@@ -463,6 +478,9 @@ const Shop = () => {
         <title>{title}</title>
         <meta name="description" content={description} />
         <link rel="canonical" href={canonical} />
+        {alternateLinks.map((alt) => (
+          <link key={alt.locale} rel="alternate" hrefLang={alt.locale} href={alt.href} />
+        ))}
         <link rel="preconnect" href={IMAGE_DELIVERY_ORIGIN} crossOrigin="" />
         <link rel="preconnect" href={PRODUCTS_API_ORIGIN} crossOrigin="" />
         <meta property="og:title" content={title} />
@@ -667,7 +685,7 @@ const Shop = () => {
                 className="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col gap-4"
               >
                 <Link
-                  to={`/product/${product.slug || product.id || ""}`}
+                  to={withLocalePath(`/product/${product.slug || product.id || ""}`, locale)}
                   className="group flex-1 flex flex-col gap-3"
                 >
                   {product.image ? (
@@ -824,7 +842,7 @@ const Shop = () => {
                 </span>
               </div>
               <Link
-                to="/cart"
+                to={withLocalePath("/cart", locale)}
                 className="w-full inline-flex items-center justify-center gap-2 border border-border text-foreground px-4 py-3 rounded-lg hover:bg-muted transition"
               >
                 Naar winkelmand pagina
@@ -837,7 +855,7 @@ const Shop = () => {
       <Footer />
       <FloatingContact />
       <Link
-        to="/cart"
+        to={withLocalePath("/cart", locale)}
         className="fixed bottom-24 right-6 inline-flex items-center gap-2 px-4 py-3 rounded-full shadow-lg bg-primary text-primary-foreground hover:opacity-90 transition"
       >
         <ShoppingCart size={18} />

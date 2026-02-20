@@ -1,5 +1,6 @@
 import { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
+import { getNonDefaultLocales, stripLocaleFromPath } from "@/lib/i18n";
 
 type RouteComponents = {
   Index?: React.ComponentType;
@@ -28,8 +29,7 @@ const LazyBlog = lazy(() => import("@/pages/Blog"));
 const LazyBlogPost = lazy(() => import("@/pages/BlogPost"));
 
 export const loadInitialRouteComponents = async (pathname: string): Promise<RouteComponents> => {
-  const normalizedPathname =
-    pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+  const normalizedPathname = stripLocaleFromPath(pathname);
 
   if (normalizedPathname === "/" || normalizedPathname === "/webshop") {
     const mod = await import("@/pages/Webshop");
@@ -102,6 +102,21 @@ export const AppRoutesClient = ({ initialComponents }: { initialComponents?: Rou
         <Route path="/success" element={<Success />} />
         <Route path="/cancel" element={<Cancel />} />
         <Route path="/admin/*" element={<Admin />} />
+        {getNonDefaultLocales().map((locale) => (
+          <Route key={locale} path={`/${locale}`}>
+            <Route index element={<Webshop />} />
+            <Route path="zakelijke-websites" element={<Index />} />
+            <Route path="shop" element={<Shop />} />
+            <Route path="webshop" element={<Webshop />} />
+            <Route path="product/:id" element={<Product />} />
+            <Route path="cart" element={<Cart />} />
+            <Route path="blog" element={<Blog />} />
+            <Route path="blog/:slug" element={<BlogPost />} />
+            <Route path="success" element={<Success />} />
+            <Route path="cancel" element={<Cancel />} />
+            <Route path="admin/*" element={<Admin />} />
+          </Route>
+        ))}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

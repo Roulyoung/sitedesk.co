@@ -74,3 +74,35 @@ Each client must have isolated resources:
 3. `order:*` key appears in KV and transitions to `synced`.
 4. Order row appears in Google Sheet.
 5. `admin/stripe-health` confirms expected mode/account.
+
+## 9) Multi-language Engine (Sheet-first)
+
+- Frontend locale model:
+  - default locale: `nl`
+  - prefixed locales: `/en/*`, `/de/*`
+  - routing supports both default and prefixed paths.
+- Product translation source is Google Sheets product tab:
+  - localized slugs: `slug_en`, `slug_de` (and `slug_nl` optional)
+  - localized text fields: `name_<lang>`, `description_<lang>`
+  - fallback chain: localized field -> default field.
+- Prerender now outputs locale route trees:
+  - `/`, `/shop`, `/product/:slug`, `/blog`, `/blog/:slug`
+  - `/en/...` and `/de/...` equivalents.
+- SEO:
+  - canonical per locale route
+  - `hreflang` alternates + `x-default`
+  - product alternates prefer locale-specific slugs when present.
+
+## 10) I18n Sheet Rules (for next clients)
+
+- Required product columns:
+  - `slug` (default)
+  - `slug_en`, `slug_de`
+  - `name`, `name_en`, `name_de`
+  - `description`, `description_en`, `description_de`
+- Slug rules:
+  - lowercase
+  - hyphen-separated
+  - unique per locale
+  - no trailing spaces.
+- If a localized slug is missing, frontend falls back to `slug`.

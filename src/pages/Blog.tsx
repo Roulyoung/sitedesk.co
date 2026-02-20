@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, CalendarDays, Tag } from "lucide-react";
 import { posts, PAGE_SIZE, paginate, type Post } from "@/lib/blogData";
 import { Helmet } from "react-helmet-async";
+import { getAlternateHrefLangs, getLocaleFromPath, stripLocaleFromPath, withLocalePath } from "@/lib/i18n";
+import { useLocation } from "react-router-dom";
 
 const formatDate = (value: string) =>
   new Intl.DateTimeFormat("nl-NL", {
@@ -53,13 +55,17 @@ const Pagination = ({ page, totalPages, onChange }: { page: number; totalPages: 
 };
 
 const Blog = () => {
+  const location = useLocation();
+  const locale = getLocaleFromPath(location.pathname);
+  const pathWithoutLocale = stripLocaleFromPath(location.pathname);
+  const alternateLinks = getAlternateHrefLangs(pathWithoutLocale);
   const [page, setPage] = useState(1);
   const totalPages = useMemo(() => Math.max(1, Math.ceil(posts.length / PAGE_SIZE)), []);
   const visiblePosts = useMemo(() => paginate(posts, page, PAGE_SIZE), [page]);
   const title = "Blog | Sitedesk";
   const description =
     "Praktische inzichten over edge-performance, CRO, checkout en schaalbare e-commerce architectuur.";
-  const canonical = "https://sitedesk.co/blog/";
+  const canonical = `https://sitedesk.co${withLocalePath("/blog", locale)}`;
 
   return (
     <div className="min-h-screen bg-background">
@@ -67,6 +73,9 @@ const Blog = () => {
         <title>{title}</title>
         <meta name="description" content={description} />
         <link rel="canonical" href={canonical} />
+        {alternateLinks.map((alt) => (
+          <link key={alt.locale} rel="alternate" hrefLang={alt.locale} href={alt.href} />
+        ))}
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:type" content="website" />
@@ -101,7 +110,7 @@ const Blog = () => {
                   <span suppressHydrationWarning>{formatDate(post.date)}</span>
                 </div>
                 <h2 className="text-xl font-semibold text-foreground mb-2">
-                  <a href={`/blog/${post.id}`} className="hover:text-accent transition-colors">
+                  <a href={withLocalePath(`/blog/${post.id}`, locale)} className="hover:text-accent transition-colors">
                     {post.title}
                   </a>
                 </h2>
@@ -116,7 +125,7 @@ const Blog = () => {
                   </div>
                 )}
                 <Button asChild variant="heroOutline" size="sm">
-                  <a href={`/blog/${post.id}`}>Lees meer</a>
+                  <a href={withLocalePath(`/blog/${post.id}`, locale)}>Lees meer</a>
                 </Button>
               </article>
             ))}

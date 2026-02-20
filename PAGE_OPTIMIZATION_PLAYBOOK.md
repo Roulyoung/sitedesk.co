@@ -130,6 +130,14 @@ Output:
 10. React 18 image priority attribute
 - In JSX on React 18, prefer `fetchpriority` (lowercase attribute) on `<img>` instead of `fetchPriority` to avoid runtime warnings and console-noise audits.
 
+11. Multilanguage parity checks (when i18n is enabled)
+- Every primary route must exist in default and prefixed locales:
+  - `/...`, `/en/...`, `/de/...`
+- Locale-aware links must preserve current locale (avoid hardcoded root `/shop`, `/blog`, `/cart` links).
+- Product routes must use locale slugs from sheet (`slug_<lang>`) with fallback to default `slug`.
+- Add `hreflang` alternates and `x-default` to localized pages.
+- Keep SSR and client route trees identical across locale-prefixed routes.
+
 ## Cloudflare Settings Checklist (Post-Deploy)
 
 1. Disable Email Obfuscation

@@ -1,9 +1,11 @@
 import { useMemo } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
+import { getLocaleFromPath, withLocalePath } from "@/lib/i18n";
 
 const Success = () => {
   const location = useLocation();
+  const locale = getLocaleFromPath(location.pathname);
 
   const { product, amountFormatted } = useMemo(() => {
     const params = new URLSearchParams(location.search);
@@ -60,7 +62,7 @@ const Success = () => {
 
         <div className="mt-10 flex justify-center">
           <Link
-            to="/"
+            to={withLocalePath("/", locale)}
             className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition"
           >
             Terug naar de winkel

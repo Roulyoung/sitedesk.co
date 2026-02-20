@@ -1,4 +1,5 @@
 import { saveCart, type CartItem } from "@/lib/cart";
+import { getLocalizedSlug, getLocalizedValue } from "@/lib/i18n";
 
 const PRODUCTS_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/products";
 
@@ -54,19 +55,32 @@ const fetchLatestProducts = async (): Promise<Map<string, LatestProduct>> => {
   const byKey = new Map<string, LatestProduct>();
   const rows = Array.isArray(data?.products) ? data.products : [];
   rows.forEach((row: any, idx: number) => {
-    const name = (row.name || row.naam || row.description || row.omschrijving || `Product ${idx + 1}`).toString();
-    const slug = (row.slug || row.id || "").toString();
+    const name =
+      (
+        getLocalizedValue(row, "name", "nl") ||
+        row.name ||
+        row.naam ||
+        row.description ||
+        row.omschrijving ||
+        `Product ${idx + 1}`
+      ).toString();
+    const slugs = [
+      getLocalizedSlug(row, "nl"),
+      getLocalizedSlug(row, "en"),
+      getLocalizedSlug(row, "de"),
+      (row.slug || row.id || "").toString(),
+    ].filter(Boolean);
     const price = row.sale_price || row.sale || row.price || row.prijs || "0";
     const stockRaw = (row.stock || row.voorraad || "").toString();
     const latest: LatestProduct = {
-      key: key(slug || name),
+      key: key(slugs[0] || name),
       name,
       priceCents: parsePriceToCents(String(price)),
       deliveryCostCents: parseShippingToCents(String(row.delivery_cost || row.verzendkosten || "0")),
       stockRaw,
     };
 
-    if (slug) byKey.set(key(slug), latest);
+    slugs.forEach((slug) => byKey.set(key(slug), latest));
     byKey.set(key(name), latest);
   });
   return byKey;
