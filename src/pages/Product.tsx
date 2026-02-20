@@ -120,21 +120,21 @@ const ProductPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [products, setProducts] = useState<Product[]>(() => getPrerenderProducts());
-  const [loading, setLoading] = useState(() => getPrerenderProducts().length === 0);
+  const initialProducts = useMemo(() => getPrerenderProducts(), []);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [loading, setLoading] = useState(() => initialProducts.length === 0);
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [mainVariantFailed, setMainVariantFailed] = useState(false);
   const [failedThumbs, setFailedThumbs] = useState<Record<string, true>>({});
 
   useEffect(() => {
-    if (products.length > 0) {
-      setLoading(false);
-      return;
-    }
-    const fetchProducts = async () => {
+    let cancelled = false;
+
+    const fetchProducts = async (showLoader: boolean) => {
+      if (showLoader) setLoading(true);
       try {
-        const res = await fetch(PRODUCTS_ENDPOINT);
+        const res = await fetch(PRODUCTS_ENDPOINT, { cache: "no-store" });
         if (!res.ok) throw new Error("Kon producten niet laden");
         const text = await res.text();
         let data;
@@ -144,15 +144,33 @@ const ProductPage = () => {
           throw new Error("Onverwachte serverrespons (geen geldige JSON)");
         }
         const mapped: Product[] = data?.products?.map((row: any, idx: number) => mapProductRow(row, idx)) || [];
-        setProducts(mapped);
+        if (!cancelled) {
+          setProducts(mapped);
+          setError(null);
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Onbekende fout");
+        if (!cancelled && initialProducts.length === 0) {
+          setError(err instanceof Error ? err.message : "Onbekende fout");
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
-    fetchProducts();
-  }, [products.length]);
+
+    fetchProducts(initialProducts.length === 0);
+
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        fetchProducts(false);
+      }
+    };
+
+    window.addEventListener("pageshow", onPageShow);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("pageshow", onPageShow);
+    };
+  }, [initialProducts]);
 
   const product = useMemo(
     () => {
