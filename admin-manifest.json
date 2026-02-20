@@ -1,0 +1,22 @@
+{
+  "name": "Sitedesk Admin",
+  "short_name": "Admin",
+  "start_url": "/admin",
+  "scope": "/admin",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0b1224",
+  "description": "PWA voor productbeheer vanuit de Google Sheet.",
+  "icons": [
+    {
+      "src": "/icon-sitedesk.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-sitedesk.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
