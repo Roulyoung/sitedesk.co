@@ -2,13 +2,21 @@ import Stripe from "stripe";
 
 // Leave undefined to use Stripe default and avoid version mismatch errors
 const STRIPE_API_VERSION = undefined;
-const SHEET_RANGE = "Orders!A:G";
+const SHEET_RANGE = "Orders!A:H";
 const PRODUCTS_RANGE_DEFAULT = "Products!A:Z"; // default range for products tab
 const ADMIN_SESSION_SALT = "sheet-admin-session";
 const PRODUCTS_CACHE_TTL = 900; // seconds
+const ORDER_KEY_PREFIX = "order:";
+const ORDER_STATUS_PENDING = "pending_sync";
+const ORDER_STATUS_SYNCED = "synced";
+const ORDER_STATUS_FAILED = "failed_sync";
+const DEFAULT_ORDER_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
+const DEFAULT_RETRY_BASE_MS = 60 * 1000; // 1 min
+const MAX_RETRY_DELAY_MS = 60 * 60 * 1000; // 1 hour
+const DEFAULT_SYNC_BATCH_LIMIT = 25;
 
 export default {
-  async fetch(req, env) {
+  async fetch(req, env, ctx) {
     const url = new URL(req.url);
 
     // Preflight for CORS
@@ -65,47 +73,42 @@ export default {
     }
 
     const session = event.data.object;
-    const customer = session.customer_details;
-    const addr = customer?.address;
-  const address = addr
-    ? `${addr.line1 ?? ""} ${addr.line2 ?? ""}, ${addr.postal_code ?? ""} ${addr.city ?? ""}, ${addr.country ?? ""}`.trim()
-    : "";
-
-  const orderDatetime = new Date().toLocaleString("nl-NL", {
-    timeZone: "Europe/Amsterdam",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-  const meta = session.metadata || {};
-  const productId = meta.productId || meta.ProductID || "N/A";
-  const amountTotal = (session.amount_total ?? 0) / 100;
-  const transactionId = session.payment_intent?.toString() ?? session.id;
+    const eventId = event.id || `evt_${session?.id || Date.now()}`;
 
     try {
-      const token = await getGoogleAccessToken(env);
-      await appendOrderRow({
-        token,
-        sheetId: env.SHEET_ID,
-        values: [
-          orderDatetime,
-          customer?.name || "Anoniem",
-          customer?.email || "Geen e-mail",
-          address,
-          productId,
-          amountTotal,
-          transactionId,
-        ],
-      });
+      const orderRecord = buildOrderRecordFromStripeEvent(eventId, session);
+      await persistOrderRecord(env, orderRecord);
+      ctx.waitUntil(triggerOrderSync(orderRecord.key, env));
     } catch (err) {
-      console.error("Sheet append failed:", err instanceof Error ? err.message : String(err));
-      return new Response("Sheet append failed", { status: 500 });
+      console.error("Order buffering failed:", err instanceof Error ? err.message : String(err));
+      // Returning 500 here makes Stripe retry webhook delivery later.
+      return new Response("Order buffering failed", { status: 500 });
     }
 
     return new Response("OK", { status: 200 });
+  },
+
+  async queue(batch, env, ctx) {
+    for (const message of batch.messages) {
+      const body = message.body || {};
+      const orderKey = typeof body === "string" ? body : body.orderKey;
+      if (!orderKey) {
+        message.ack();
+        continue;
+      }
+      try {
+        await syncOrderByKey(orderKey, env);
+        message.ack();
+      } catch (err) {
+        console.error("Queue sync failed:", err instanceof Error ? err.message : String(err));
+        message.retry();
+      }
+    }
+    ctx.waitUntil(Promise.resolve());
+  },
+
+  async scheduled(_controller, env, ctx) {
+    ctx.waitUntil(processDueOrderSyncs(env));
   },
 };
 
@@ -155,6 +158,11 @@ async function getGoogleAccessToken(env) {
 async function appendOrderRow({ token, sheetId, values }) {
   // Write header row if sheet is empty
   await ensureHeaderRow({ token, sheetId });
+  const eventId = values?.[7];
+  if (eventId) {
+    const exists = await orderEventExistsInSheet({ token, sheetId, eventId: String(eventId) });
+    if (exists) return;
+  }
 
   const res = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(SHEET_RANGE)}:append?valueInputOption=USER_ENTERED`,
@@ -171,6 +179,18 @@ async function appendOrderRow({ token, sheetId, values }) {
     const text = await res.text();
     throw new Error(`Sheets append failed: ${text}`);
   }
+}
+
+async function orderEventExistsInSheet({ token, sheetId, eventId }) {
+  const columnRange = `${SHEET_RANGE.split("!")[0]}!H:H`;
+  const res = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(columnRange)}`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!res.ok) return false;
+  const data = await res.json();
+  const values = Array.isArray(data?.values) ? data.values.flat() : [];
+  return values.includes(eventId);
 }
 
 // UTILS
@@ -191,7 +211,7 @@ function base64url(input) {
 
 async function ensureHeaderRow({ token, sheetId }) {
   try {
-    const range = SHEET_RANGE.split("!")[0] + "!A1:G1";
+    const range = SHEET_RANGE.split("!")[0] + "!A1:H1";
     const res = await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?majorDimension=ROWS`,
       {
@@ -201,7 +221,7 @@ async function ensureHeaderRow({ token, sheetId }) {
     const data = await res.json();
     const hasHeader = Array.isArray(data?.values) && data.values.length > 0;
     if (hasHeader) return;
-    const headerValues = [["Datum/Tijd", "Naam", "Email", "Adres", "ProductID", "Bedrag", "Transactie"]];
+    const headerValues = [["Datum/Tijd", "Naam", "Email", "Adres", "ProductID", "Bedrag", "Transactie", "StripeEventId"]];
     await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,
       {
@@ -216,6 +236,159 @@ async function ensureHeaderRow({ token, sheetId }) {
   } catch {
     // ignore header errors
   }
+}
+
+function getOrdersKV(env) {
+  const kv = env.ORDERS_BUFFER || env.PRODUCTS_CACHE;
+  if (!kv) throw new Error("No KV binding found for order buffering (ORDERS_BUFFER or PRODUCTS_CACHE).");
+  return kv;
+}
+
+function getRetryBaseMs(env) {
+  const value = Number(env.ORDER_SYNC_RETRY_BASE_MS || DEFAULT_RETRY_BASE_MS);
+  return Number.isFinite(value) && value > 0 ? value : DEFAULT_RETRY_BASE_MS;
+}
+
+function getOrderTtlSeconds(env) {
+  const value = Number(env.ORDER_TTL_SECONDS || DEFAULT_ORDER_TTL_SECONDS);
+  return Number.isFinite(value) && value > 0 ? value : DEFAULT_ORDER_TTL_SECONDS;
+}
+
+function computeNextAttemptAt(attempts, env) {
+  const base = getRetryBaseMs(env);
+  const delay = Math.min(base * Math.pow(2, Math.max(0, attempts - 1)), MAX_RETRY_DELAY_MS);
+  return Date.now() + delay;
+}
+
+function buildOrderRecordFromStripeEvent(eventId, session) {
+  const customer = session.customer_details;
+  const addr = customer?.address;
+  const address = addr
+    ? `${addr.line1 ?? ""} ${addr.line2 ?? ""}, ${addr.postal_code ?? ""} ${addr.city ?? ""}, ${addr.country ?? ""}`.trim()
+    : "";
+  const orderDatetime = new Date().toLocaleString("nl-NL", {
+    timeZone: "Europe/Amsterdam",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const meta = session.metadata || {};
+  const productId = meta.productId || meta.ProductID || "N/A";
+  const amountTotal = (session.amount_total ?? 0) / 100;
+  const transactionId = session.payment_intent?.toString() ?? session.id;
+
+  return {
+    key: `${ORDER_KEY_PREFIX}${eventId}`,
+    eventId,
+    sessionId: session.id,
+    status: ORDER_STATUS_PENDING,
+    attempts: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    nextAttemptAt: Date.now(),
+    order: {
+      orderDatetime,
+      customerName: customer?.name || "Anoniem",
+      customerEmail: customer?.email || "Geen e-mail",
+      address,
+      productId,
+      amountTotal,
+      transactionId,
+      eventId,
+    },
+  };
+}
+
+async function persistOrderRecord(env, record) {
+  const kv = getOrdersKV(env);
+  const existingRaw = await kv.get(record.key);
+  if (existingRaw) {
+    const existing = JSON.parse(existingRaw);
+    if (existing.status === ORDER_STATUS_SYNCED) return existing;
+  }
+  await kv.put(record.key, JSON.stringify(record), { expirationTtl: getOrderTtlSeconds(env) });
+  return record;
+}
+
+async function triggerOrderSync(orderKey, env) {
+  if (env.ORDER_SYNC_QUEUE) {
+    await env.ORDER_SYNC_QUEUE.send({ orderKey });
+    return;
+  }
+  await syncOrderByKey(orderKey, env);
+}
+
+async function syncOrderByKey(orderKey, env) {
+  const kv = getOrdersKV(env);
+  const raw = await kv.get(orderKey);
+  if (!raw) return;
+
+  const record = JSON.parse(raw);
+  if (!record || record.status === ORDER_STATUS_SYNCED) return;
+  if (record.nextAttemptAt && Date.now() < Number(record.nextAttemptAt)) return;
+
+  try {
+    const token = await getGoogleAccessToken(env);
+    await appendOrderRow({
+      token,
+      sheetId: env.SHEET_ID,
+      values: [
+        record.order.orderDatetime,
+        record.order.customerName,
+        record.order.customerEmail,
+        record.order.address,
+        record.order.productId,
+        record.order.amountTotal,
+        record.order.transactionId,
+        record.order.eventId,
+      ],
+    });
+
+    const synced = {
+      ...record,
+      status: ORDER_STATUS_SYNCED,
+      attempts: (record.attempts || 0) + 1,
+      syncedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      nextAttemptAt: null,
+      lastError: null,
+    };
+    await kv.put(orderKey, JSON.stringify(synced), { expirationTtl: getOrderTtlSeconds(env) });
+  } catch (err) {
+    const attempts = (record.attempts || 0) + 1;
+    const failed = {
+      ...record,
+      status: ORDER_STATUS_FAILED,
+      attempts,
+      lastError: err instanceof Error ? err.message : String(err),
+      nextAttemptAt: computeNextAttemptAt(attempts, env),
+      updatedAt: new Date().toISOString(),
+    };
+    await kv.put(orderKey, JSON.stringify(failed), { expirationTtl: getOrderTtlSeconds(env) });
+    throw err;
+  }
+}
+
+async function processDueOrderSyncs(env) {
+  const kv = getOrdersKV(env);
+  let cursor = undefined;
+  let processed = 0;
+
+  do {
+    const page = await kv.list({ prefix: ORDER_KEY_PREFIX, cursor, limit: 100 });
+    for (const item of page.keys) {
+      if (processed >= DEFAULT_SYNC_BATCH_LIMIT) return;
+      try {
+        await syncOrderByKey(item.name, env);
+      } catch {
+        // Keep going; failed item is scheduled for retry.
+      }
+      processed += 1;
+    }
+    cursor = page.list_complete ? undefined : page.cursor;
+  } while (cursor);
 }
 
 async function handleGetProducts(env, req) {
@@ -310,6 +483,14 @@ async function handleCreateCheckoutSession(req, env) {
       mode: "payment",
       payment_method_types: ["card", "ideal"],
       line_items: lineItems,
+      metadata: {
+        productId: cart
+          .map((item) => item.id || item.name || "product")
+          .join("|")
+          .slice(0, 450),
+        cartCount: String(cart.length),
+        totalAmount: (totalCents / 100).toFixed(2),
+      },
       success_url: successUrl,
       cancel_url: cancelUrl,
     });
