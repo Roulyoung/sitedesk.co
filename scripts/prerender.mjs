@@ -7,7 +7,7 @@ const distDir = path.resolve(__dirname, "..", "dist");
 const ssrEntry = path.resolve(__dirname, "..", "dist-ssr", "entry-ssr.js");
 
 const DEFAULT_LOCALE = "nl";
-const PRERENDER_LOCALES = (process.env.PRERENDER_LOCALES || "nl,en,de")
+const PRERENDER_LOCALES = (process.env.PRERENDER_LOCALES || "nl,en")
   .split(",")
   .map((value) => value.trim().toLowerCase())
   .filter(Boolean);

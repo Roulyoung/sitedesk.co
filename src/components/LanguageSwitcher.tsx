@@ -1,7 +1,7 @@
-import { useLocation } from "react-router-dom";
+﻿import { useLocation } from "react-router-dom";
 import {
+  ACTIVE_LOCALES,
   DEFAULT_LOCALE,
-  SUPPORTED_LOCALES,
   getLocaleFromPath,
   stripLocaleFromPath,
   withLocalePath,
@@ -21,9 +21,29 @@ const LanguageSwitcher = () => {
     return `${localizedPath}${search}${hash}`;
   };
 
+  if (ACTIVE_LOCALES.length > 3) {
+    return (
+      <select
+        aria-label="Language"
+        className="rounded-md border border-border bg-background px-2 py-1 text-xs font-semibold text-foreground"
+        value={currentLocale}
+        onChange={(event) => {
+          const next = event.target.value as SupportedLocale;
+          window.location.href = toLocaleUrl(next);
+        }}
+      >
+        {ACTIVE_LOCALES.map((locale) => (
+          <option key={locale} value={locale}>
+            {t(DEFAULT_LOCALE, `lang.${locale}` as const)}
+          </option>
+        ))}
+      </select>
+    );
+  }
+
   return (
     <div className="inline-flex items-center rounded-md border border-border bg-background p-1" aria-label="Language switcher">
-      {SUPPORTED_LOCALES.map((locale) => {
+      {ACTIVE_LOCALES.map((locale) => {
         const active = locale === currentLocale;
         return (
           <a

@@ -14,7 +14,7 @@ import {
   getLocalizedSlug,
   getLocalizedValue,
   stripLocaleFromPath,
-  SUPPORTED_LOCALES,
+  ACTIVE_LOCALES,
   withLocalePath,
   type SupportedLocale,
 } from "@/lib/i18n";
@@ -229,7 +229,7 @@ const ProductPage = () => {
   const canonical = `https://sitedesk.co${location.pathname}`;
   const localeAlternates = product
     ? [
-        ...SUPPORTED_LOCALES.map((altLocale) => {
+        ...ACTIVE_LOCALES.map((altLocale) => {
           const localizedSlug = product.slugByLocale[altLocale] || product.slug || product.id;
           return {
             locale: altLocale,

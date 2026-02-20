@@ -3,10 +3,33 @@ export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 export const DEFAULT_LOCALE: SupportedLocale = "nl";
 
-const NON_DEFAULT_LOCALES = SUPPORTED_LOCALES.filter((locale) => locale !== DEFAULT_LOCALE);
+const parseActiveLocales = () => {
+  const raw =
+    (typeof import.meta !== "undefined" && import.meta.env?.VITE_ACTIVE_LOCALES) || "nl,en";
+  const requested = String(raw)
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+
+  const filtered = requested.filter((locale): locale is SupportedLocale =>
+    SUPPORTED_LOCALES.includes(locale as SupportedLocale),
+  );
+
+  const withDefault = filtered.includes(DEFAULT_LOCALE)
+    ? filtered
+    : [DEFAULT_LOCALE, ...filtered];
+
+  return [...new Set(withDefault)];
+};
+
+export const ACTIVE_LOCALES: SupportedLocale[] = parseActiveLocales();
+const ACTIVE_NON_DEFAULT_LOCALES = ACTIVE_LOCALES.filter((locale) => locale !== DEFAULT_LOCALE);
 
 export const isSupportedLocale = (value: string | null | undefined): value is SupportedLocale =>
   Boolean(value && SUPPORTED_LOCALES.includes(value as SupportedLocale));
+
+export const isActiveLocale = (value: string | null | undefined): value is SupportedLocale =>
+  Boolean(value && ACTIVE_LOCALES.includes(value as SupportedLocale));
 
 export const normalizeLocale = (value: string | null | undefined): SupportedLocale => {
   if (!value) return DEFAULT_LOCALE;
@@ -22,7 +45,7 @@ export const splitLocalePath = (pathname: string) => {
   const parts = normalizedPathname.split("/").filter(Boolean);
   const maybeLocale = parts[0]?.toLowerCase();
 
-  if (isSupportedLocale(maybeLocale) && maybeLocale !== DEFAULT_LOCALE) {
+  if (isActiveLocale(maybeLocale) && maybeLocale !== DEFAULT_LOCALE) {
     const rest = `/${parts.slice(1).join("/")}`;
     return {
       locale: maybeLocale,
@@ -53,7 +76,7 @@ export const getAlternateHrefLangs = (pathWithoutLocale: string) => {
   const clean = pathWithoutLocale.startsWith("/") ? pathWithoutLocale : `/${pathWithoutLocale}`;
   const normalized = clean === "/" ? "/" : clean.replace(/\/+$/, "");
 
-  const alternates = SUPPORTED_LOCALES.map((locale) => ({
+  const alternates = ACTIVE_LOCALES.map((locale) => ({
     locale,
     href: `https://sitedesk.co${withLocalePath(normalized, locale)}`,
   }));
@@ -95,4 +118,4 @@ export const getLocalizedSlug = (row: Record<string, unknown>, locale: Supported
   return "";
 };
 
-export const getNonDefaultLocales = () => NON_DEFAULT_LOCALES;
+export const getNonDefaultLocales = () => ACTIVE_NON_DEFAULT_LOCALES;
