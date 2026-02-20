@@ -1,6 +1,7 @@
-import { MapPin } from "lucide-react";
+﻿import { MapPin } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { getLocaleFromPath, withLocalePath } from "@/lib/i18n";
+import { t } from "@/lib/messages";
 
 const Footer = () => {
   const location = useLocation();
@@ -39,39 +40,39 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">Onze Oplossingen</h3>
+            <h3 className="font-semibold mb-4">{t(locale, "footer.solutions")}</h3>
             <ul className="space-y-2 text-primary-foreground/70">
               <li>
                 <a href={withLocalePath("/", locale)} className="hover:text-primary-foreground transition-colors">
-                  Webshops
+                  {t(locale, "footer.webshops")}
                 </a>
               </li>
               <li>
                 <a href={withLocalePath("/zakelijke-websites", locale)} className="hover:text-primary-foreground transition-colors">
-                  Zakelijke Websites
+                  {t(locale, "footer.businessSites")}
                 </a>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">Navigatie</h3>
+            <h3 className="font-semibold mb-4">{t(locale, "footer.navigation")}</h3>
             <ul className="space-y-2 text-primary-foreground/70">
               <li>
                 <a href={`${withLocalePath("/", locale)}#contact`} className="hover:text-primary-foreground transition-colors">
-                  Plan een call
+                  {t(locale, "footer.planCall")}
                 </a>
               </li>
               <li>
                 <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer" className="hover:text-primary-foreground transition-colors">
-                  WhatsApp direct
+                  {t(locale, "footer.whatsapp")}
                 </a>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">Juridisch</h3>
+            <h3 className="font-semibold mb-4">{t(locale, "footer.legal")}</h3>
             <ul className="space-y-2 text-primary-foreground/70">
               <li>
                 <a href="#" className="hover:text-primary-foreground transition-colors">
@@ -93,7 +94,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-primary-foreground/10 mt-12 pt-8 text-center text-sm text-primary-foreground/60">
-          <p suppressHydrationWarning>� {new Date().getFullYear()} Sitedesk.co. Alle rechten voorbehouden.</p>
+          <p suppressHydrationWarning>© {new Date().getFullYear()} Sitedesk.co. Alle rechten voorbehouden.</p>
         </div>
       </div>
     </footer>

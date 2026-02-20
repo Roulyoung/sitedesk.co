@@ -3,16 +3,18 @@ import { NavLink, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, MessageCircle } from "lucide-react";
 import { getLocaleFromPath, withLocalePath } from "@/lib/i18n";
+import { t } from "@/lib/messages";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const navLinks = [
-  { to: "/#techniek", label: "Techniek", type: "hash" as const },
-  { to: "/#omzetverlies", label: "Calculator", type: "hash" as const },
-  { to: "/#concurrentievergelijking", label: "Vergelijking", type: "hash" as const },
-  { to: "/#aanbod", label: "Aanbod", type: "hash" as const },
-  { to: "/#sheets", label: "Sheets", type: "hash" as const },
-  { to: "/shop", label: "Demo", type: "route" as const },
-  { to: "/blog", label: "Blog", type: "route" as const },
-  { to: "/zakelijke-websites", label: "Zakelijke Websites", type: "route" as const },
+  { to: "/#techniek", labelKey: "nav.tech", type: "hash" as const },
+  { to: "/#omzetverlies", labelKey: "nav.calculator", type: "hash" as const },
+  { to: "/#concurrentievergelijking", labelKey: "nav.comparison", type: "hash" as const },
+  { to: "/#aanbod", labelKey: "nav.offer", type: "hash" as const },
+  { to: "/#sheets", labelKey: "nav.sheets", type: "hash" as const },
+  { to: "/shop", labelKey: "nav.demo", type: "route" as const },
+  { to: "/blog", labelKey: "nav.blog", type: "route" as const },
+  { to: "/zakelijke-websites", labelKey: "nav.business", type: "route" as const },
 ];
 
 const Header = () => {
@@ -107,21 +109,22 @@ const Header = () => {
                   handleNavClick(e, resolvedTo, link.type);
                 }}
               >
-                {link.label}
+                {t(locale, link.labelKey)}
               </NavLink>
             );
           })}
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
+          <LanguageSwitcher />
           <Button asChild variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10">
             <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
               <MessageCircle className="w-4 h-4" />
-              WhatsApp
+              {t(locale, "cta.whatsapp")}
             </a>
           </Button>
           <Button asChild variant="hero" size="default">
-            <a href={`${withLocalePath("/", locale)}#contact`}>Plan een call</a>
+            <a href={`${withLocalePath("/", locale)}#contact`}>{t(locale, "cta.planCall")}</a>
           </Button>
         </div>
 
@@ -159,10 +162,13 @@ const Header = () => {
                     handleNavClick(e, resolvedTo, link.type);
                   }}
                 >
-                  {link.label}
+                  {t(locale, link.labelKey)}
                 </NavLink>
               );
             })}
+            <div className="pt-1">
+              <LanguageSwitcher />
+            </div>
             <Button
               asChild
               variant="outline"
@@ -172,11 +178,11 @@ const Header = () => {
             >
               <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
                 <MessageCircle />
-                WhatsApp
+                {t(locale, "cta.whatsapp")}
               </a>
             </Button>
             <Button asChild variant="hero" size="lg" className="mt-2" onClick={() => setIsMenuOpen(false)}>
-              <a href={`${withLocalePath("/", locale)}#contact`}>Plan een call</a>
+              <a href={`${withLocalePath("/", locale)}#contact`}>{t(locale, "cta.planCall")}</a>
             </Button>
           </nav>
         </div>

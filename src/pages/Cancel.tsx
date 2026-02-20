@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Ban } from "lucide-react";
 import { getLocaleFromPath, withLocalePath } from "@/lib/i18n";
+import { t } from "@/lib/messages";
 
 const Cancel = () => {
   const location = useLocation();
@@ -17,22 +18,22 @@ const Cancel = () => {
           <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-destructive/10 text-destructive mx-auto">
             <Ban size={28} />
           </div>
-          <h1 className="text-4xl md:text-5xl font-serif text-foreground">Bestelling geannuleerd</h1>
+          <h1 className="text-4xl md:text-5xl font-serif text-foreground">{t(locale, "cancel.title")}</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Geen zorgen, je hebt nog niets betaald. Wil je verder winkelen of opnieuw proberen?
+            {t(locale, "cancel.subtitle")}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to={withLocalePath("/shop", locale)}
               className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition"
             >
-              Terug naar de shop
+              {t(locale, "cancel.backToShop")}
             </Link>
             <Link
               to={withLocalePath("/cart", locale)}
               className="inline-flex items-center justify-center px-6 py-3 rounded-full border border-border text-foreground hover:bg-muted transition"
             >
-              Naar winkelmand
+              {t(locale, "cancel.toCart")}
             </Link>
           </div>
         </div>
