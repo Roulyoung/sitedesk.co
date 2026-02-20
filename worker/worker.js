@@ -61,7 +61,11 @@ export default {
 
     let event;
     try {
-      event = stripe.webhooks.constructEvent(Buffer.from(rawBody), stripeSig, env.STRIPE_WEBHOOK_SECRET);
+      event = await stripe.webhooks.constructEventAsync(
+        Buffer.from(rawBody),
+        stripeSig,
+        env.STRIPE_WEBHOOK_SECRET,
+      );
     } catch (err) {
       return new Response(err instanceof Error ? err.message : "Signature verification failed", { status: 400 });
     }
