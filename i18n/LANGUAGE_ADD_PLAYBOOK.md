@@ -2,6 +2,12 @@
 
 Use this when adding a new language for the website.
 
+Related:
+- `i18n/BLOG_REWRITE_PROMPTS.md`
+- `i18n/CODEX_TASK_PROMPTS.md`
+- `.private/I18N_OPERATOR_PRIVATE.md`
+- `.private/I18N_CODEX_RUNBOOK_PRIVATE.md`
+
 ## 1) Decide language code
 
 - Use ISO code (example: `de`, `fr`, `es`).
