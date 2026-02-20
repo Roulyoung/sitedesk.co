@@ -111,6 +111,9 @@ Output:
 - Keep canonical out of global static head template.
 - Define canonical in each page component that should index.
 - If Lighthouse SEO reports `Document does not have a valid rel=canonical`, check for duplicate/conflicting canonical URLs first.
+- Important route mapping note:
+  - `/` and `/<locale>/` are rendered by `Webshop` in this repo, not by `Index`.
+  - Therefore homepage canonical/hreflang must be fixed in `src/pages/Webshop.tsx`, not only in `src/pages/Index.tsx`.
 
 7. Dynamic pages may not be prerendered by default
 - If scores are low on `/product/:id`, ensure metadata is injected by the template itself and not dependent on static prerender only.
@@ -137,6 +140,12 @@ Output:
 - Product routes must use locale slugs from sheet (`slug_<lang>`) with fallback to default `slug`.
 - Add `hreflang` alternates and `x-default` to localized pages.
 - Keep SSR and client route trees identical across locale-prefixed routes.
+
+12. Cloudflare deploy + purge verification loop
+- Even with auto-deploy, always verify the live HTML after deploy:
+  - `https://<domain>/en/` must output canonical to `/en/` (or `/en`) and not root `/`.
+- After SEO/head changes, run a full cache purge to remove stale HTML variants.
+- Re-check live source before Lighthouse rerun to avoid false debugging on already-fixed code.
 
 ## Cloudflare Settings Checklist (Post-Deploy)
 

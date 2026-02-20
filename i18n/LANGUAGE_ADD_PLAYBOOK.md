@@ -97,3 +97,13 @@ npm run i18n:blog:clean -- --lang=<lang> --scope=all
   - `/product/<slug>/`
   - `/en/product/<slug>/`
   and confirm no `/products` request appears in the critical network chain before LCP.
+
+## 9) Canonical Guardrails for Localized Home
+
+- In this repo, localized home (`/en/`) is served by `Webshop` route.
+- Do not assume `Index.tsx` controls homepage SEO tags.
+- Keep `src/pages/Webshop.tsx` canonical locale-aware:
+  - canonical should use `location.pathname` (`https://<domain>/en/` for EN home).
+- Add hreflang alternates from `getAlternateHrefLangs(...)` on the same page.
+- After deploy, validate live HTML for `/en/` before Lighthouse:
+  - canonical must not point to root `/` when testing `/en/`.
