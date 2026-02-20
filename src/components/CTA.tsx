@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { getLocaleFromPath, withLocalePath } from "@/lib/i18n";
+import { getLandingSectionHash, getLocaleFromPath, withLocalePath } from "@/lib/i18n";
 
 const CTA = () => {
   const location = useLocation();
@@ -43,13 +43,13 @@ const CTA = () => {
           </div>
 
           <Button asChild variant="hero" size="xl" className="group">
-            <a href={`${withLocalePath("/", locale)}#contact`}>
+            <a href={`${withLocalePath("/", locale)}${getLandingSectionHash(locale, "contact")}`}>
               {isEn ? "Start now - pay EUR 1/day" : "Start nu - betaal EUR 1/dag"}
               <ArrowRight className="group-hover:translate-x-1 transition-transform" />
             </a>
           </Button>
 
-          <p className="mt-6 text-sm text-primary-foreground/60">{isEn ? "No credit card needed · Start right away" : "Geen creditcard nodig · Direct aan de slag"}</p>
+          <p className="mt-6 text-sm text-primary-foreground/60">{isEn ? "No credit card needed Â· Start right away" : "Geen creditcard nodig Â· Direct aan de slag"}</p>
         </div>
       </div>
     </section>

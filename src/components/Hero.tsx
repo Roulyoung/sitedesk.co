@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Check, ArrowRight } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { getLocaleFromPath, withLocalePath } from "@/lib/i18n";
+import { getLandingSectionHash, getLocaleFromPath, withLocalePath } from "@/lib/i18n";
 
 const Hero = () => {
   const location = useLocation();
@@ -37,7 +37,7 @@ const Hero = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-up stagger-3">
               <Button asChild variant="hero" size="xl" className="group">
-                <a href={`${withLocalePath("/", locale)}#contact`}>
+                <a href={`${withLocalePath("/", locale)}${getLandingSectionHash(locale, "contact")}`}>
                   {isEn ? "Start Today - EUR 1/day" : "Start Vandaag - EUR 1/dag"}
                   <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </a>

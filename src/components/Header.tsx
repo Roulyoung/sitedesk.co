@@ -2,16 +2,16 @@ import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, MessageCircle } from "lucide-react";
-import { getLocaleFromPath, withLocalePath } from "@/lib/i18n";
+import { getLandingSectionHash, getLocaleFromPath, withLocalePath, type LandingSectionKey } from "@/lib/i18n";
 import { t } from "@/lib/messages";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const navLinks = [
-  { to: "/#techniek", labelKey: "nav.tech", type: "hash" as const },
-  { to: "/#omzetverlies", labelKey: "nav.calculator", type: "hash" as const },
-  { to: "/#concurrentievergelijking", labelKey: "nav.comparison", type: "hash" as const },
-  { to: "/#aanbod", labelKey: "nav.offer", type: "hash" as const },
-  { to: "/#sheets", labelKey: "nav.sheets", type: "hash" as const },
+  { sectionKey: "tech" as LandingSectionKey, labelKey: "nav.tech", type: "hash" as const },
+  { sectionKey: "calculator" as LandingSectionKey, labelKey: "nav.calculator", type: "hash" as const },
+  { sectionKey: "comparison" as LandingSectionKey, labelKey: "nav.comparison", type: "hash" as const },
+  { sectionKey: "offer" as LandingSectionKey, labelKey: "nav.offer", type: "hash" as const },
+  { sectionKey: "sheets" as LandingSectionKey, labelKey: "nav.sheets", type: "hash" as const },
   { to: "/shop", labelKey: "nav.demo", type: "route" as const },
   { to: "/blog", labelKey: "nav.blog", type: "route" as const },
   { to: "/zakelijke-websites", labelKey: "nav.business", type: "route" as const },
@@ -92,12 +92,12 @@ const Header = () => {
           {navLinks.map((link) => {
             const resolvedTo =
               link.type === "hash"
-                ? `${withLocalePath("/", locale)}${link.to.replace("/#", "#")}`
+                ? `${withLocalePath("/", locale)}${getLandingSectionHash(locale, link.sectionKey)}`
                 : withLocalePath(link.to, locale);
             const active = isActive(resolvedTo, link.type);
             return (
               <NavLink
-                key={link.to}
+                key={link.type === "hash" ? link.sectionKey : link.to}
                 to={resolvedTo}
                 className={`text-sm font-medium transition-colors ${
                   active
@@ -124,7 +124,7 @@ const Header = () => {
             </a>
           </Button>
           <Button asChild variant="hero" size="default">
-            <a href={`${withLocalePath("/", locale)}#contact`}>{t(locale, "cta.planCall")}</a>
+            <a href={`${withLocalePath("/", locale)}${getLandingSectionHash(locale, "contact")}`}>{t(locale, "cta.planCall")}</a>
           </Button>
         </div>
 
@@ -145,12 +145,12 @@ const Header = () => {
             {navLinks.map((link) => {
               const resolvedTo =
                 link.type === "hash"
-                  ? `${withLocalePath("/", locale)}${link.to.replace("/#", "#")}`
+                  ? `${withLocalePath("/", locale)}${getLandingSectionHash(locale, link.sectionKey)}`
                   : withLocalePath(link.to, locale);
               const active = isActive(resolvedTo, link.type);
               return (
                 <NavLink
-                  key={link.to}
+                  key={link.type === "hash" ? link.sectionKey : link.to}
                   to={resolvedTo}
                   className={`text-base font-medium py-2 ${
                     active
@@ -182,7 +182,7 @@ const Header = () => {
               </a>
             </Button>
             <Button asChild variant="hero" size="lg" className="mt-2" onClick={() => setIsMenuOpen(false)}>
-              <a href={`${withLocalePath("/", locale)}#contact`}>{t(locale, "cta.planCall")}</a>
+              <a href={`${withLocalePath("/", locale)}${getLandingSectionHash(locale, "contact")}`}>{t(locale, "cta.planCall")}</a>
             </Button>
           </nav>
         </div>

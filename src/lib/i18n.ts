@@ -119,3 +119,44 @@ export const getLocalizedSlug = (row: Record<string, unknown>, locale: Supported
 };
 
 export const getNonDefaultLocales = () => ACTIVE_NON_DEFAULT_LOCALES;
+
+export type LandingSectionKey =
+  | "tech"
+  | "calculator"
+  | "comparison"
+  | "offer"
+  | "sheets"
+  | "contact";
+
+const LANDING_SECTION_IDS: Record<SupportedLocale, Record<LandingSectionKey, string>> = {
+  nl: {
+    tech: "techniek",
+    calculator: "omzetverlies",
+    comparison: "concurrentievergelijking",
+    offer: "aanbod",
+    sheets: "sheets",
+    contact: "contact",
+  },
+  en: {
+    tech: "technology",
+    calculator: "revenue-loss",
+    comparison: "comparison",
+    offer: "offer",
+    sheets: "sheets",
+    contact: "contact",
+  },
+  de: {
+    tech: "technik",
+    calculator: "umsatzverlust",
+    comparison: "vergleich",
+    offer: "angebot",
+    sheets: "sheets",
+    contact: "kontakt",
+  },
+};
+
+export const getLandingSectionId = (locale: SupportedLocale, key: LandingSectionKey) =>
+  LANDING_SECTION_IDS[locale]?.[key] || LANDING_SECTION_IDS[DEFAULT_LOCALE][key];
+
+export const getLandingSectionHash = (locale: SupportedLocale, key: LandingSectionKey) =>
+  `#${getLandingSectionId(locale, key)}`;

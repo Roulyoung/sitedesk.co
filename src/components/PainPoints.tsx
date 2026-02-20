@@ -1,7 +1,7 @@
 import { X, Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "react-router-dom";
-import { getLocaleFromPath, withLocalePath } from "@/lib/i18n";
+import { getLandingSectionHash, getLocaleFromPath, withLocalePath } from "@/lib/i18n";
 
 const PainPoints = () => {
   const location = useLocation();
@@ -47,7 +47,7 @@ const PainPoints = () => {
             </p>
 
             <Button asChild variant="hero" size="lg" className="group">
-              <a href={`${withLocalePath("/", locale)}#contact`}>
+              <a href={`${withLocalePath("/", locale)}${getLandingSectionHash(locale, "contact")}`}>
                 {isEn ? "Start today" : "Start vandaag nog"}
                 <ArrowRight className="group-hover:translate-x-1 transition-transform" />
               </a>

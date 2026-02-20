@@ -13,7 +13,13 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
-import { getAlternateHrefLangs, getLocaleFromPath, stripLocaleFromPath, withLocalePath } from "@/lib/i18n";
+import {
+  getAlternateHrefLangs,
+  getLandingSectionId,
+  getLocaleFromPath,
+  stripLocaleFromPath,
+  withLocalePath,
+} from "@/lib/i18n";
 
 declare global {
   interface Window {
@@ -112,6 +118,17 @@ const Webshop = () => {
   const isEn = locale === "en";
   const pathWithoutLocale = stripLocaleFromPath(location.pathname);
   const alternateLinks = getAlternateHrefLangs(pathWithoutLocale);
+  const sectionIds = useMemo(
+    () => ({
+      tech: getLandingSectionId(locale, "tech"),
+      calculator: getLandingSectionId(locale, "calculator"),
+      comparison: getLandingSectionId(locale, "comparison"),
+      offer: getLandingSectionId(locale, "offer"),
+      sheets: getLandingSectionId(locale, "sheets"),
+      contact: getLandingSectionId(locale, "contact"),
+    }),
+    [locale],
+  );
   const pageTitle = isEn
     ? "Ultra-Fast Edge Webshop | EUR 1,000 setup + EUR 150 p/m | Sitedesk"
     : "Supersnelle Webshop op Edge | €1.000 setup + €150 p/m | Sitedesk";
@@ -169,7 +186,14 @@ const Webshop = () => {
     [monthlyRevenue, isEn],
   );
   useEffect(() => {
-    const ids = ["techniek", "omzetverlies", "concurrentievergelijking", "aanbod", "sheets", "contact"];
+    const ids = [
+      sectionIds.tech,
+      sectionIds.calculator,
+      sectionIds.comparison,
+      sectionIds.offer,
+      sectionIds.sheets,
+      sectionIds.contact,
+    ];
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries.find((entry) => entry.isIntersecting);
@@ -189,7 +213,7 @@ const Webshop = () => {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [sectionIds]);
 
   const trackLead = () => {
     if (typeof window !== "undefined" && typeof window.gtag === "function") {
@@ -345,7 +369,7 @@ const Webshop = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button asChild variant="hero" size="lg" className="group">
-                    <a href="#contact">
+                    <a href={`#${sectionIds.contact}`}>
                       {isEn ? "Book a call" : "Plan een call"}
                       <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                     </a>
@@ -422,7 +446,7 @@ const Webshop = () => {
         </section>
 
         {/* Techniek */}
-        <section id="techniek" className="container mx-auto scroll-mt-28">
+        <section id={sectionIds.tech} className="container mx-auto scroll-mt-28">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div className="space-y-4">
               <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider">
@@ -525,7 +549,7 @@ const Webshop = () => {
                   </a>
                 </Button>
                 <Button asChild variant="hero" size="lg">
-                  <a href="#contact">{isEn ? "Book a call" : "Plan een call"}</a>
+                  <a href={`#${sectionIds.contact}`}>{isEn ? "Book a call" : "Plan een call"}</a>
                 </Button>
               </div>
             </div>
@@ -564,7 +588,7 @@ const Webshop = () => {
         </section>
 
         {/* Omzetverlies calculator */}
-        <section id="omzetverlies" className="container mx-auto scroll-mt-28">
+        <section id={sectionIds.calculator} className="container mx-auto scroll-mt-28">
           <div className="text-center max-w-4xl mx-auto mb-10">
             <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider mb-3">
               {isEn ? "Conversion loss calculator" : "Conversie verlies calculator"}
@@ -737,7 +761,7 @@ const Webshop = () => {
         </section>
 
         {/* Concurrentievergelijking */}
-        <section id="concurrentievergelijking" className="container mx-auto scroll-mt-28">
+        <section id={sectionIds.comparison} className="container mx-auto scroll-mt-28">
           <div className="text-center max-w-4xl mx-auto mb-10">
             <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider mb-3">
               {isEn ? "Platform comparison" : "Concurrentievergelijking"}
@@ -809,7 +833,7 @@ const Webshop = () => {
         </section>
 
         {/* Pilot / Aanbod */}
-        <section id="aanbod" className="container mx-auto scroll-mt-28">
+        <section id={sectionIds.offer} className="container mx-auto scroll-mt-28">
           <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary to-primary/80 text-primary-foreground p-8 md:p-12 shadow-xl">
             <div className="grid lg:grid-cols-2 gap-10 items-center">
               <div className="space-y-5">
@@ -835,7 +859,7 @@ const Webshop = () => {
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3 mt-6">
                     <Button asChild variant="hero" size="lg" className="bg-primary text-primary-foreground">
-                      <a href="#contact">{isEn ? "Book a call" : "Plan een call"}</a>
+                      <a href={`#${sectionIds.contact}`}>{isEn ? "Book a call" : "Plan een call"}</a>
                     </Button>
                     <Button
                       asChild
@@ -886,7 +910,7 @@ const Webshop = () => {
         </section>
 
         {/* Google Sheets management */}
-        <section id="sheets" className="container mx-auto scroll-mt-28">
+        <section id={sectionIds.sheets} className="container mx-auto scroll-mt-28">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-4">
               <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider">
@@ -984,7 +1008,7 @@ const Webshop = () => {
               </div>
               <div className="flex flex-wrap gap-3">
                 <Button asChild variant="hero" size="lg">
-                  <a href="#contact">{isEn ? "Book a call" : "Plan een call"}</a>
+                  <a href={`#${sectionIds.contact}`}>{isEn ? "Book a call" : "Plan een call"}</a>
                 </Button>
                 <Button
                   asChild
@@ -1031,7 +1055,7 @@ const Webshop = () => {
           </div>
         </section>
 
-        <section id="contact" className="container mx-auto pb-20 scroll-mt-28">
+        <section id={sectionIds.contact} className="container mx-auto pb-20 scroll-mt-28">
           <div className="grid lg:grid-cols-2 gap-12 items-start bg-card border border-border rounded-3xl p-8 md:p-12 shadow-lg">
             <div className="space-y-4">
               <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider">
@@ -1058,7 +1082,7 @@ const Webshop = () => {
                   </a>
                 </Button>
                 <Button asChild variant="hero" size="lg">
-                  <a href="#contact">{isEn ? "Book a call" : "Plan een call"}</a>
+                  <a href={`#${sectionIds.contact}`}>{isEn ? "Book a call" : "Plan een call"}</a>
                 </Button>
               </div>
             </div>

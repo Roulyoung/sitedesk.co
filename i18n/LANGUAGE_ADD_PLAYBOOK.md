@@ -107,3 +107,25 @@ npm run i18n:blog:clean -- --lang=<lang> --scope=all
 - Add hreflang alternates from `getAlternateHrefLangs(...)` on the same page.
 - After deploy, validate live HTML for `/en/` before Lighthouse:
   - canonical must not point to root `/` when testing `/en/`.
+
+## 10) Localized Hash Anchors (Important)
+
+- Never hardcode Dutch section hashes in shared navigation.
+- Use centralized helpers from `src/lib/i18n.ts`:
+  - `getLandingSectionId(locale, key)`
+  - `getLandingSectionHash(locale, key)`
+- Current landing section keys:
+  - `tech`
+  - `calculator`
+  - `comparison`
+  - `offer`
+  - `sheets`
+  - `contact`
+- Header/nav/footer/CTA links must use locale-aware hashes:
+  - Example EN: `/en#comparison`
+  - Example NL: `/#concurrentievergelijking`
+- Section IDs on the landing page (`src/pages/Webshop.tsx`) must also be locale-aware and match these hashes.
+- When adding a new language, update `LANDING_SECTION_IDS` in `src/lib/i18n.ts` before enabling the locale.
+- Regression check after deploy:
+  - Open `/en#comparison` and confirm it scrolls to the comparison section.
+  - Open `/#concurrentievergelijking` and confirm NL still works.

@@ -1,6 +1,6 @@
 import { MapPin } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { getLocaleFromPath, withLocalePath } from "@/lib/i18n";
+import { getLandingSectionHash, getLocaleFromPath, withLocalePath } from "@/lib/i18n";
 import { t } from "@/lib/messages";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
@@ -62,7 +62,7 @@ const Footer = () => {
             <h3 className="font-semibold mb-4">{t(locale, "footer.navigation")}</h3>
             <ul className="space-y-2 text-primary-foreground/70">
               <li>
-                <a href={`${withLocalePath("/", locale)}#contact`} className="hover:text-primary-foreground transition-colors">
+                <a href={`${withLocalePath("/", locale)}${getLandingSectionHash(locale, "contact")}`} className="hover:text-primary-foreground transition-colors">
                   {t(locale, "footer.planCall")}
                 </a>
               </li>
@@ -101,7 +101,7 @@ const Footer = () => {
 
         <div className="border-t border-primary-foreground/10 mt-12 pt-8 text-center text-sm text-primary-foreground/60">
           <p suppressHydrationWarning>
-            © {new Date().getFullYear()} Sitedesk.co. {isEn ? "All rights reserved." : "Alle rechten voorbehouden."}
+            Â© {new Date().getFullYear()} Sitedesk.co. {isEn ? "All rights reserved." : "Alle rechten voorbehouden."}
           </p>
         </div>
       </div>

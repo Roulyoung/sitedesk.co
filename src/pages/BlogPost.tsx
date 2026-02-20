@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { CalendarDays, Tag, ArrowLeft, ArrowRight, Share2 } from "lucide-react";
 import { getPostsForLocale, PAGE_SIZE, paginate, type ContentBlock } from "@/lib/blogData";
 import { Helmet } from "react-helmet-async";
-import { getAlternateHrefLangs, getLocaleFromPath, stripLocaleFromPath, withLocalePath } from "@/lib/i18n";
+import { getAlternateHrefLangs, getLandingSectionHash, getLocaleFromPath, stripLocaleFromPath, withLocalePath } from "@/lib/i18n";
 
 const formatDate = (value: string, isEn: boolean) =>
   new Intl.DateTimeFormat(isEn ? "en-GB" : "nl-NL", {
@@ -210,11 +210,11 @@ const BlogPost = () => {
               {block.data?.body ??
                 (isEn
                   ? "EUR 1,000 one-time, EUR 150 p/m. Includes hosting, unlimited support, and continuous development."
-                  : "€1.000 eenmalig, €150 p/m. Inclusief hosting, onbeperkt support én doorontwikkeling.")}
+                  : "â¬1.000 eenmalig, â¬150 p/m. Inclusief hosting, onbeperkt support Ã©n doorontwikkeling.")}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-3 mt-6">
               <Button asChild variant="hero" size="lg">
-                <a href={`${withLocalePath("/", locale)}#contact`}>{isEn ? "Plan your speed check" : "Plan je Speed-Check"}</a>
+                <a href={`${withLocalePath("/", locale)}${getLandingSectionHash(locale, "contact")}`}>{isEn ? "Plan your speed check" : "Plan je Speed-Check"}</a>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
                 <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
@@ -287,7 +287,7 @@ const BlogPost = () => {
               </div>
               <div className="flex flex-wrap gap-3">
                 <Button asChild variant="hero" size="sm">
-                  <a href={`${withLocalePath("/", locale)}#contact`}>{isEn ? "Plan a speed check" : "Plan een Speed-Check"}</a>
+                  <a href={`${withLocalePath("/", locale)}${getLandingSectionHash(locale, "contact")}`}>{isEn ? "Plan a speed check" : "Plan een Speed-Check"}</a>
                 </Button>
                 <Button asChild variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10">
                   <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
