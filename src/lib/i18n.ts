@@ -160,3 +160,27 @@ export const getLandingSectionId = (locale: SupportedLocale, key: LandingSection
 
 export const getLandingSectionHash = (locale: SupportedLocale, key: LandingSectionKey) =>
   `#${getLandingSectionId(locale, key)}`;
+
+export const getLandingSectionKeyById = (
+  locale: SupportedLocale,
+  id: string | null | undefined,
+): LandingSectionKey | null => {
+  if (!id) return null;
+  const clean = String(id).replace(/^#/, "").trim();
+  const entries = Object.entries(LANDING_SECTION_IDS[locale] || {}) as Array<
+    [LandingSectionKey, string]
+  >;
+  const found = entries.find(([, value]) => value === clean);
+  return found ? found[0] : null;
+};
+
+export const translateLandingHash = (
+  hash: string,
+  fromLocale: SupportedLocale,
+  toLocale: SupportedLocale,
+) => {
+  if (!hash) return "";
+  const key = getLandingSectionKeyById(fromLocale, hash);
+  if (!key) return hash;
+  return getLandingSectionHash(toLocale, key);
+};

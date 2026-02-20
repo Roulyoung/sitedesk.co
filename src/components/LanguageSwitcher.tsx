@@ -3,6 +3,7 @@ import {
   ACTIVE_LOCALES,
   DEFAULT_LOCALE,
   getLocaleFromPath,
+  translateLandingHash,
   stripLocaleFromPath,
   withLocalePath,
   type SupportedLocale,
@@ -17,7 +18,10 @@ const LanguageSwitcher = () => {
   const toLocaleUrl = (targetLocale: SupportedLocale) => {
     const localizedPath = withLocalePath(basePath, targetLocale);
     const search = location.search || "";
-    const hash = location.hash || "";
+    const hash =
+      basePath === "/"
+        ? translateLandingHash(location.hash || "", currentLocale, targetLocale)
+        : location.hash || "";
     return `${localizedPath}${search}${hash}`;
   };
 
