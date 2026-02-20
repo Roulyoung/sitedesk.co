@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "i18n:blog:scaffold": "node scripts/blog-locale-scaffold.mjs",
+    "i18n:blog:clean": "node scripts/blog-locale-clean.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },

@@ -17,9 +17,17 @@ const getArg = (name, fallback = "") => {
 
 const targetLang = getArg("lang");
 const sourceLang = getArg("source", "nl");
+const outputMode = getArg("out", "private").toLowerCase();
 
 if (!targetLang) {
-  console.error("Usage: node scripts/blog-locale-scaffold.mjs --lang=<target_lang> [--source=nl]");
+  console.error(
+    "Usage: node scripts/blog-locale-scaffold.mjs --lang=<target_lang> [--source=nl] [--out=private|public]",
+  );
+  process.exit(1);
+}
+
+if (!["private", "public"].includes(outputMode)) {
+  console.error("Invalid --out value. Use --out=private or --out=public");
   process.exit(1);
 }
 
@@ -64,7 +72,10 @@ const main = async () => {
     throw new Error("No posts found in src/lib/blogData.ts");
   }
 
-  const outDir = path.join(rootDir, "i18n", "blog-locales", targetLang);
+  const outDir =
+    outputMode === "public"
+      ? path.join(rootDir, "i18n", "blog-locales", targetLang)
+      : path.join(rootDir, ".private", "blog-locales", targetLang);
   await fs.mkdir(outDir, { recursive: true });
 
   const indexLines = [
@@ -84,7 +95,10 @@ const main = async () => {
 
   await fs.writeFile(path.join(outDir, "README.md"), `${indexLines.join("\n")}\n`, "utf-8");
 
-  console.log(`Scaffolded ${posts.length} blog rewrite drafts at i18n/blog-locales/${targetLang}/`);
+  const printedBase = outputMode === "public" ? "i18n/blog-locales" : ".private/blog-locales";
+  console.log(
+    `Scaffolded ${posts.length} blog rewrite drafts at ${printedBase}/${targetLang}/ (mode=${outputMode})`,
+  );
 };
 
 main().catch((error) => {

@@ -38,8 +38,29 @@ npm run i18n:blog:scaffold -- --lang=<lang> --source=nl
 ```
 
 This creates:
-- `i18n/blog-locales/<lang>/README.md`
+- `.private/blog-locales/<lang>/README.md` (default, commit-safe)
 - one draft file per blog post
+
+Optional public mode:
+
+```bash
+npm run i18n:blog:scaffold -- --lang=<lang> --source=nl --out=public
+```
+
+This writes to `i18n/blog-locales/<lang>/`.
+
+Cleanup command:
+
+```bash
+# default: private drafts
+npm run i18n:blog:clean -- --lang=<lang>
+
+# cleanup public drafts
+npm run i18n:blog:clean -- --lang=<lang> --scope=public
+
+# cleanup both
+npm run i18n:blog:clean -- --lang=<lang> --scope=all
+```
 
 ## 5) Rewrite with prompt pack (Codex workflow)
 
