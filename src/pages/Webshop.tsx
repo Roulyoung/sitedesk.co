@@ -88,27 +88,27 @@ const comparisonRows = [
   },
   {
     feature: { nl: "Beheer", en: "Management" },
-    sitedesk: "Google Sheets (real-time)",
-    shopify: "Dashboard + apps",
-    woocommerce: "WP-Admin + plugins",
-    magento: "Complex admin panel",
-    prestashop: "Backoffice + modules",
+    sitedesk: { nl: "Google Sheets (real-time)", en: "Google Sheets (real-time)" },
+    shopify: { nl: "Dashboard + apps", en: "Dashboard + apps" },
+    woocommerce: { nl: "WP-Admin + plugins", en: "WP Admin + plugins" },
+    magento: { nl: "Complex admin panel", en: "Complex admin panel" },
+    prestashop: { nl: "Backoffice + modules", en: "Back office + modules" },
   },
   {
     feature: { nl: "Doorontwikkeling", en: "Continuous development" },
-    sitedesk: "Inclusief in maandbedrag",
-    shopify: "Apps + developers",
-    woocommerce: "Developer + plugin onderhoud",
-    magento: "Developer team nodig",
-    prestashop: "Module stack + developer",
+    sitedesk: { nl: "Inclusief in maandbedrag", en: "Included in monthly fee" },
+    shopify: { nl: "Apps + developers", en: "Apps + developers" },
+    woocommerce: { nl: "Developer + plugin onderhoud", en: "Developer + plugin maintenance" },
+    magento: { nl: "Developer team nodig", en: "Developer team required" },
+    prestashop: { nl: "Module stack + developer", en: "Module stack + developer" },
   },
   {
     feature: { nl: "Veiligheid", en: "Security" },
-    sitedesk: "Edge + beperkt aanvalsoppervlak",
-    shopify: "SaaS afhankelijk",
-    woocommerce: "Plugin en hosting risico",
-    magento: "Patch management zwaar",
-    prestashop: "Module kwetsbaarheden mogelijk",
+    sitedesk: { nl: "Edge + beperkt aanvalsoppervlak", en: "Edge + reduced attack surface" },
+    shopify: { nl: "SaaS afhankelijk", en: "SaaS dependent" },
+    woocommerce: { nl: "Plugin en hosting risico", en: "Plugin and hosting risk" },
+    magento: { nl: "Patch management zwaar", en: "Heavy patch management" },
+    prestashop: { nl: "Module kwetsbaarheden mogelijk", en: "Potential module vulnerabilities" },
   },
 ];
 
@@ -790,11 +790,21 @@ const Webshop = () => {
                 {comparisonRows.map((row) => (
                   <tr key={row.feature.nl} className="border-t border-border align-top">
                     <td className="p-4 font-semibold text-foreground">{isEn ? row.feature.en : row.feature.nl}</td>
-                    <td className="p-4 text-foreground font-semibold bg-success/5">{row.sitedesk}</td>
-                    <td className="p-4 text-muted-foreground">{row.shopify}</td>
-                    <td className="p-4 text-muted-foreground">{row.woocommerce}</td>
-                    <td className="p-4 text-muted-foreground">{row.magento}</td>
-                    <td className="p-4 text-muted-foreground">{row.prestashop}</td>
+                    <td className="p-4 text-foreground font-semibold bg-success/5">
+                      {typeof row.sitedesk === "string" ? row.sitedesk : isEn ? row.sitedesk.en : row.sitedesk.nl}
+                    </td>
+                    <td className="p-4 text-muted-foreground">
+                      {typeof row.shopify === "string" ? row.shopify : isEn ? row.shopify.en : row.shopify.nl}
+                    </td>
+                    <td className="p-4 text-muted-foreground">
+                      {typeof row.woocommerce === "string" ? row.woocommerce : isEn ? row.woocommerce.en : row.woocommerce.nl}
+                    </td>
+                    <td className="p-4 text-muted-foreground">
+                      {typeof row.magento === "string" ? row.magento : isEn ? row.magento.en : row.magento.nl}
+                    </td>
+                    <td className="p-4 text-muted-foreground">
+                      {typeof row.prestashop === "string" ? row.prestashop : isEn ? row.prestashop.en : row.prestashop.nl}
+                    </td>
                   </tr>
                 ))}
               </tbody>
