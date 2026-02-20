@@ -70,10 +70,13 @@ const Shop = () => {
   const { toast } = useToast();
   const location = useLocation();
   const locale = getLocaleFromPath(location.pathname);
+  const isEn = locale === "en";
   const pathWithoutLocale = stripLocaleFromPath(location.pathname);
   const title = "Shop | Sitedesk";
   const description =
-    "Bekijk producten, filter op categorie en reken direct af via een snelle Stripe checkout op Sitedesk.";
+    isEn
+      ? "Browse products, filter by category, and checkout quickly with Stripe on Sitedesk."
+      : "Bekijk producten, filter op categorie en reken direct af via een snelle Stripe checkout op Sitedesk.";
   const canonical = `https://sitedesk.co${location.pathname}`;
   const alternateLinks = getAlternateHrefLangs(pathWithoutLocale);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -87,13 +90,13 @@ const Shop = () => {
     const fetchProducts = async () => {
       try {
         const response = await fetch(PRODUCTS_ENDPOINT);
-        if (!response.ok) throw new Error("Kon producten niet laden");
+        if (!response.ok) throw new Error(isEn ? "Could not load products" : "Kon producten niet laden");
         const text = await response.text();
         let data;
         try {
           data = JSON.parse(text);
         } catch (parseErr) {
-          throw new Error("Onverwachte serverrespons (geen geldige JSON)");
+          throw new Error(isEn ? "Unexpected server response (invalid JSON)" : "Onverwachte serverrespons (geen geldige JSON)");
         }
         const mapped =
           data?.products?.map((row: any, idx: number) => {
@@ -146,14 +149,14 @@ const Shop = () => {
           }) || [];
         setProducts(mapped);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Onbekende fout");
+        setError(err instanceof Error ? err.message : isEn ? "Unknown error" : "Onbekende fout");
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-  }, [locale]);
+  }, [locale, isEn]);
 
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") || "");
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
@@ -184,13 +187,15 @@ const Shop = () => {
 
   const activeFilterChips = useMemo(() => {
     const chips: { label: string; onRemove: () => void }[] = [];
-    selectedCategories.forEach((c) => chips.push({ label: `Categorie: ${c}`, onRemove: () => toggleCategory(c) }));
+    selectedCategories.forEach((c) =>
+      chips.push({ label: `${isEn ? "Category" : "Categorie"}: ${c}`, onRemove: () => toggleCategory(c) }),
+    );
     selectedTags.forEach((t) => chips.push({ label: `Tag: ${t}`, onRemove: () => toggleTag(t) }));
     if (minPrice) chips.push({ label: `Min €${minPrice}`, onRemove: () => setMinPrice("") });
     if (maxPrice) chips.push({ label: `Max €${maxPrice}`, onRemove: () => setMaxPrice("") });
-    if (searchQuery) chips.push({ label: `Zoek: ${searchQuery}`, onRemove: () => setSearchQuery("") });
+    if (searchQuery) chips.push({ label: `${isEn ? "Search" : "Zoek"}: ${searchQuery}`, onRemove: () => setSearchQuery("") });
     return chips;
-  }, [selectedCategories, selectedTags, minPrice, maxPrice, searchQuery]);
+  }, [selectedCategories, selectedTags, minPrice, maxPrice, searchQuery, isEn]);
 
   const displayProducts = useMemo(
     () =>
@@ -295,7 +300,7 @@ const Shop = () => {
   const addToCart = (product: Product) => {
     const priceCents = product.priceCents || parsePriceToCents(product.price || "0");
     if (!priceCents || priceCents <= 0) {
-      setError("Geen geldige prijs beschikbaar voor dit product.");
+      setError(isEn ? "No valid price available for this product." : "Geen geldige prijs beschikbaar voor dit product.");
       return;
     }
     setCart((prev) =>
@@ -309,12 +314,12 @@ const Shop = () => {
         quantity: 1,
         deliveryCostCents: parsePriceToCents(product.delivery_cost || "0"),
         deliveryTime: product.delivery_time || "1-2 dagen",
-        stock: product.stock || "Op voorraad",
+        stock: product.stock || (isEn ? "In stock" : "Op voorraad"),
       }),
     );
     setAddedProduct(product.name || "Product");
     toast({
-      title: "Toegevoegd aan winkelmand",
+      title: isEn ? "Added to cart" : "Toegevoegd aan winkelmand",
       description: product.name || "Product",
     });
     setTimeout(() => setAddedProduct(null), 2000);
@@ -331,7 +336,7 @@ const Shop = () => {
       const validation = await validateCartBeforeCheckout(cart);
       setCart(validation.cart);
       if (!validation.ok) {
-        setError(validation.message || "Controleer je winkelmand en probeer opnieuw.");
+        setError(validation.message || (isEn ? "Check your cart and try again." : "Controleer je winkelmand en probeer opnieuw."));
         return;
       }
 
@@ -357,7 +362,7 @@ const Shop = () => {
               ? [
                   {
                     id: "shipping",
-                    name: "Verzendkosten",
+                    name: isEn ? "Shipping" : "Verzendkosten",
                     price: shippingCents / 100,
                     quantity: 1,
                   },
@@ -368,13 +373,13 @@ const Shop = () => {
       });
       if (!res.ok) {
         const text = await res.text();
-        throw new Error(text || "Aanmaken van checkout sessie mislukt");
+        throw new Error(text || (isEn ? "Failed to create checkout session" : "Aanmaken van checkout sessie mislukt"));
       }
       const data = await res.json();
-      if (!data?.url) throw new Error("Geen checkout URL ontvangen");
+      if (!data?.url) throw new Error(isEn ? "No checkout URL received" : "Geen checkout URL ontvangen");
       window.location.href = data.url;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Checkout mislukt");
+      setError(err instanceof Error ? err.message : isEn ? "Checkout failed" : "Checkout mislukt");
     } finally {
       setCheckoutLoadingId(null);
     }
@@ -383,7 +388,7 @@ const Shop = () => {
   const handleBuyNow = async (product: Product) => {
     const priceCents = product.priceCents || parsePriceToCents(product.price || "0");
     if (!priceCents || priceCents <= 0) {
-      setError("Geen geldige prijs voor dit product.");
+      setError(isEn ? "No valid price for this product." : "Geen geldige prijs voor dit product.");
       return;
     }
     const newItem = {
@@ -402,13 +407,13 @@ const Shop = () => {
       const validation = await validateCartBeforeCheckout(combinedCart);
       if (!validation.ok) {
         setCart(validation.cart);
-        setError(validation.message || "Controleer je winkelmand en probeer opnieuw.");
+        setError(validation.message || (isEn ? "Check your cart and try again." : "Controleer je winkelmand en probeer opnieuw."));
         return;
       }
 
       const validatedNewItem = validation.cart.find((item) => item.id === newItem.id);
       if (!validatedNewItem) {
-        setError(`${product.name || "Product"} is niet meer beschikbaar.`);
+        setError(`${product.name || "Product"} ${isEn ? "is no longer available." : "is niet meer beschikbaar."}`);
         return;
       }
 
@@ -449,7 +454,7 @@ const Shop = () => {
                 ? [
                     {
                       id: "shipping",
-                      name: "Verzendkosten",
+                      name: isEn ? "Shipping" : "Verzendkosten",
                       price: shippingCents / 100,
                       quantity: 1,
                     },
@@ -460,13 +465,13 @@ const Shop = () => {
       });
       if (!res.ok) {
         const text = await res.text();
-        throw new Error(text || "Aanmaken van checkout sessie mislukt");
+        throw new Error(text || (isEn ? "Failed to create checkout session" : "Aanmaken van checkout sessie mislukt"));
       }
       const data = await res.json();
-      if (!data?.url) throw new Error("Geen checkout URL ontvangen");
+      if (!data?.url) throw new Error(isEn ? "No checkout URL received" : "Geen checkout URL ontvangen");
       window.location.href = data.url;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Checkout mislukt");
+      setError(err instanceof Error ? err.message : isEn ? "Checkout failed" : "Checkout mislukt");
     } finally {
       setCheckoutLoadingId(null);
     }
@@ -498,10 +503,12 @@ const Shop = () => {
             Shop
           </p>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mt-4">
-            Shop onze producten
+            {isEn ? "Shop our products" : "Shop onze producten"}
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto mt-4">
-            Kies uit de beschikbare producten en bestel direct via onze Stripe links.
+            {isEn
+              ? "Choose from available products and order directly with Stripe."
+              : "Kies uit de beschikbare producten en bestel direct via onze Stripe links."}
           </p>
         </div>
 
@@ -509,22 +516,22 @@ const Shop = () => {
           <div className="flex items-center gap-3 bg-card border border-border rounded-xl p-4 shadow-sm">
             <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">⚡</div>
             <div>
-              <p className="font-semibold text-foreground">Snelle levering</p>
-              <p className="text-sm text-muted-foreground">1-2 dagen, direct verstuurd</p>
+              <p className="font-semibold text-foreground">{isEn ? "Fast delivery" : "Snelle levering"}</p>
+              <p className="text-sm text-muted-foreground">{isEn ? "1-2 days, shipped directly" : "1-2 dagen, direct verstuurd"}</p>
             </div>
           </div>
           <div className="flex items-center gap-3 bg-card border border-border rounded-xl p-4 shadow-sm">
             <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">✅</div>
             <div>
-              <p className="font-semibold text-foreground">Veilige betaling</p>
-              <p className="text-sm text-muted-foreground">iDEAL / kaart, SSL-beveiligd</p>
+              <p className="font-semibold text-foreground">{isEn ? "Secure payment" : "Veilige betaling"}</p>
+              <p className="text-sm text-muted-foreground">{isEn ? "Card / iDEAL, SSL secured" : "iDEAL / kaart, SSL-beveiligd"}</p>
             </div>
           </div>
           <div className="flex items-center gap-3 bg-card border border-border rounded-xl p-4 shadow-sm">
             <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">💬</div>
             <div>
-              <p className="font-semibold text-foreground">Persoonlijke support</p>
-              <p className="text-sm text-muted-foreground">Antwoord binnen 1 werkdag</p>
+              <p className="font-semibold text-foreground">{isEn ? "Personal support" : "Persoonlijke support"}</p>
+              <p className="text-sm text-muted-foreground">{isEn ? "Reply within 1 business day" : "Antwoord binnen 1 werkdag"}</p>
             </div>
           </div>
         </div>
@@ -537,18 +544,18 @@ const Shop = () => {
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
-              <label className="text-sm text-muted-foreground">Zoek</label>
+              <label className="text-sm text-muted-foreground">{isEn ? "Search" : "Zoek"}</label>
               <input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Zoek op titel of omschrijving"
+                placeholder={isEn ? "Search by title or description" : "Zoek op titel of omschrijving"}
                 className="w-full rounded-lg border border-border bg-background px-3 py-2"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-muted-foreground">Categorie</label>
+              <label className="text-sm text-muted-foreground">{isEn ? "Category" : "Categorie"}</label>
               <div className="flex flex-wrap gap-2">
-                {categories.length === 0 && <span className="text-xs text-muted-foreground">Geen categorieën</span>}
+                {categories.length === 0 && <span className="text-xs text-muted-foreground">{isEn ? "No categories" : "Geen categorieën"}</span>}
                 {categories.map((cat) => {
                   const active = selectedCategories.includes(cat);
                   const count = categoryCounts[cat] || 0;
@@ -588,7 +595,7 @@ const Shop = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-muted-foreground">Prijs (min - max)</label>
+              <label className="text-sm text-muted-foreground">{isEn ? "Price (min - max)" : "Prijs (min - max)"}</label>
               <div className="grid grid-cols-2 gap-2">
                 <input
                   value={minPrice}
@@ -607,27 +614,27 @@ const Shop = () => {
           </div>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <div className="flex items-center gap-2 flex-wrap">
-              <label htmlFor="shop-sort" className="text-sm text-muted-foreground">Sorteer op:</label>
+              <label htmlFor="shop-sort" className="text-sm text-muted-foreground">{isEn ? "Sort by:" : "Sorteer op:"}</label>
               <select
                 id="shop-sort"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
               >
-                <option value="relevance">Relevantie</option>
-                <option value="price_asc">Prijs: laag naar hoog</option>
-                <option value="price_desc">Prijs: hoog naar laag</option>
-                <option value="newest">Nieuwste</option>
+                <option value="relevance">{isEn ? "Relevance" : "Relevantie"}</option>
+                <option value="price_asc">{isEn ? "Price: low to high" : "Prijs: laag naar hoog"}</option>
+                <option value="price_desc">{isEn ? "Price: high to low" : "Prijs: hoog naar laag"}</option>
+                <option value="newest">{isEn ? "Newest" : "Nieuwste"}</option>
               </select>
               <button
                 onClick={clearFilters}
                 className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4"
               >
-                Alles wissen
+                {isEn ? "Clear all" : "Alles wissen"}
               </button>
             </div>
             <div className="text-sm text-muted-foreground">
-              {filteredProducts.length} van {displayProducts.length} producten getoond
+              {filteredProducts.length} {isEn ? "of" : "van"} {displayProducts.length} {isEn ? "products shown" : "producten getoond"}
             </div>
           </div>
 
@@ -677,7 +684,7 @@ const Shop = () => {
 
         {!loading && !error && filteredProducts.length > 0 && (
           <>
-          <h2 className="sr-only">Productoverzicht</h2>
+          <h2 className="sr-only">{isEn ? "Product overview" : "Productoverzicht"}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProducts.map((product, idx) => (
               <div
@@ -701,20 +708,20 @@ const Shop = () => {
                     />
                   ) : (
                     <div className="h-64 w-full rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm">
-                      Geen afbeelding
+                      {isEn ? "No image" : "Geen afbeelding"}
                     </div>
                   )}
                   <div className="flex flex-col gap-2">
                     <h3 className="font-bold text-lg text-foreground line-clamp-2 group-hover:text-primary transition">
-                      {product.name || "Naam onbekend"}
+                      {product.name || (isEn ? "Unknown name" : "Naam onbekend")}
                     </h3>
                     <p className="text-primary font-semibold">{product.price}</p>
                     <div className="text-sm text-muted-foreground flex flex-col gap-1">
-                      <span>Levering: {product.deliveryTime || "1-2 dagen"}</span>
+                      <span>{isEn ? "Delivery" : "Levering"}: {product.deliveryTime || "1-2 dagen"}</span>
                       {parsePriceToCents(product.delivery_cost || "0") > 0 ? (
-                        <span>Verzendkosten: {currency.format(parsePriceToCents(product.delivery_cost || "0") / 100)}</span>
+                        <span>{isEn ? "Shipping" : "Verzendkosten"}: {currency.format(parsePriceToCents(product.delivery_cost || "0") / 100)}</span>
                       ) : (
-                        <span>Gratis verzending</span>
+                        <span>{isEn ? "Free shipping" : "Gratis verzending"}</span>
                       )}
                     </div>
                     {product.tags && product.tags.length > 0 && (
@@ -736,7 +743,7 @@ const Shop = () => {
                     onClick={() => addToCart(product)}
                     className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-lg hover:opacity-90 transition"
                   >
-                    In winkelmand
+                    {isEn ? "Add to cart" : "In winkelmand"}
                     <ArrowRight size={16} />
                   </button>
                   <button
@@ -747,11 +754,11 @@ const Shop = () => {
                     {checkoutLoadingId === (product.id || product.name) ? (
                       <>
                         <Loader2 className="animate-spin" size={16} />
-                        Even geduld...
+                        {isEn ? "Please wait..." : "Even geduld..."}
                       </>
                     ) : (
                       <>
-                        Koop nu
+                        {isEn ? "Buy now" : "Koop nu"}
                         <ArrowRight size={16} />
                       </>
                     )}
@@ -764,20 +771,20 @@ const Shop = () => {
         )}
         {!loading && !error && filteredProducts.length === 0 && (
         <div className="text-center text-muted-foreground bg-card border border-border rounded-2xl p-10">
-          Geen producten gevonden met deze filters.
+          {isEn ? "No products found with these filters." : "Geen producten gevonden met deze filters."}
         </div>
         )}
 
         {/* Cart Summary */}
         <div id="winkelmand" className="mt-12 bg-card border border-border rounded-2xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-foreground">Winkelmand</h2>
+            <h2 className="text-xl font-semibold text-foreground">{isEn ? "Cart" : "Winkelmand"}</h2>
             <span className="text-sm text-muted-foreground">
               {cart.length} item{cart.length === 1 ? "" : "s"}
             </span>
           </div>
           {cart.length === 0 ? (
-            <p className="text-muted-foreground">Je mandje is leeg.</p>
+            <p className="text-muted-foreground">{isEn ? "Your cart is empty." : "Je mandje is leeg."}</p>
           ) : (
             <div className="space-y-4">
               {cart.map((item) => (
@@ -810,7 +817,7 @@ const Shop = () => {
               ))}
 
               <div className="flex items-center justify-between pt-2">
-                <span className="text-muted-foreground">Totaal</span>
+                <span className="text-muted-foreground">{isEn ? "Total" : "Totaal"}</span>
                 <span className="font-semibold text-foreground">
                   {currency.format(
                     cart.reduce((sum, item) => sum + item.priceCents * item.quantity, 0) / 100,
@@ -826,17 +833,17 @@ const Shop = () => {
                 {checkoutLoadingId === "cart" ? (
                   <>
                     <Loader2 className="animate-spin" size={16} />
-                    Bezig met afrekenen...
+                    {isEn ? "Processing checkout..." : "Bezig met afrekenen..."}
                   </>
                 ) : (
                   <>
-                    Naar de kassa
+                    {isEn ? "Go to checkout" : "Naar de kassa"}
                     <ArrowRight size={16} />
                   </>
                 )}
               </button>
               <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <span>Verzendkosten</span>
+                <span>{isEn ? "Shipping" : "Verzendkosten"}</span>
                 <span>
                   {currency.format(Math.max(...cart.map((c) => c.deliveryCostCents || 0), 0) / 100)}
                 </span>
@@ -845,7 +852,7 @@ const Shop = () => {
                 to={withLocalePath("/cart", locale)}
                 className="w-full inline-flex items-center justify-center gap-2 border border-border text-foreground px-4 py-3 rounded-lg hover:bg-muted transition"
               >
-                Naar winkelmand pagina
+                {isEn ? "Go to cart page" : "Naar winkelmand pagina"}
               </Link>
               {error && <p className="text-sm text-destructive">{error}</p>}
             </div>
@@ -859,7 +866,7 @@ const Shop = () => {
         className="fixed bottom-24 right-6 inline-flex items-center gap-2 px-4 py-3 rounded-full shadow-lg bg-primary text-primary-foreground hover:opacity-90 transition"
       >
         <ShoppingCart size={18} />
-        Winkelmand ({cart.reduce((sum, item) => sum + item.quantity, 0)})
+        {isEn ? "Cart" : "Winkelmand"} ({cart.reduce((sum, item) => sum + item.quantity, 0)})
       </Link>
     </div>
   );

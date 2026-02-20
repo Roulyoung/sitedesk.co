@@ -100,11 +100,16 @@ const comparisonRows = [
 const Webshop = () => {
   const location = useLocation();
   const locale = getLocaleFromPath(location.pathname);
+  const isEn = locale === "en";
   const pathWithoutLocale = stripLocaleFromPath(location.pathname);
   const alternateLinks = getAlternateHrefLangs(pathWithoutLocale);
-  const pageTitle = "Supersnelle Webshop op Edge | €1.000 setup + €150 p/m | Sitedesk";
+  const pageTitle = isEn
+    ? "Ultra-Fast Edge Webshop | EUR 1,000 setup + EUR 150 p/m | Sitedesk"
+    : "Supersnelle Webshop op Edge | €1.000 setup + €150 p/m | Sitedesk";
   const pageDescription =
-    "Sitedesk bouwt, host en onderhoudt supersnelle webshops op Edge. Inclusief Google Sheets CMS, Stripe checkout en support. Early Adopter: €1.000 setup + €150 p/m lifetime.";
+    isEn
+      ? "Sitedesk builds, hosts and maintains ultra-fast edge webshops. Includes Google Sheets CMS, Stripe checkout and support. Early Adopter: EUR 1,000 setup + EUR 150 p/m lifetime."
+      : "Sitedesk bouwt, host en onderhoudt supersnelle webshops op Edge. Inclusief Google Sheets CMS, Stripe checkout en support. Early Adopter: €1.000 setup + €150 p/m lifetime.";
   const canonicalUrl = `https://sitedesk.co${location.pathname}`;
   const imageUrl = "https://sitedesk.co/icon-sitedesk.png";
   const [monthlyRevenue, setMonthlyRevenue] = useState(10000);
@@ -315,16 +320,17 @@ const Webshop = () => {
                   <span>Headless Edge E-commerce</span>
                 </div>
                 <h1 className="text-4xl md:text-5xl font-bold leading-tight text-foreground">
-                  De snelste e-commerce engine voor ambitieuze merken.
+                  {isEn ? "The fastest e-commerce engine for ambitious brands." : "De snelste e-commerce engine voor ambitieuze merken."}
                 </h1>
                 <p className="text-lg text-muted-foreground max-w-2xl">
-                  Stop met het verliezen van omzet door trage systemen. Wij zijn je volledig beheerde tech-afdeling en
-                  bouwen high-performance webshops op Edge-technologie die net zo makkelijk te beheren zijn als een spreadsheet.
+                  {isEn
+                    ? "Stop losing revenue to slow systems. We are your fully managed tech department and build high-performance edge webshops that are as easy to manage as a spreadsheet."
+                    : "Stop met het verliezen van omzet door trage systemen. Wij zijn je volledig beheerde tech-afdeling en bouwen high-performance webshops op Edge-technologie die net zo makkelijk te beheren zijn als een spreadsheet."}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button asChild variant="hero" size="lg" className="group">
                     <a href="#contact">
-                      Plan een call
+                      {isEn ? "Book a call" : "Plan een call"}
                       <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                     </a>
                   </Button>
@@ -336,22 +342,22 @@ const Webshop = () => {
                   >
                     <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer" aria-label="WhatsApp">
                       <MessageCircle />
-                      WhatsApp direct
+                      {isEn ? "WhatsApp now" : "WhatsApp direct"}
                     </a>
                   </Button>
                 </div>
                 <div className="grid sm:grid-cols-3 gap-3 text-sm text-muted-foreground">
                   <div className="p-3 rounded-xl bg-card border border-border shadow-sm">
-                    <div className="text-foreground font-semibold">Volledig ontzorgd</div>
-                    <p>Wij zijn je vaste tech-team, dagelijkse wijzigingen inbegrepen.</p>
+                    <div className="text-foreground font-semibold">{isEn ? "Fully managed" : "Volledig ontzorgd"}</div>
+                    <p>{isEn ? "We are your fixed tech team, daily updates included." : "Wij zijn je vaste tech-team, dagelijkse wijzigingen inbegrepen."}</p>
                   </div>
                   <div className="p-3 rounded-xl bg-card border border-border shadow-sm">
-                    <div className="text-foreground font-semibold">Geen developer nodig</div>
-                    <p>Stuur wensen via WhatsApp of telefoon, wij regelen het.</p>
+                    <div className="text-foreground font-semibold">{isEn ? "No developer needed" : "Geen developer nodig"}</div>
+                    <p>{isEn ? "Send requests via WhatsApp or phone, we handle it." : "Stuur wensen via WhatsApp of telefoon, wij regelen het."}</p>
                   </div>
                   <div className="p-3 rounded-xl bg-card border border-border shadow-sm">
-                    <div className="text-foreground font-semibold">Snel resultaat</div>
-                    <p>Aanpassingen en CRO-tests zonder wachtrij.</p>
+                    <div className="text-foreground font-semibold">{isEn ? "Fast results" : "Snel resultaat"}</div>
+                    <p>{isEn ? "Changes and CRO tests without queue time." : "Aanpassingen en CRO-tests zonder wachtrij."}</p>
                   </div>
                 </div>
               </div>
@@ -496,11 +502,11 @@ const Webshop = () => {
                 >
                   <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
                     <MessageCircle />
-                    WhatsApp direct
+                    {isEn ? "WhatsApp now" : "WhatsApp direct"}
                   </a>
                 </Button>
                 <Button asChild variant="hero" size="lg">
-                  <a href="#contact">Plan een call</a>
+                  <a href="#contact">{isEn ? "Book a call" : "Plan een call"}</a>
                 </Button>
               </div>
             </div>
@@ -804,7 +810,7 @@ const Webshop = () => {
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3 mt-6">
                     <Button asChild variant="hero" size="lg" className="bg-primary text-primary-foreground">
-                      <a href="#contact">Plan een call</a>
+                      <a href="#contact">{isEn ? "Book a call" : "Plan een call"}</a>
                     </Button>
                     <Button
                       asChild
@@ -813,7 +819,7 @@ const Webshop = () => {
                       className="border-primary-foreground text-primary-foreground"
                     >
                       <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
-                        WhatsApp direct
+                        {isEn ? "WhatsApp now" : "WhatsApp direct"}
                       </a>
                     </Button>
                   </div>
@@ -946,7 +952,7 @@ const Webshop = () => {
               </div>
               <div className="flex flex-wrap gap-3">
                 <Button asChild variant="hero" size="lg">
-                  <a href="#contact">Plan een call</a>
+                  <a href="#contact">{isEn ? "Book a call" : "Plan een call"}</a>
                 </Button>
                 <Button
                   asChild
@@ -956,7 +962,7 @@ const Webshop = () => {
                 >
                   <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
                     <MessageCircle />
-                    WhatsApp direct
+                    {isEn ? "WhatsApp now" : "WhatsApp direct"}
                   </a>
                 </Button>
               </div>
@@ -997,13 +1003,15 @@ const Webshop = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-start bg-card border border-border rounded-3xl p-8 md:p-12 shadow-lg">
             <div className="space-y-4">
               <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider">
-                Direct contact & demo
+                {isEn ? "Direct contact and demo" : "Direct contact & demo"}
               </span>
               <h3 className="text-3xl md:text-4xl font-bold text-foreground">
-                Vragen over de overstap? Wij kijken gratis mee naar je huidige laadtijd.
+                {isEn ? "Questions about switching? We review your current speed for free." : "Vragen over de overstap? Wij kijken gratis mee naar je huidige laadtijd."}
               </h3>
               <p className="text-muted-foreground text-lg">
-                We Got You: wij bouwen wat je nodig hebt, zonder extra kosten. Plan een demo of stuur direct een bericht.
+                {isEn
+                  ? "We Got You: we build what you need, without extra costs. Book a demo or send a direct message."
+                  : "We Got You: wij bouwen wat je nodig hebt, zonder extra kosten. Plan een demo of stuur direct een bericht."}
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button
@@ -1014,22 +1022,22 @@ const Webshop = () => {
                 >
                   <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
                     <MessageCircle />
-                    WhatsApp direct
+                    {isEn ? "WhatsApp now" : "WhatsApp direct"}
                   </a>
                 </Button>
                 <Button asChild variant="hero" size="lg">
-                  <a href="#contact">Plan een call</a>
+                  <a href="#contact">{isEn ? "Book a call" : "Plan een call"}</a>
                 </Button>
               </div>
             </div>
             <form className="space-y-4" onSubmit={handleContactSubmit}>
               <div className="hidden">
-                <label htmlFor="contact-company">Bedrijfsnaam (laat leeg)</label>
+                <label htmlFor="contact-company">{isEn ? "Company (leave empty)" : "Bedrijfsnaam (laat leeg)"}</label>
                 <input id="contact-company" name="company" type="text" />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="name">
-                  Naam
+                  {isEn ? "Name" : "Naam"}
                 </label>
                 <input
                   id="name"
@@ -1037,12 +1045,12 @@ const Webshop = () => {
                   type="text"
                   required
                   className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
-                  placeholder="Jouw naam"
+                  placeholder={isEn ? "Your name" : "Jouw naam"}
                 />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="email">
-                  E-mail
+                  {isEn ? "Email" : "E-mail"}
                 </label>
                 <input
                   id="email"
@@ -1055,26 +1063,28 @@ const Webshop = () => {
               </div>
               <div>
                 <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="message">
-                  Bericht
+                  {isEn ? "Message" : "Bericht"}
                 </label>
                 <textarea
                   id="message"
                   name="message"
                   rows={4}
                   className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
-                  placeholder="Vertel kort over je shop of huidige laadtijd."
+                  placeholder={isEn ? "Tell us briefly about your shop or current load time." : "Vertel kort over je shop of huidige laadtijd."}
                   required
                 />
               </div>
               <Button type="submit" variant="hero" size="lg" className="w-full" disabled={contactStatus === "sending"}>
-                {contactStatus === "sending" ? "Verzenden..." : "Plan gratis speed-check"}
+                {contactStatus === "sending" ? (isEn ? "Sending..." : "Verzenden...") : isEn ? "Plan free speed check" : "Plan gratis speed-check"}
               </Button>
               <p className="text-xs text-muted-foreground">
-                We reageren binnen 1 werkdag. Geen verplichtingen, wel directe inzichten in je snelheid.
+                {isEn
+                  ? "We respond within 1 business day. No obligations, just direct insights into your speed."
+                  : "We reageren binnen 1 werkdag. Geen verplichtingen, wel directe inzichten in je snelheid."}
               </p>
               <div className="text-sm" aria-live="polite">
                 {contactStatus === "success" && (
-                  <span className="text-success">Bericht ontvangen. We nemen snel contact op.</span>
+                  <span className="text-success">{isEn ? "Message received. We will contact you soon." : "Bericht ontvangen. We nemen snel contact op."}</span>
                 )}
                 {contactStatus === "error" && <span className="text-destructive">{contactError}</span>}
               </div>

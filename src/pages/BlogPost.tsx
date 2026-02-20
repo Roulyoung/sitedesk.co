@@ -9,8 +9,8 @@ import { posts, PAGE_SIZE, paginate, type ContentBlock } from "@/lib/blogData";
 import { Helmet } from "react-helmet-async";
 import { getAlternateHrefLangs, getLocaleFromPath, stripLocaleFromPath, withLocalePath } from "@/lib/i18n";
 
-const formatDate = (value: string) =>
-  new Intl.DateTimeFormat("nl-NL", {
+const formatDate = (value: string, isEn: boolean) =>
+  new Intl.DateTimeFormat(isEn ? "en-GB" : "nl-NL", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -22,6 +22,7 @@ const BlogPost = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const locale = getLocaleFromPath(location.pathname);
+  const isEn = locale === "en";
   const pathWithoutLocale = stripLocaleFromPath(location.pathname);
   const alternateLinks = getAlternateHrefLangs(pathWithoutLocale);
   const searchParams = new URLSearchParams(location.search);
@@ -36,7 +37,7 @@ const BlogPost = () => {
 
   const title = current.title;
   const description = current.excerpt;
-  const publishedDate = formatDate(current.date);
+  const publishedDate = formatDate(current.date, isEn);
   const readingTime = current.readingTime ?? "6 min";
   const canonical = `https://sitedesk.co${location.pathname}`;
   const isBrowser = typeof window !== "undefined";
@@ -83,7 +84,7 @@ const BlogPost = () => {
       <div className="flex items-center justify-center gap-2 my-8">
         <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(Math.max(1, page - 1))}>
           <ArrowLeft className="w-4 h-4 mr-1" />
-          Vorige
+          {isEn ? "Previous" : "Vorige"}
         </Button>
         {pages.map((p) => (
           <Button key={p} variant={p === page ? "hero" : "outline"} size="sm" onClick={() => setPage(p)}>
@@ -96,7 +97,7 @@ const BlogPost = () => {
           disabled={page === totalPages}
           onClick={() => setPage(Math.min(totalPages, page + 1))}
         >
-          Volgende
+          {isEn ? "Next" : "Volgende"}
           <ArrowRight className="w-4 h-4 ml-1" />
         </Button>
       </div>
@@ -205,15 +206,18 @@ const BlogPost = () => {
           <section key={idx} className="bg-black text-white p-10 rounded-2xl my-16 text-center">
             <h2 className="font-extrabold text-3xl">{block.data?.title ?? "Pilot Deal"}</h2>
             <p className="text-lg leading-relaxed mt-4">
-              {block.data?.body ?? "€1.000 eenmalig, €150 p/m. Inclusief hosting, onbeperkt support én doorontwikkeling."}
+              {block.data?.body ??
+                (isEn
+                  ? "EUR 1,000 one-time, EUR 150 p/m. Includes hosting, unlimited support, and continuous development."
+                  : "€1.000 eenmalig, €150 p/m. Inclusief hosting, onbeperkt support én doorontwikkeling.")}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-3 mt-6">
               <Button asChild variant="hero" size="lg">
-                <a href={`${withLocalePath("/", locale)}#contact`}>Plan je Speed-Check</a>
+                <a href={`${withLocalePath("/", locale)}#contact`}>{isEn ? "Plan your speed check" : "Plan je Speed-Check"}</a>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
                 <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
-                  WhatsApp direct
+                  {isEn ? "WhatsApp now" : "WhatsApp direct"}
                 </a>
               </Button>
             </div>
@@ -245,11 +249,11 @@ const BlogPost = () => {
           <div className="mb-6 flex items-center justify-between">
             <Button variant="outline" size="sm" onClick={handleBack} className="gap-2">
               <ArrowLeft className="w-4 h-4" />
-              Terug naar blogoverzicht
+              {isEn ? "Back to blog overview" : "Terug naar blogoverzicht"}
             </Button>
             <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
               <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-              High-performance e-commerce inzichten
+              {isEn ? "High-performance e-commerce insights" : "High-performance e-commerce inzichten"}
             </div>
           </div>
 
@@ -277,16 +281,16 @@ const BlogPost = () => {
                 )}
                 <span className="inline-flex items-center gap-2">
                   <Share2 className="w-4 h-4" />
-                  {readingTime} leestijd
+                  {readingTime} {isEn ? "read time" : "leestijd"}
                 </span>
               </div>
               <div className="flex flex-wrap gap-3">
                 <Button asChild variant="hero" size="sm">
-                  <a href={`${withLocalePath("/", locale)}#contact`}>Plan een Speed-Check</a>
+                  <a href={`${withLocalePath("/", locale)}#contact`}>{isEn ? "Plan a speed check" : "Plan een Speed-Check"}</a>
                 </Button>
                 <Button asChild variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10">
                   <a href="https://wa.me/31640326650" target="_blank" rel="noreferrer">
-                    WhatsApp direct
+                    {isEn ? "WhatsApp now" : "WhatsApp direct"}
                   </a>
                 </Button>
               </div>
@@ -294,14 +298,14 @@ const BlogPost = () => {
           </div>
 
           <div className="mt-10 grid lg:grid-cols-[1fr,280px] gap-10">
-            <h2 className="sr-only">Artikelinhoud</h2>
+            <h2 className="sr-only">{isEn ? "Article content" : "Artikelinhoud"}</h2>
             <section className="article-body max-w-[720px] mx-auto text-lg leading-relaxed text-foreground space-y-12">
               {current.content.map((block, idx) => renderBlock(block, idx))}
             </section>
 
             <aside className="hidden lg:block sticky top-28 self-start">
               <div className="rounded-2xl border border-border bg-card/70 p-5 space-y-4">
-                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Inhoudsopgave</h3>
+                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">{isEn ? "Table of contents" : "Inhoudsopgave"}</h3>
                 <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
                   {current.content
                     .map((c, i) => ({ block: c, id: headingIds[i] }))
@@ -331,25 +335,27 @@ const BlogPost = () => {
 
           <section className="mt-16 space-y-6">
             <div className="rounded-2xl border border-border bg-card/80 p-6">
-              <h3 className="text-lg font-semibold text-foreground">Geschreven door</h3>
+              <h3 className="text-lg font-semibold text-foreground">{isEn ? "Written by" : "Geschreven door"}</h3>
               <p className="text-foreground font-bold">Roeland</p>
-              <p className="text-muted-foreground text-sm">E-commerce Architect bij Sitedesk</p>
+              <p className="text-muted-foreground text-sm">{isEn ? "E-commerce Architect at Sitedesk" : "E-commerce Architect bij Sitedesk"}</p>
               <p className="text-muted-foreground mt-2">
-                Specialist in edge-performance en conversiegedreven checkout flows voor ambitieuze merken.
+                {isEn
+                  ? "Specialist in edge performance and conversion-focused checkout flows for ambitious brands."
+                  : "Specialist in edge-performance en conversiegedreven checkout flows voor ambitieuze merken."}
               </p>
             </div>
 
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-xl font-semibold text-foreground">Gerelateerde artikelen</h3>
+                <h3 className="text-xl font-semibold text-foreground">{isEn ? "Related articles" : "Gerelateerde artikelen"}</h3>
               </div>
-              <p className="text-sm text-muted-foreground">Binnenkort vind je hier onze meest relevante artikelen.</p>
+              <p className="text-sm text-muted-foreground">{isEn ? "Our most relevant articles will appear here soon." : "Binnenkort vind je hier onze meest relevante artikelen."}</p>
             </div>
           </section>
 
           <section className="mt-16">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-foreground">Meer artikelen</h3>
+              <h3 className="text-xl font-semibold text-foreground">{isEn ? "More articles" : "Meer artikelen"}</h3>
             </div>
             <Pagination />
             <div className="grid md:grid-cols-2 gap-6">
@@ -357,7 +363,7 @@ const BlogPost = () => {
                 <article key={post.id} className="p-5 rounded-2xl border border-border bg-card shadow-sm">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
                     <CalendarDays className="w-4 h-4" />
-                    <span suppressHydrationWarning>{formatDate(post.date)}</span>
+                    <span suppressHydrationWarning>{formatDate(post.date, isEn)}</span>
                   </div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">
                     <a href={`/blog/${post.id}?page=${page}`} className="hover:text-accent transition-colors">
