@@ -69,6 +69,11 @@ const ensureDir = async (filePath) => {
 
 for (const route of routes) {
   const url = route;
+  if (route.startsWith("/product/") && productRowsForPrerender.length > 0) {
+    globalThis.__PRERENDER_PRODUCTS__ = productRowsForPrerender;
+  } else {
+    delete globalThis.__PRERENDER_PRODUCTS__;
+  }
   const { html, head } = await render(url);
   const productBootstrap =
     route.startsWith("/product/") && productRowsForPrerender.length > 0

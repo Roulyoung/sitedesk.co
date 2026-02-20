@@ -125,6 +125,10 @@ Output:
 - Do not block product rendering on client-side product fetch.
 - Seed product template with prerendered product payload (`window.__PRERENDER_PRODUCTS__`) so hero image and price render in initial HTML.
 - Keep runtime fetch as fallback only when prerender seed is missing.
+- SSR/client parity is mandatory: the same seed must be available during SSR render and before hydration, otherwise React hydration errors (#418/#423) will occur.
+
+10. React 18 image priority attribute
+- In JSX on React 18, prefer `fetchpriority` (lowercase attribute) on `<img>` instead of `fetchPriority` to avoid runtime warnings and console-noise audits.
 
 ## Cloudflare Settings Checklist (Post-Deploy)
 

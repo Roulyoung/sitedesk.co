@@ -367,7 +367,7 @@ const ProductPage = () => {
                   height={768}
                   decoding="async"
                   loading="eager"
-                  fetchPriority="high"
+                  fetchpriority="high"
                   onError={(e) => {
                     if (mainVariantFailed) return;
                     setMainVariantFailed(true);
@@ -478,7 +478,7 @@ const ProductPage = () => {
                         height={96}
                         loading="lazy"
                         decoding="async"
-                        fetchPriority="low"
+                        fetchpriority="low"
                         onError={(e) => {
                           if (failedThumbs[img]) return;
                           setFailedThumbs((prev) => ({ ...prev, [img]: true }));
