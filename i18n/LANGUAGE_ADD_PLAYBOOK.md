@@ -81,3 +81,19 @@ npm run i18n:blog:clean -- --lang=<lang> --scope=all
   - `/lang/shop`
   - `/lang/blog`
   - `/lang/product/<localized-slug>`
+
+## 8) Performance Guardrails (Keep Product Pages at 100)
+
+- Do not introduce blocking product API fetches in first render for localized product pages.
+- Product detail route must render from prerender seed first (`window.__PRERENDER_PRODUCTS__`), for all locales.
+- Runtime product refresh is allowed only as:
+  - fallback when prerender seed is missing, or
+  - background refresh (`requestIdleCallback` / delayed timeout), never in LCP critical path.
+- Keep LCP image discoverable in HTML with:
+  - `loading="eager"`
+  - `fetchpriority="high"`
+  - fixed `width`/`height`.
+- If translation changes touch product templates, rerun mobile Lighthouse on:
+  - `/product/<slug>/`
+  - `/en/product/<slug>/`
+  and confirm no `/products` request appears in the critical network chain before LCP.

@@ -20,6 +20,7 @@ const CartPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const locale = getLocaleFromPath(location.pathname);
+  const isEn = locale === "en";
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +59,7 @@ const CartPage = () => {
       const validation = await validateCartBeforeCheckout(cart);
       setCart(validation.cart);
       if (!validation.ok) {
-        setError(validation.message || "Controleer je winkelmand en probeer opnieuw.");
+        setError(validation.message || (isEn ? "Check your cart and try again." : "Controleer je winkelmand en probeer opnieuw."));
         return;
       }
 
@@ -87,7 +88,7 @@ const CartPage = () => {
                 ? [
                     {
                       id: "shipping",
-                      name: "Verzendkosten",
+                      name: isEn ? "Shipping" : "Verzendkosten",
                       price: liveShippingCents / 100,
                       quantity: 1,
                     },
@@ -98,14 +99,14 @@ const CartPage = () => {
       });
       if (!res.ok) {
         const text = await res.text();
-        throw new Error(text || "Aanmaken van checkout sessie mislukt");
+        throw new Error(text || (isEn ? "Failed to create checkout session" : "Aanmaken van checkout sessie mislukt"));
       }
       const data = await res.json();
-      if (!data?.url) throw new Error("Geen checkout URL ontvangen");
+      if (!data?.url) throw new Error(isEn ? "No checkout URL received" : "Geen checkout URL ontvangen");
       clearCart();
       window.location.href = data.url;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Checkout mislukt");
+      setError(err instanceof Error ? err.message : isEn ? "Checkout failed" : "Checkout mislukt");
     } finally {
       setCheckoutLoadingId(null);
     }
@@ -123,15 +124,15 @@ const CartPage = () => {
               <ShoppingBag size={20} />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Winkelmand</p>
-              <h1 className="text-3xl font-bold text-foreground">Je bestelling</h1>
+              <p className="text-sm text-muted-foreground">{isEn ? "Cart" : "Winkelmand"}</p>
+              <h1 className="text-3xl font-bold text-foreground">{isEn ? "Your order" : "Je bestelling"}</h1>
             </div>
           </div>
 
           {cart.length === 0 ? (
             <div className="bg-white border border-border rounded-2xl p-8 text-center shadow-sm">
-              <p className="text-muted-foreground mb-4">Je mandje is leeg.</p>
-              <ButtonLink to={withLocalePath("/shop", locale)} label="Verder winkelen" />
+              <p className="text-muted-foreground mb-4">{isEn ? "Your cart is empty." : "Je mandje is leeg."}</p>
+              <ButtonLink to={withLocalePath("/shop", locale)} label={isEn ? "Continue shopping" : "Verder winkelen"} />
             </div>
           ) : (
             <div className="grid lg:grid-cols-[2fr_1fr] gap-8">
@@ -142,7 +143,7 @@ const CartPage = () => {
                       {item.image ? (
                         <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
                       ) : (
-                        <span className="text-xs text-muted-foreground">Geen afbeelding</span>
+                        <span className="text-xs text-muted-foreground">{isEn ? "No image" : "Geen afbeelding"}</span>
                       )}
                     </div>
                     <div className="flex-1">
@@ -169,7 +170,7 @@ const CartPage = () => {
                     <button
                       onClick={() => removeItem(item.id)}
                       className="p-2 rounded-md text-destructive hover:bg-destructive/10 transition"
-                      aria-label="Verwijder"
+                      aria-label={isEn ? "Remove" : "Verwijder"}
                     >
                       <Trash size={16} />
                     </button>
@@ -179,19 +180,21 @@ const CartPage = () => {
 
               <div className="bg-white border border-border rounded-2xl shadow-sm p-6 space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Subtotaal</span>
+                  <span className="text-muted-foreground">{isEn ? "Subtotal" : "Subtotaal"}</span>
                   <span className="font-semibold text-foreground">{currency.format(total / 100)}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Verzendkosten</span>
+                  <span>{isEn ? "Shipping" : "Verzendkosten"}</span>
                   <span>{currency.format(shippingCents / 100)}</span>
                 </div>
                 <div className="flex items-center justify-between pt-2">
-                  <span className="text-foreground font-semibold">Totaal</span>
+                  <span className="text-foreground font-semibold">{isEn ? "Total" : "Totaal"}</span>
                   <span className="text-lg font-bold text-foreground">{currency.format(grandTotal / 100)}</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Prijzen inclusief btw. Verzendkosten op basis van het hoogste tarief in je mandje.
+                  {isEn
+                    ? "Prices include VAT. Shipping is based on the highest shipping rate in your cart."
+                    : "Prijzen inclusief btw. Verzendkosten op basis van het hoogste tarief in je mandje."}
                 </p>
                 <button
                   onClick={handleCheckout}
@@ -201,11 +204,11 @@ const CartPage = () => {
                   {checkoutLoadingId === "cart" ? (
                     <>
                       <Loader2 className="animate-spin" size={16} />
-                      Bezig met afrekenen...
+                      {isEn ? "Processing checkout..." : "Bezig met afrekenen..."}
                     </>
                   ) : (
                     <>
-                      Naar de kassa
+                      {isEn ? "Go to checkout" : "Naar de kassa"}
                       <ArrowRight size={16} />
                     </>
                   )}
@@ -214,7 +217,7 @@ const CartPage = () => {
                   onClick={handleContinueShopping}
                   className="w-full inline-flex items-center justify-center gap-2 border border-border text-foreground px-4 py-3 rounded-lg hover:bg-muted transition"
                 >
-                  Verder winkelen
+                  {isEn ? "Continue shopping" : "Verder winkelen"}
                 </button>
                 {error && <p className="text-sm text-destructive">{error}</p>}
               </div>

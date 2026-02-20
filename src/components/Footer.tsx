@@ -1,4 +1,4 @@
-﻿import { MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { getLocaleFromPath, withLocalePath } from "@/lib/i18n";
 import { t } from "@/lib/messages";
@@ -7,11 +7,12 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 const Footer = () => {
   const location = useLocation();
   const locale = getLocaleFromPath(location.pathname);
+  const isEn = locale === "en";
 
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="container mx-auto py-16">
-        <h2 className="sr-only">Footer navigatie</h2>
+        <h2 className="sr-only">{isEn ? "Footer navigation" : "Footer navigatie"}</h2>
         <div className="grid md:grid-cols-4 gap-12">
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
@@ -26,8 +27,9 @@ const Footer = () => {
               </div>
             </div>
             <p className="text-primary-foreground/70 max-w-sm mb-6">
-              Jouw digitale rechterhand. Professionele websites voor ondernemers,
-              volledig beheerd voor slechts EUR 1 per dag.
+              {isEn
+                ? "Your digital right hand. Professional websites for entrepreneurs, fully managed for only EUR 1 per day."
+                : "Jouw digitale rechterhand. Professionele websites voor ondernemers, volledig beheerd voor slechts EUR 1 per dag."}
             </p>
             <div className="space-y-2 text-sm text-primary-foreground/70">
               <div className="flex items-start gap-2">
@@ -82,7 +84,7 @@ const Footer = () => {
               </li>
               <li>
                 <a href="#" className="hover:text-primary-foreground transition-colors">
-                  Algemene Voorwaarden
+                  {isEn ? "Terms and Conditions" : "Algemene Voorwaarden"}
                 </a>
               </li>
               <li>
@@ -98,7 +100,9 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-primary-foreground/10 mt-12 pt-8 text-center text-sm text-primary-foreground/60">
-          <p suppressHydrationWarning>© {new Date().getFullYear()} Sitedesk.co. Alle rechten voorbehouden.</p>
+          <p suppressHydrationWarning>
+            � {new Date().getFullYear()} Sitedesk.co. {isEn ? "All rights reserved." : "Alle rechten voorbehouden."}
+          </p>
         </div>
       </div>
     </footer>

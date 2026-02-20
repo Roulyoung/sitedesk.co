@@ -85,7 +85,7 @@ const MESSAGES: Record<SupportedLocale, Record<MessageKey, string>> = {
     "footer.webshops": "Webshops",
     "footer.businessSites": "Business Websites",
     "footer.planCall": "Book a call",
-    "footer.whatsapp": "WhatsApp direct",
+    "footer.whatsapp": "WhatsApp now",
     "success.title": "Thanks for your order!",
     "success.subtitle": "You will receive a confirmation email within a few minutes.",
     "success.summary": "Order summary",

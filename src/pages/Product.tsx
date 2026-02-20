@@ -152,6 +152,7 @@ const ProductPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const locale = getLocaleFromPath(location.pathname);
+  const isEn = locale === "en";
   const pathWithoutLocale = stripLocaleFromPath(location.pathname);
   const alternateLinks = getAlternateHrefLangs(pathWithoutLocale);
   const initialProducts = useMemo(() => getPrerenderProducts(locale), [locale]);
@@ -164,18 +165,20 @@ const ProductPage = () => {
 
   useEffect(() => {
     let cancelled = false;
+    let idleId: number | null = null;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     const fetchProducts = async (showLoader: boolean) => {
       if (showLoader) setLoading(true);
       try {
         const res = await fetch(PRODUCTS_ENDPOINT, { cache: "no-store" });
-        if (!res.ok) throw new Error("Kon producten niet laden");
+        if (!res.ok) throw new Error(isEn ? "Could not load products" : "Kon producten niet laden");
         const text = await res.text();
         let data;
         try {
           data = JSON.parse(text);
         } catch (_err) {
-          throw new Error("Onverwachte serverrespons (geen geldige JSON)");
+          throw new Error(isEn ? "Unexpected server response (invalid JSON)" : "Onverwachte serverrespons (geen geldige JSON)");
         }
         const mapped: Product[] = data?.products?.map((row: any, idx: number) => mapProductRow(row, idx, locale)) || [];
         if (!cancelled) {
@@ -191,7 +194,22 @@ const ProductPage = () => {
       }
     };
 
-    fetchProducts(initialProducts.length === 0);
+    if (initialProducts.length === 0) {
+      // No prerender data available: fetch immediately.
+      fetchProducts(true);
+    } else {
+      // Keep product LCP path clean; refresh catalog only when browser is idle.
+      const runRefresh = () => {
+        if (!cancelled) fetchProducts(false);
+      };
+      if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+        idleId = (window as Window & { requestIdleCallback: (cb: IdleRequestCallback) => number }).requestIdleCallback(
+          () => runRefresh(),
+        );
+      } else {
+        timeoutId = setTimeout(runRefresh, 2200);
+      }
+    }
 
     const onPageShow = (event: PageTransitionEvent) => {
       if (event.persisted) {
@@ -202,9 +220,13 @@ const ProductPage = () => {
     window.addEventListener("pageshow", onPageShow);
     return () => {
       cancelled = true;
+      if (idleId !== null && typeof window !== "undefined" && "cancelIdleCallback" in window) {
+        (window as Window & { cancelIdleCallback: (id: number) => void }).cancelIdleCallback(idleId);
+      }
+      if (timeoutId) clearTimeout(timeoutId);
       window.removeEventListener("pageshow", onPageShow);
     };
-  }, [initialProducts, locale]);
+  }, [initialProducts, locale, isEn]);
 
   const product = useMemo(
     () => {
@@ -266,7 +288,7 @@ const ProductPage = () => {
     };
     const current = loadCart();
     addToCartStore(current, item);
-    toast({ title: "Toegevoegd aan winkelmand", description: product.name });
+    toast({ title: isEn ? "Added to cart" : "Toegevoegd aan winkelmand", description: product.name });
     navigate(withLocalePath("/cart", locale));
   };
 
@@ -290,13 +312,13 @@ const ProductPage = () => {
       setError(null);
       const validation = await validateCartBeforeCheckout(combinedCart);
       if (!validation.ok) {
-        setError(validation.message || "Controleer je winkelmand en probeer opnieuw.");
+        setError(validation.message || (isEn ? "Check your cart and try again." : "Controleer je winkelmand en probeer opnieuw."));
         return;
       }
 
       const validatedCurrent = validation.cart.find((item) => item.id === checkoutItem.id);
       if (!validatedCurrent) {
-        setError(`${product.name} is niet meer beschikbaar.`);
+        setError(`${product.name} ${isEn ? "is no longer available." : "is niet meer beschikbaar."}`);
         return;
       }
 
@@ -336,7 +358,7 @@ const ProductPage = () => {
                 ? [
                     {
                       id: "shipping",
-                      name: "Verzendkosten",
+                      name: isEn ? "Shipping" : "Verzendkosten",
                       price: shippingCents / 100,
                       quantity: 1,
                     },
@@ -347,10 +369,10 @@ const ProductPage = () => {
       });
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
-      if (!data?.url) throw new Error("Geen checkout URL ontvangen");
+      if (!data?.url) throw new Error(isEn ? "No checkout URL received" : "Geen checkout URL ontvangen");
       window.location.href = data.url;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Checkout mislukt");
+      setError(err instanceof Error ? err.message : isEn ? "Checkout failed" : "Checkout mislukt");
     }
   };
 
@@ -393,21 +415,28 @@ const ProductPage = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Helmet>
-          <title>Product niet gevonden | Sitedesk</title>
-          <meta name="description" content="Deze productpagina is niet beschikbaar. Bekijk het volledige aanbod in de shop." />
+          <title>{isEn ? "Product not found | Sitedesk" : "Product niet gevonden | Sitedesk"}</title>
+          <meta
+            name="description"
+            content={
+              isEn
+                ? "This product page is unavailable. View the full collection in the shop."
+                : "Deze productpagina is niet beschikbaar. Bekijk het volledige aanbod in de shop."
+            }
+          />
           <link rel="canonical" href={canonical} />
           <meta name="robots" content="noindex, follow" />
         </Helmet>
         <Header />
         <main className="flex-1 flex items-center justify-center px-4">
           <div className="max-w-lg text-center space-y-4">
-            <h1 className="text-3xl font-semibold">Product niet gevonden</h1>
-            <p className="text-muted-foreground">{error || "Controleer de link of ga terug naar de shop."}</p>
+            <h1 className="text-3xl font-semibold">{isEn ? "Product not found" : "Product niet gevonden"}</h1>
+            <p className="text-muted-foreground">{error || (isEn ? "Check the URL or return to the shop." : "Controleer de link of ga terug naar de shop.")}</p>
             <Link
               to={withLocalePath("/shop", locale)}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition"
             >
-              Terug naar shop
+              {isEn ? "Back to shop" : "Terug naar shop"}
             </Link>
           </div>
         </main>
@@ -446,13 +475,13 @@ const ProductPage = () => {
             onClick={handleAddToCart}
             className="min-h-12 px-4 py-3 rounded-lg border border-border text-foreground touch-manipulation"
           >
-            In mand
+            {isEn ? "Cart" : "In mand"}
           </button>
           <button
             onClick={handleCheckout}
             className="min-h-12 px-4 py-3 rounded-lg bg-primary text-primary-foreground touch-manipulation"
           >
-            Koop nu
+            {isEn ? "Buy now" : "Koop nu"}
           </button>
         </div>
       </div>
@@ -499,29 +528,29 @@ const ProductPage = () => {
                   {product.priceDisplay || formatPrice(product.priceCents)}
                 </div>
                 <div className="space-y-1 text-sm text-muted-foreground">
-                  <div>Levering: {product.delivery_time || "1-2 dagen"}</div>
+                  <div>{isEn ? "Delivery" : "Levering"}: {product.delivery_time || (isEn ? "1-2 days" : "1-2 dagen")}</div>
                   {parsePriceToCents(product.delivery_cost || "0") > 0 ? (
                     <div>
-                      Verzendkosten:{" "}
+                      {isEn ? "Shipping" : "Verzendkosten"}:{" "}
                       {new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(
                         parsePriceToCents(product.delivery_cost || "0") / 100,
                       )}
                     </div>
                   ) : (
-                    <div>Gratis verzending</div>
+                    <div>{isEn ? "Free shipping" : "Gratis verzending"}</div>
                   )}
                 </div>
                 <p className="text-gray-700 leading-relaxed">
-                  {product.description || "Geen beschrijving beschikbaar."}
+                  {product.description || (isEn ? "No description available." : "Geen beschrijving beschikbaar.")}
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-muted-foreground">
                   <div className="rounded-lg border border-border px-4 py-3 bg-gray-50">
-                    <p className="font-semibold text-foreground">Direct te bestellen</p>
-                    <p>Veilige betaling via Stripe</p>
+                    <p className="font-semibold text-foreground">{isEn ? "Ready to order" : "Direct te bestellen"}</p>
+                    <p>{isEn ? "Secure payment via Stripe" : "Veilige betaling via Stripe"}</p>
                   </div>
                   <div className="rounded-lg border border-border px-4 py-3 bg-gray-50">
-                    <p className="font-semibold text-foreground">Inclusief support</p>
-                    <p>Persoonlijk contact na je bestelling</p>
+                    <p className="font-semibold text-foreground">{isEn ? "Support included" : "Inclusief support"}</p>
+                    <p>{isEn ? "Personal follow-up after your order" : "Persoonlijk contact na je bestelling"}</p>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-3 pt-2">
@@ -529,27 +558,27 @@ const ProductPage = () => {
                     onClick={handleAddToCart}
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-border text-foreground hover:bg-muted transition"
                   >
-                    In winkelmand
+                    {isEn ? "Add to cart" : "In winkelmand"}
                     <ArrowRight size={16} />
                   </button>
                   <button
                     onClick={handleCheckout}
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition"
                   >
-                    Bestel nu
+                    {isEn ? "Order now" : "Bestel nu"}
                     <ArrowRight size={16} />
                   </button>
                   <Link
                     to={withLocalePath("/shop", locale)}
                     className="inline-flex items-center gap-2 px-4 py-3 rounded-lg border border-border text-foreground hover:bg-muted transition"
                   >
-                    Terug naar shop
+                    {isEn ? "Back to shop" : "Terug naar shop"}
                   </Link>
                 </div>
                 {error && <p className="text-sm text-destructive">{error}</p>}
                 <div className="pt-2">
                   <Link to={withLocalePath("/shop", locale)} className="text-sm text-gray-500 hover:text-primary">
-                    Verder winkelen
+                    {isEn ? "Continue shopping" : "Verder winkelen"}
                   </Link>
                 </div>
               </div>
