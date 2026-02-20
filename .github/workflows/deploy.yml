@@ -27,8 +27,9 @@ jobs:
       - name: Run Prerender Script
         run: npm run build
 
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
         with:
-          folder: dist
-          branch: gh-pages
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }} --branch=main
