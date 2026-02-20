@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Link, useSearchParams } from "react-router-dom";
 import { addToCart as addToCartStore, loadCart, updateQuantity as updateQtyStore, type CartItem } from "@/lib/cart";
+import { validateCartBeforeCheckout } from "@/lib/checkoutValidation";
 import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from "react-helmet-async";
 
@@ -309,29 +310,29 @@ const Shop = () => {
   };
 
   const handleCheckout = async () => {
-    if (cart.length === 0) {
-      setError("Je mandje is leeg.");
-      return;
-    }
-
-    const nonLinkItems = cart.filter((item) => !item.stripe_link);
-    const linkItems = cart.filter((item) => item.stripe_link);
-
-    if (nonLinkItems.length === 0 && linkItems.length === 1) {
-      window.location.href = linkItems[0].stripe_link as string;
-      return;
-    }
-
-    const shippingCents = Math.max(...cart.map((c) => c.deliveryCostCents || 0), 0);
-
     try {
       setError(null);
       setCheckoutLoadingId("cart");
+      const validation = await validateCartBeforeCheckout(cart);
+      setCart(validation.cart);
+      if (!validation.ok) {
+        setError(validation.message || "Controleer je winkelmand en probeer opnieuw.");
+        return;
+      }
+
+      const nonLinkItems = validation.cart.filter((item) => !item.stripe_link);
+      const linkItems = validation.cart.filter((item) => item.stripe_link);
+      if (nonLinkItems.length === 0 && linkItems.length === 1) {
+        window.location.href = linkItems[0].stripe_link as string;
+        return;
+      }
+
+      const shippingCents = Math.max(...validation.cart.map((c) => c.deliveryCostCents || 0), 0);
       const res = await fetch(CHECKOUT_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          cart: cart.map((item) => ({
+          cart: validation.cart.map((item) => ({
             id: item.id,
             name: item.name,
             price: item.priceCents / 100,
@@ -373,33 +374,61 @@ const Shop = () => {
     const newItem = {
       id: product.id || product.name || "product",
       name: product.name || "Product",
-      price: priceCents / 100,
+      priceCents,
       quantity: 1,
-    };
-    const existingCart = cart.map((item) => ({
-      id: item.id,
-      name: item.name,
-      price: (item.priceCents || 0) / 100,
-      quantity: item.quantity,
-    }));
-    const shippingCentsExisting = Math.max(...cart.map((c) => c.deliveryCostCents || 0), 0);
-    const shippingCentsNew = parseShippingToCents(product.delivery_cost || "0");
-    const shippingCents = Math.max(shippingCentsExisting, shippingCentsNew);
+      deliveryCostCents: parseShippingToCents(product.delivery_cost || "0"),
+      stock: product.stock || "",
+    } as CartItem;
+    const combinedCart: CartItem[] = cart.map((item) => ({ ...item })).concat(newItem);
 
-    // Direct link only if cart empty and product has direct link
-    if (product.stripe_link && existingCart.length === 0) {
-      window.location.href = product.stripe_link;
-      return;
-    }
     try {
       setError(null);
       setCheckoutLoadingId(product.id || product.name || "product");
+      const validation = await validateCartBeforeCheckout(combinedCart);
+      if (!validation.ok) {
+        setCart(validation.cart);
+        setError(validation.message || "Controleer je winkelmand en probeer opnieuw.");
+        return;
+      }
+
+      const validatedNewItem = validation.cart.find((item) => item.id === newItem.id);
+      if (!validatedNewItem) {
+        setError(`${product.name || "Product"} is niet meer beschikbaar.`);
+        return;
+      }
+
+      const existingValidated = validation.cart
+        .map((item) =>
+          item.id === newItem.id ? { ...item, quantity: Math.max(0, item.quantity - 1) } : item,
+        )
+        .filter((item) => item.quantity > 0);
+      const shippingCents = Math.max(...validation.cart.map((c) => c.deliveryCostCents || 0), 0);
+
+      // Direct link only if no existing cart and product has direct link
+      if (product.stripe_link && existingValidated.length === 0) {
+        window.location.href = product.stripe_link;
+        return;
+      }
+
       const res = await fetch(CHECKOUT_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          cart: existingCart
-            .concat(newItem)
+          cart: existingValidated
+            .map((item) => ({
+              id: item.id,
+              name: item.name,
+              price: (item.priceCents || 0) / 100,
+              quantity: item.quantity,
+            }))
+            .concat([
+              {
+                id: validatedNewItem.id,
+                name: validatedNewItem.name,
+                price: validatedNewItem.priceCents / 100,
+                quantity: 1,
+              },
+            ])
             .concat(
               shippingCents > 0
                 ? [

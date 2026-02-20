@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { ArrowRight } from "lucide-react";
 import { addToCart as addToCartStore, loadCart, type CartItem } from "@/lib/cart";
+import { validateCartBeforeCheckout } from "@/lib/checkoutValidation";
 import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from "react-helmet-async";
 
@@ -225,19 +226,50 @@ const ProductPage = () => {
   const handleCheckout = async () => {
     if (!product) return;
     const existingCart = loadCart();
-    const shippingExisting = Math.max(...existingCart.map((c) => c.deliveryCostCents || 0), 0);
-    const shippingCents = Math.max(shippingExisting, parsePriceToCents(product.delivery_cost || "0"));
+    const checkoutItem: CartItem = {
+      id: product.id,
+      name: product.name,
+      priceCents: product.priceCents,
+      quantity: 1,
+      deliveryCostCents: parsePriceToCents(product.delivery_cost || "0"),
+      stock: product.stock || "",
+      stripe_link: product.stripe_link,
+      price_id: product.price_id,
+      image: product.image || product.images?.[0],
+    };
+    const combinedCart: CartItem[] = existingCart.map((item) => ({ ...item })).concat(checkoutItem);
 
-    if (product.stripe_link && existingCart.length === 0 && shippingCents === 0) {
-      window.location.href = product.stripe_link;
-      return;
-    }
     try {
+      setError(null);
+      const validation = await validateCartBeforeCheckout(combinedCart);
+      if (!validation.ok) {
+        setError(validation.message || "Controleer je winkelmand en probeer opnieuw.");
+        return;
+      }
+
+      const validatedCurrent = validation.cart.find((item) => item.id === checkoutItem.id);
+      if (!validatedCurrent) {
+        setError(`${product.name} is niet meer beschikbaar.`);
+        return;
+      }
+
+      const existingValidated = validation.cart
+        .map((item) =>
+          item.id === checkoutItem.id ? { ...item, quantity: Math.max(0, item.quantity - 1) } : item,
+        )
+        .filter((item) => item.quantity > 0);
+      const shippingCents = Math.max(...validation.cart.map((c) => c.deliveryCostCents || 0), 0);
+
+      if (product.stripe_link && existingValidated.length === 0 && shippingCents === 0) {
+        window.location.href = product.stripe_link;
+        return;
+      }
+
       const res = await fetch(CHECKOUT_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          cart: existingCart
+          cart: existingValidated
             .map((item) => ({
               id: item.id,
               name: item.name,
@@ -246,9 +278,9 @@ const ProductPage = () => {
             }))
             .concat([
               {
-                id: product.id,
-                name: product.name,
-                price: product.priceCents / 100,
+                id: validatedCurrent.id,
+                name: validatedCurrent.name,
+                price: validatedCurrent.priceCents / 100,
                 quantity: 1,
               },
             ])

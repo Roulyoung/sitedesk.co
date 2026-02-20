@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { loadCart, updateQuantity as updateQtyStore, saveCart, clearCart, type CartItem } from "@/lib/cart";
+import { validateCartBeforeCheckout } from "@/lib/checkoutValidation";
 import { ArrowRight, Loader2, Minus, Plus, ShoppingBag, Trash } from "lucide-react";
 
 const CHECKOUT_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/create-checkout-session";
@@ -48,27 +49,30 @@ const CartPage = () => {
   };
 
   const handleCheckout = async () => {
-    if (cart.length === 0) {
-      setError("Je mandje is leeg.");
-      return;
-    }
-
-    const nonLinkItems = cart.filter((item) => !item.stripe_link);
-    const linkItems = cart.filter((item) => item.stripe_link);
-
-    if (nonLinkItems.length === 0 && linkItems.length === 1 && shippingCents === 0) {
-      window.location.href = linkItems[0].stripe_link as string;
-      return;
-    }
-
     try {
       setError(null);
       setCheckoutLoadingId("cart");
+      const validation = await validateCartBeforeCheckout(cart);
+      setCart(validation.cart);
+      if (!validation.ok) {
+        setError(validation.message || "Controleer je winkelmand en probeer opnieuw.");
+        return;
+      }
+
+      const nonLinkItems = validation.cart.filter((item) => !item.stripe_link);
+      const linkItems = validation.cart.filter((item) => item.stripe_link);
+      const liveShippingCents = Math.max(...validation.cart.map((c) => c.deliveryCostCents || 0), 0);
+
+      if (nonLinkItems.length === 0 && linkItems.length === 1 && liveShippingCents === 0) {
+        window.location.href = linkItems[0].stripe_link as string;
+        return;
+      }
+
       const res = await fetch(CHECKOUT_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          cart: cart
+          cart: validation.cart
             .map((item) => ({
               id: item.id,
               name: item.name,
@@ -76,12 +80,12 @@ const CartPage = () => {
               quantity: item.quantity,
             }))
             .concat(
-              shippingCents > 0
+              liveShippingCents > 0
                 ? [
                     {
                       id: "shipping",
                       name: "Verzendkosten",
-                      price: shippingCents / 100,
+                      price: liveShippingCents / 100,
                       quantity: 1,
                     },
                   ]
