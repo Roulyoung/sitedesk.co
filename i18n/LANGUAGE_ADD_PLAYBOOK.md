@@ -7,6 +7,7 @@ Related:
 - `i18n/CODEX_TASK_PROMPTS.md`
 - `.private/I18N_OPERATOR_PRIVATE.md`
 - `.private/I18N_CODEX_RUNBOOK_PRIVATE.md`
+- `GOOGLE_SHEETS_I18N_SETUP.md`
 
 ## 1) Decide language code
 
