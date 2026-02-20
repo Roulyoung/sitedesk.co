@@ -2,6 +2,7 @@
 import { useLocation } from "react-router-dom";
 import { getLocaleFromPath, withLocalePath } from "@/lib/i18n";
 import { t } from "@/lib/messages";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Footer = () => {
   const location = useLocation();
@@ -90,6 +91,9 @@ const Footer = () => {
                 </a>
               </li>
             </ul>
+            <div className="mt-4">
+              <LanguageSwitcher />
+            </div>
           </div>
         </div>
 
