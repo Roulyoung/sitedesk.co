@@ -1,0 +1,30 @@
+account_id = "REPLACE_WITH_ACCOUNT_ID"
+name = "stripe-webhook"
+main = "worker.js"
+compatibility_date = "2026-01-28"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+SHEET_ID = "REPLACE_WITH_SHEET_ID"
+GOOGLE_SERVICE_ACCOUNT_EMAIL = "REPLACE_WITH_SERVICE_ACCOUNT_EMAIL"
+CHECKOUT_SUCCESS_URL = "https://example.com/success"
+CHECKOUT_CANCEL_URL = "https://example.com/cancel"
+PRODUCTS_CACHE_TTL = 900
+ORDER_SYNC_RETRY_BASE_MS = 60000
+ORDER_TTL_SECONDS = 2592000
+
+[[kv_namespaces]]
+binding = "PRODUCTS_CACHE"
+id = "REPLACE_WITH_PRODUCTS_CACHE_KV_ID"
+
+[[kv_namespaces]]
+binding = "ORDERS_BUFFER"
+id = "REPLACE_WITH_ORDERS_BUFFER_KV_ID"
+
+[triggers]
+crons = ["*/1 * * * *"]
+
+[observability]
+enabled = true
+[observability.logs]
+enabled = true
