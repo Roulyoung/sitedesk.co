@@ -67,3 +67,9 @@ Then verify:
 - If Sheets fails temporarily, order remains in KV with `failed_sync`.
 - Cron retry (every minute) attempts sync again.
 - No order loss as long as Stripe webhook reaches worker and KV write succeeds.
+
+## 6) Known gotcha
+
+- On Cloudflare Workers, Stripe webhook signature verification must use:
+  - `await stripe.webhooks.constructEventAsync(...)`
+- Using sync `constructEvent(...)` causes `400` webhook failures.

@@ -1,5 +1,10 @@
 # Sitedesk Clone + Update Factory
 
+Related:
+- `ADMIN_HANDOVER.md`
+- `worker/TEST_AND_MODE_PROCEDURE.md`
+- `worker/SAFE_WRANGLER_DEPLOY.md`
+
 ## 1) One-time template setup
 
 1. Mark this repo as `Template repository` in GitHub.
