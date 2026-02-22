@@ -106,3 +106,6 @@ If "Update Website" does nothing:
    - `CLOUDFLARE_API_TOKEN`
    - `CLOUDFLARE_ACCOUNT_ID`
    - `CLOUDFLARE_PAGES_PROJECT_NAME`
+5. Verify workflow trigger exists in `.github/workflows/deploy.yml`:
+   - `repository_dispatch`
+   - `types: [webhook_update_from_sheets]`

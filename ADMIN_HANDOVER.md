@@ -75,6 +75,13 @@ Each client must have isolated resources:
 4. Order row appears in Google Sheet.
 5. `admin/stripe-health` confirms expected mode/account.
 
+## 8.1) Secret Hygiene (Critical)
+
+- Never commit raw secrets to repo files.
+- Keep sensitive operator notes in `.private/` only (excluded from git tracking via local exclude).
+- Keep `secrets-live.txt` / `secrets-test.txt` local-only and ignored.
+- If a token/key is ever pasted in chat or shell history, rotate it.
+
 ## 9) Multi-language Engine (Sheet-first)
 
 - Frontend locale model:
@@ -106,3 +113,14 @@ Each client must have isolated resources:
   - unique per locale
   - no trailing spaces.
 - If a localized slug is missing, frontend falls back to `slug`.
+
+## 11) Known Regressions to Recheck After Any i18n/SEO Deploy
+
+1. Localized canonical correctness:
+   - `/en/` canonical must point to `/en/`, not `/`.
+2. Localized hash navigation:
+   - EN/NL anchor links must map to valid localized section IDs.
+3. Console integrity:
+   - no React hydration errors `#418/#423`.
+4. Cloudflare cache freshness:
+   - purge cache before interpreting Lighthouse deltas after head/meta changes.

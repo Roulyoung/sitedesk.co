@@ -25,6 +25,22 @@ The script `scripts/bootstrap-customer.ps1` automates:
 2. PowerShell execution from repo root:
    - `C:\Users\micro\Documents\Codex CLI websites\Websites\sitedesk.co`
 3. Cloudflare API token with Pages edit rights.
+4. Template repo expectation:
+   - If you want true template cloning, source repo must be marked as `Template repository` in GitHub settings.
+   - If not, bootstrap script falls back to source-copy create.
+
+## Required workflow contract (for Google Sheets update button)
+
+The target repo workflow must include:
+
+- `repository_dispatch` trigger with:
+  - `types: [webhook_update_from_sheets]`
+- deployment secrets present:
+  - `CLOUDFLARE_API_TOKEN`
+  - `CLOUDFLARE_ACCOUNT_ID`
+  - `CLOUDFLARE_PAGES_PROJECT_NAME`
+
+Without this contract, the Apps Script update button appears to run but no deploy starts.
 
 ## Token profiles
 
@@ -72,3 +88,17 @@ For now, convenience-first is acceptable in this project, as long as token scope
 - If template mode fails, script falls back to source-copy repo create.
 - Keep client-specific secrets out of committed files.
 - Run content reset/sanitization only after clone is verified.
+- If Cloudflare Pages builds an old commit SHA, ensure latest commit is pushed to `main` and re-run the workflow from Actions.
+- After any SEO/head or i18n-route change, purge Cloudflare cache before Lighthouse validation.
+
+## Manual post-bootstrap verification (must pass)
+
+1. `gh repo view <owner>/<repo>` succeeds.
+2. GitHub Actions run `deploy.yml` succeeds on `main`.
+3. Cloudflare Pages project has:
+   - production branch `main`
+   - custom domain attached
+4. Live checks:
+   - no React hydration errors in console (`#418/#423` must not appear)
+   - canonical on localized route is self-referential (`/en/` -> canonical `/en/`)
+   - Google Sheets update button triggers a new `repository_dispatch` workflow run
