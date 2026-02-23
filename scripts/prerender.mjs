@@ -82,21 +82,35 @@ const productRoutes = productRowsForPrerender
   )
   .filter(Boolean);
 
-const previewRoutes = [...new Set(productRowsForPrerender.map(getClientSlug).filter(Boolean))]
+const previewClientSlugs = [...new Set(productRowsForPrerender.map(getClientSlug).filter(Boolean))]
   .filter((slug) => slug !== "default")
-  .slice(0, Math.max(0, PREVIEW_ROUTE_LIMIT))
-  .map((slug) => `/preview/${normalizeSegment(slug)}`);
+  .slice(0, Math.max(0, PREVIEW_ROUTE_LIMIT));
+
+const previewShopRoutes = previewClientSlugs.flatMap((slug) => [
+  `/preview/${normalizeSegment(slug)}`,
+  `/preview/${normalizeSegment(slug)}/shop`,
+]);
+
+const previewProductRoutes = productRowsForPrerender
+  .flatMap((row) => {
+    const clientSlug = getClientSlug(row);
+    if (!clientSlug || clientSlug === "default") return [];
+    const productSlug = getLocalizedSlug(row, DEFAULT_LOCALE);
+    if (!productSlug) return [];
+    return `/preview/${normalizeSegment(clientSlug)}/product/${normalizeSegment(productSlug)}`;
+  })
+  .filter(Boolean);
 
 const baseRoutes = [...new Set([...staticBaseRoutes, ...blogBaseRoutes])];
 const localizedStaticRoutes = baseRoutes.flatMap((route) => locales.map((locale) => withLocalePath(route, locale)));
 
-const routes = [...new Set([...localizedStaticRoutes, ...productRoutes, ...previewRoutes])].slice(
+const routes = [...new Set([...localizedStaticRoutes, ...productRoutes, ...previewShopRoutes, ...previewProductRoutes])].slice(
   0,
-  Math.max(0, localizedStaticRoutes.length + PRODUCT_ROUTE_LIMIT * locales.length + PREVIEW_ROUTE_LIMIT),
+  Math.max(0, localizedStaticRoutes.length + PRODUCT_ROUTE_LIMIT * locales.length + PREVIEW_ROUTE_LIMIT * 3),
 );
 
 console.log(
-  `[prerender] locales=${locales.join(",")}, static=${localizedStaticRoutes.length}, blog=${blogBaseRoutes.length * locales.length}, product=${productRoutes.length}, preview=${previewRoutes.length}`,
+  `[prerender] locales=${locales.join(",")}, static=${localizedStaticRoutes.length}, blog=${blogBaseRoutes.length * locales.length}, product=${productRoutes.length}, previewShop=${previewShopRoutes.length}, previewProduct=${previewProductRoutes.length}`,
 );
 
 const ensureDir = async (filePath) => {

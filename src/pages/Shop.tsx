@@ -3,11 +3,12 @@ import { ArrowRight, Loader2, Plus, Minus, X, SlidersHorizontal, ShoppingCart } 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useParams, useSearchParams } from "react-router-dom";
 import { addToCart as addToCartStore, loadCart, updateQuantity as updateQtyStore, type CartItem } from "@/lib/cart";
 import { validateCartBeforeCheckout } from "@/lib/checkoutValidation";
 import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from "react-helmet-async";
+import "@/previews/previewTheme.css";
 import {
   getAlternateHrefLangs,
   getLocaleFromPath,
@@ -40,6 +41,16 @@ const CHECKOUT_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/create-check
 const IMAGE_DELIVERY_ORIGIN = "https://imagedelivery.net";
 const PRODUCTS_API_ORIGIN = "https://stripe-webhook.rdo90.workers.dev";
 
+const normalizeClientSlug = (value: string | undefined) => String(value || "").trim().toLowerCase();
+const getProductsSeed = (): any[] => {
+  try {
+    const seeded = (globalThis as any).__PRERENDER_PRODUCTS__;
+    return Array.isArray(seeded) ? seeded : [];
+  } catch {
+    return [];
+  }
+};
+
 const currency = new Intl.NumberFormat("nl-NL", {
   style: "currency",
   currency: "EUR",
@@ -68,9 +79,12 @@ const normalizePrice = (value: string) => {
 
 const Shop = () => {
   const { toast } = useToast();
+  const { clientSlug } = useParams<{ clientSlug?: string }>();
   const location = useLocation();
   const locale = getLocaleFromPath(location.pathname);
   const isEn = locale === "en";
+  const normalizedClientSlug = normalizeClientSlug(clientSlug);
+  const isPreview = location.pathname.includes("/preview/") && !!normalizedClientSlug;
   const pathWithoutLocale = stripLocaleFromPath(location.pathname);
   const title = "Shop | Sitedesk";
   const description =
@@ -89,17 +103,10 @@ const Shop = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(PRODUCTS_ENDPOINT);
-        if (!response.ok) throw new Error(isEn ? "Could not load products" : "Kon producten niet laden");
-        const text = await response.text();
-        let data;
-        try {
-          data = JSON.parse(text);
-        } catch (parseErr) {
-          throw new Error(isEn ? "Unexpected server response (invalid JSON)" : "Onverwachte serverrespons (geen geldige JSON)");
-        }
-        const mapped =
-          data?.products?.map((row: any, idx: number) => {
+        const filterRowsForPreview = (rows: any[]) =>
+          rows.filter((row) => normalizeClientSlug(String(row.client_slug || "")) === normalizedClientSlug);
+        const mapRows = (rows: any[]) =>
+          rows.map((row: any, idx: number) => {
             const localizedName = getLocalizedValue(row, "name", locale);
             const localizedDescription = getLocalizedValue(row, "description", locale);
             const name =
@@ -146,7 +153,30 @@ const Shop = () => {
               deliveryCostCents,
               stock,
             } as Product;
-          }) || [];
+          });
+
+        if (isPreview) {
+          const seededRows = filterRowsForPreview(getProductsSeed());
+          if (seededRows.length > 0) {
+            setProducts(mapRows(seededRows));
+            setError(null);
+            setLoading(false);
+            return;
+          }
+        }
+
+        const response = await fetch(PRODUCTS_ENDPOINT);
+        if (!response.ok) throw new Error(isEn ? "Could not load products" : "Kon producten niet laden");
+        const text = await response.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (parseErr) {
+          throw new Error(isEn ? "Unexpected server response (invalid JSON)" : "Onverwachte serverrespons (geen geldige JSON)");
+        }
+        const rows = Array.isArray(data?.products) ? data.products : [];
+        const filteredRows = isPreview ? filterRowsForPreview(rows) : rows;
+        const mapped = mapRows(filteredRows);
         setProducts(mapped);
       } catch (err) {
         setError(err instanceof Error ? err.message : isEn ? "Unknown error" : "Onbekende fout");
@@ -156,7 +186,7 @@ const Shop = () => {
     };
 
     fetchProducts();
-  }, [locale, isEn]);
+  }, [locale, isEn, isPreview, normalizedClientSlug]);
 
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") || "");
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
@@ -183,6 +213,13 @@ const Shop = () => {
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
+  };
+
+  const previewShopPath = isPreview ? `/preview/${encodeURIComponent(normalizedClientSlug)}/shop` : "";
+  const productPath = (product: Product) => {
+    const productId = encodeURIComponent(product.slug || product.id || "");
+    if (isPreview) return `/preview/${encodeURIComponent(normalizedClientSlug)}/product/${productId}`;
+    return withLocalePath(`/product/${productId}`, locale);
   };
 
   const activeFilterChips = useMemo(() => {
@@ -478,12 +515,13 @@ const Shop = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen ${isPreview ? "preview-scope" : ""}`}>
       <Helmet>
-        <title>{title}</title>
+        <title>{isPreview ? `Preview Shop | ${normalizedClientSlug} | Sitedesk` : title}</title>
         <meta name="description" content={description} />
         <link rel="canonical" href={canonical} />
-        {alternateLinks.map((alt) => (
+        {isPreview && <meta name="robots" content="noindex, nofollow" />}
+        {!isPreview && alternateLinks.map((alt) => (
           <link key={alt.locale} rel="alternate" hrefLang={alt.locale} href={alt.href} />
         ))}
         <link rel="preconnect" href={IMAGE_DELIVERY_ORIGIN} crossOrigin="" />
@@ -692,7 +730,7 @@ const Shop = () => {
                 className="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col gap-4"
               >
                 <Link
-                  to={withLocalePath(`/product/${product.slug || product.id || ""}`, locale)}
+                  to={productPath(product)}
                   className="group flex-1 flex flex-col gap-3"
                 >
                   {product.image ? (
@@ -849,7 +887,7 @@ const Shop = () => {
                 </span>
               </div>
               <Link
-                to={withLocalePath("/cart", locale)}
+                to={isPreview ? `${previewShopPath}#winkelmand` : withLocalePath("/cart", locale)}
                 className="w-full inline-flex items-center justify-center gap-2 border border-border text-foreground px-4 py-3 rounded-lg hover:bg-muted transition"
               >
                 {isEn ? "Go to cart page" : "Naar winkelmand pagina"}
@@ -862,7 +900,7 @@ const Shop = () => {
       <Footer />
       <FloatingContact />
       <Link
-        to={withLocalePath("/cart", locale)}
+        to={isPreview ? `${previewShopPath}#winkelmand` : withLocalePath("/cart", locale)}
         className="fixed bottom-24 right-6 inline-flex items-center gap-2 px-4 py-3 rounded-full shadow-lg bg-primary text-primary-foreground hover:opacity-90 transition"
       >
         <ShoppingCart size={18} />

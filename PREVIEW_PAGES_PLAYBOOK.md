@@ -3,6 +3,8 @@
 This project supports client-specific preview pages at:
 
 - `/preview/:clientSlug`
+- `/preview/:clientSlug/shop`
+- `/preview/:clientSlug/product/:id`
 
 Example:
 
@@ -10,7 +12,7 @@ Example:
 
 ## Purpose
 
-Preview pages are customer demo shells that read from the main `Products` Google Sheets feed and show only rows for a single client via the `client_slug` column.
+Preview pages run the real `Shop` and `Product` templates, but only with rows for one `client_slug`.
 
 ## Non-Negotiable Rules
 
@@ -19,13 +21,13 @@ Preview pages are customer demo shells that read from the main `Products` Google
 - Never show cross-client rows.
 
 2. Performance rule:
-- Preview route must remain lazy-loaded from app routes.
-- Any client-specific override must be lazy-loaded and only when its slug matches.
-- Do not import preview override components from homepage or global layout.
+- Preview routes must stay on the same lazy-loaded page chunks as `Shop`/`Product`.
+- Product/preview prerender can use `window.__PRERENDER_PRODUCTS__` bootstrap.
 
 3. Styling rule:
-- Use scoped styles only for preview UIs (CSS Modules).
-- Do not place preview styles in global CSS files.
+- Preview styling must be scoped under `.preview-scope` only.
+- Put preview overrides in `src/previews/previewTheme.css`.
+- Never change global styling for preview-only design tweaks.
 
 4. SEO/privacy rule:
 - Every preview page must output:
@@ -36,33 +38,31 @@ Preview pages are customer demo shells that read from the main `Products` Google
 
 ## Current Implementation
 
-- Route shell: `src/pages/PreviewShell.tsx`
-- Shell styles: `src/pages/PreviewShell.module.css`
-- Hardcoded override example:
-  - `src/previews/overrides/Bestfit3DPreview.tsx`
-  - `src/previews/overrides/Bestfit3DPreview.module.css`
+- Preview-aware templates:
+  - `src/pages/Shop.tsx`
+  - `src/pages/Product.tsx`
+- Preview scoped styles:
+  - `src/previews/previewTheme.css`
 - Route registration:
   - `src/routes/AppRoutes.client.tsx`
   - `src/routes/AppRoutes.ssr.tsx`
 - Prerender + sitemap:
   - `scripts/prerender.mjs`
 
-## How To Add A New Hardcoded Preview Override
+## How To Add Preview-Only Styling
 
-1. Create a new component under:
-- `src/previews/overrides/<ClientName>Preview.tsx`
-- `src/previews/overrides/<ClientName>Preview.module.css`
+1. Add CSS under `.preview-scope` in:
+- `src/previews/previewTheme.css`
 
-2. Register slug loader in `overrideLoaders` in:
-- `src/pages/PreviewShell.tsx`
+2. If client-specific, scope deeper:
+- `.preview-scope[data-client="bestfit3d"] { ... }`
+- or conditionally render client class in `Shop`/`Product`.
 
-3. Ensure the slug value matches the `client_slug` in Google Sheets.
-
-4. Build and verify:
+3. Build and verify:
 - `npm run build`
 - Confirm:
   - route renders only that client data
-  - noindex/noindex canonical present
+  - noindex/canonical present
   - no global style bleed
 
 ## Prerender Behavior
@@ -70,7 +70,11 @@ Preview pages are customer demo shells that read from the main `Products` Google
 `scripts/prerender.mjs` now:
 
 - Reads all products.
-- Creates `/preview/<client_slug>/index.html` for unique slugs except `default`.
+- Creates preview shop pages:
+  - `/preview/<client_slug>/index.html`
+  - `/preview/<client_slug>/shop/index.html`
+- Creates preview product pages:
+  - `/preview/<client_slug>/product/<slug>/index.html`
 - Boots preview and product pages with `window.__PRERENDER_PRODUCTS__` for fast first render.
 - Writes `dist/sitemap.xml` without preview URLs.
 

@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import { ArrowRight } from "lucide-react";
 import type { CartItem } from "@/lib/cart";
 import { Helmet } from "react-helmet-async";
+import "@/previews/previewTheme.css";
 import {
   getAlternateHrefLangs,
   getLocaleFromPath,
@@ -41,6 +42,7 @@ const CLOUDFLARE_IMAGE_HOST = "imagedelivery.net";
 const CF_MAIN_IMAGE_VARIANT = import.meta.env.VITE_CF_IMAGE_MAIN_VARIANT || "productmain";
 const CF_THUMB_IMAGE_VARIANT = import.meta.env.VITE_CF_IMAGE_THUMB_VARIANT || "productthumb";
 const PRODUCT_YEAR = new Date().getFullYear();
+const normalizeClientSlug = (value: string | undefined) => String(value || "").trim().toLowerCase();
 
 const formatPrice = (cents: number) =>
   new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(cents / 100);
@@ -116,11 +118,14 @@ const mapProductRow = (row: any, idx: number, locale: SupportedLocale): Product 
   };
 };
 
-const getPrerenderProducts = (locale: SupportedLocale): Product[] => {
+const getPrerenderProducts = (locale: SupportedLocale, normalizedClientSlug?: string): Product[] => {
   try {
     const seeded = (globalThis as any).__PRERENDER_PRODUCTS__;
     if (!Array.isArray(seeded)) return [];
-    return seeded.map((row: any, idx: number) => mapProductRow(row, idx, locale));
+    const rows = normalizedClientSlug
+      ? seeded.filter((row: any) => normalizeClientSlug(String(row.client_slug || "")) === normalizedClientSlug)
+      : seeded;
+    return rows.map((row: any, idx: number) => mapProductRow(row, idx, locale));
   } catch {
     return [];
   }
@@ -144,14 +149,19 @@ const withCloudflareVariant = (src: string | undefined, variant: string) => {
 };
 
 const ProductPage = () => {
-  const { id } = useParams();
+  const { id, clientSlug } = useParams<{ id: string; clientSlug?: string }>();
   const location = useLocation();
   const navigate = useNavigate();
   const locale = getLocaleFromPath(location.pathname);
   const isEn = locale === "en";
+  const normalizedClientSlug = normalizeClientSlug(clientSlug);
+  const isPreview = location.pathname.includes("/preview/") && !!normalizedClientSlug;
   const pathWithoutLocale = stripLocaleFromPath(location.pathname);
   const alternateLinks = getAlternateHrefLangs(pathWithoutLocale);
-  const initialProducts = useMemo(() => getPrerenderProducts(locale), [locale]);
+  const initialProducts = useMemo(
+    () => getPrerenderProducts(locale, isPreview ? normalizedClientSlug : undefined),
+    [locale, isPreview, normalizedClientSlug],
+  );
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [loading, setLoading] = useState(() => initialProducts.length === 0);
   const [error, setError] = useState<string | null>(null);
@@ -174,7 +184,11 @@ const ProductPage = () => {
         } catch (_err) {
           throw new Error(isEn ? "Unexpected server response (invalid JSON)" : "Onverwachte serverrespons (geen geldige JSON)");
         }
-        const mapped: Product[] = data?.products?.map((row: any, idx: number) => mapProductRow(row, idx, locale)) || [];
+        const rows = Array.isArray(data?.products) ? data.products : [];
+        const filteredRows = isPreview
+          ? rows.filter((row: any) => normalizeClientSlug(String(row.client_slug || "")) === normalizedClientSlug)
+          : rows;
+        const mapped: Product[] = filteredRows.map((row: any, idx: number) => mapProductRow(row, idx, locale));
         if (!cancelled) {
           setProducts(mapped);
           setError(null);
@@ -204,7 +218,7 @@ const ProductPage = () => {
       cancelled = true;
       window.removeEventListener("pageshow", onPageShow);
     };
-  }, [initialProducts, locale, isEn]);
+  }, [initialProducts, locale, isEn, isPreview, normalizedClientSlug]);
 
   const product = useMemo(
     () => {
@@ -227,6 +241,7 @@ const ProductPage = () => {
   }, [product]);
 
   const canonical = `https://sitedesk.co${location.pathname}`;
+  const previewShopPath = isPreview ? `/preview/${encodeURIComponent(normalizedClientSlug)}/shop` : "";
   const localeAlternates = product
     ? [
         ...ACTIVE_LOCALES.map((altLocale) => {
@@ -267,7 +282,7 @@ const ProductPage = () => {
     };
     const current = loadCart();
     addToCart(current, item);
-    navigate(withLocalePath("/cart", locale));
+    navigate(isPreview ? `${previewShopPath}#winkelmand` : withLocalePath("/cart", locale));
   };
 
   const handleCheckout = async () => {
@@ -360,11 +375,12 @@ const ProductPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className={`min-h-screen flex flex-col ${isPreview ? "preview-scope" : ""}`}>
         <Helmet>
           <title>{seoTitle}</title>
           <meta name="description" content={seoDescription} />
           <link rel="canonical" href={canonical} />
+          {isPreview && <meta name="robots" content="noindex, nofollow" />}
           <meta property="og:title" content={seoTitle} />
           <meta property="og:description" content={seoDescription} />
           <meta property="og:type" content="product" />
@@ -391,7 +407,7 @@ const ProductPage = () => {
           <div className="container mx-auto px-4 py-6 text-sm text-muted-foreground flex flex-wrap items-center justify-between gap-3">
             <span>&copy; {PRODUCT_YEAR} Sitedesk</span>
             <div className="flex items-center gap-4">
-              <Link to={withLocalePath("/shop", locale)} className="hover:text-foreground">Shop</Link>
+              <Link to={isPreview ? previewShopPath : withLocalePath("/shop", locale)} className="hover:text-foreground">Shop</Link>
               <Link to={withLocalePath("/blog", locale)} className="hover:text-foreground">Blog</Link>
               <Link to={withLocalePath("/", locale)} className="hover:text-foreground">Home</Link>
             </div>
@@ -403,7 +419,7 @@ const ProductPage = () => {
 
   if (!product || error) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className={`min-h-screen flex flex-col ${isPreview ? "preview-scope" : ""}`}>
         <Helmet>
           <title>{isEn ? "Product not found | Sitedesk" : "Product niet gevonden | Sitedesk"}</title>
           <meta
@@ -415,7 +431,7 @@ const ProductPage = () => {
             }
           />
           <link rel="canonical" href={canonical} />
-          <meta name="robots" content="noindex, follow" />
+          <meta name="robots" content={isPreview ? "noindex, nofollow" : "noindex, follow"} />
         </Helmet>
         <Header />
         <main className="flex-1 flex items-center justify-center px-4">
@@ -423,7 +439,7 @@ const ProductPage = () => {
             <h1 className="text-3xl font-semibold">{isEn ? "Product not found" : "Product niet gevonden"}</h1>
             <p className="text-muted-foreground">{error || (isEn ? "Check the URL or return to the shop." : "Controleer de link of ga terug naar de shop.")}</p>
             <Link
-              to={withLocalePath("/shop", locale)}
+              to={isPreview ? previewShopPath : withLocalePath("/shop", locale)}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition"
             >
               {isEn ? "Back to shop" : "Terug naar shop"}
@@ -434,7 +450,7 @@ const ProductPage = () => {
           <div className="container mx-auto px-4 py-6 text-sm text-muted-foreground flex flex-wrap items-center justify-between gap-3">
             <span>&copy; {PRODUCT_YEAR} Sitedesk</span>
             <div className="flex items-center gap-4">
-              <Link to={withLocalePath("/shop", locale)} className="hover:text-foreground">Shop</Link>
+              <Link to={isPreview ? previewShopPath : withLocalePath("/shop", locale)} className="hover:text-foreground">Shop</Link>
               <Link to={withLocalePath("/blog", locale)} className="hover:text-foreground">Blog</Link>
               <Link to={withLocalePath("/", locale)} className="hover:text-foreground">Home</Link>
             </div>
@@ -445,12 +461,13 @@ const ProductPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
+    <div className={`min-h-screen flex flex-col bg-gray-50 text-gray-900 ${isPreview ? "preview-scope" : ""}`}>
       <Helmet>
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />
         <link rel="canonical" href={canonical} />
-        {localeAlternates.map((alt) => (
+        {isPreview && <meta name="robots" content="noindex, nofollow" />}
+        {!isPreview && localeAlternates.map((alt) => (
           <link key={alt.locale} rel="alternate" hrefLang={alt.locale} href={alt.href} />
         ))}
         <link rel="preload" as="image" href={resolvedMainSrc} />
@@ -567,7 +584,7 @@ const ProductPage = () => {
                     <ArrowRight size={16} />
                   </button>
                   <Link
-                    to={withLocalePath("/shop", locale)}
+                    to={isPreview ? previewShopPath : withLocalePath("/shop", locale)}
                     className="inline-flex items-center gap-2 px-4 py-3 rounded-lg border border-border text-foreground hover:bg-muted transition"
                   >
                     {isEn ? "Back to shop" : "Terug naar shop"}
@@ -575,7 +592,7 @@ const ProductPage = () => {
                 </div>
                 {error && <p className="text-sm text-destructive">{error}</p>}
                 <div className="pt-2">
-                  <Link to={withLocalePath("/shop", locale)} className="text-sm text-gray-500 hover:text-primary">
+                  <Link to={isPreview ? previewShopPath : withLocalePath("/shop", locale)} className="text-sm text-gray-500 hover:text-primary">
                     {isEn ? "Continue shopping" : "Verder winkelen"}
                   </Link>
                 </div>
@@ -628,7 +645,7 @@ const ProductPage = () => {
         <div className="container mx-auto px-4 py-6 text-sm text-muted-foreground flex flex-wrap items-center justify-between gap-3">
           <span>&copy; {PRODUCT_YEAR} Sitedesk</span>
           <div className="flex items-center gap-4">
-            <Link to={withLocalePath("/shop", locale)} className="hover:text-foreground">Shop</Link>
+            <Link to={isPreview ? previewShopPath : withLocalePath("/shop", locale)} className="hover:text-foreground">Shop</Link>
             <Link to={withLocalePath("/blog", locale)} className="hover:text-foreground">Blog</Link>
             <Link to={withLocalePath("/", locale)} className="hover:text-foreground">Home</Link>
           </div>
