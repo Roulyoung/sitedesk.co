@@ -7,6 +7,7 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 SHEET_ID = "REPLACE_WITH_SHEET_ID"
 GOOGLE_SERVICE_ACCOUNT_EMAIL = "REPLACE_WITH_SERVICE_ACCOUNT_EMAIL"
+PRODUCTS_RANGE = "Products!A:ZZ"
 CHECKOUT_SUCCESS_URL = "https://example.com/success"
 CHECKOUT_CANCEL_URL = "https://example.com/cancel"
 PRODUCTS_CACHE_TTL = 900
@@ -29,6 +30,7 @@ name = "stripe-webhook-test"
 [env.test.vars]
 SHEET_ID = "REPLACE_WITH_TEST_SHEET_ID"
 GOOGLE_SERVICE_ACCOUNT_EMAIL = "REPLACE_WITH_TEST_SERVICE_ACCOUNT_EMAIL"
+PRODUCTS_RANGE = "Products!A:ZZ"
 CHECKOUT_SUCCESS_URL = "https://test.example.com/success"
 CHECKOUT_CANCEL_URL = "https://test.example.com/cancel"
 PRODUCTS_CACHE_TTL = 900
@@ -51,6 +53,7 @@ name = "stripe-webhook-live"
 [env.live.vars]
 SHEET_ID = "REPLACE_WITH_LIVE_SHEET_ID"
 GOOGLE_SERVICE_ACCOUNT_EMAIL = "REPLACE_WITH_LIVE_SERVICE_ACCOUNT_EMAIL"
+PRODUCTS_RANGE = "Products!A:ZZ"
 CHECKOUT_SUCCESS_URL = "https://sitedesk.co/success"
 CHECKOUT_CANCEL_URL = "https://sitedesk.co/cancel"
 PRODUCTS_CACHE_TTL = 900

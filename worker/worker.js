@@ -3,7 +3,7 @@ import Stripe from "stripe";
 // Leave undefined to use Stripe default and avoid version mismatch errors
 const STRIPE_API_VERSION = undefined;
 const SHEET_RANGE = "Orders!A:H";
-const PRODUCTS_RANGE_DEFAULT = "Products!A:Z"; // default range for products tab
+const PRODUCTS_RANGE_DEFAULT = "Products!A:ZZ"; // wider default so appended columns (e.g. client_slug) are included
 const ADMIN_SESSION_SALT = "sheet-admin-session";
 const PRODUCTS_CACHE_TTL = 900; // seconds
 const ORDER_KEY_PREFIX = "order:";
@@ -913,9 +913,9 @@ function getRangeCandidates(env) {
   return [
     env.PRODUCTS_RANGE,
     PRODUCTS_RANGE_DEFAULT,
-    "Sheet1!A:Z",
-    "Blad1!A:Z",
-    "Products!A:Z",
+    "Sheet1!A:ZZ",
+    "Blad1!A:ZZ",
+    "Products!A:ZZ",
   ].filter(Boolean);
 }
 
