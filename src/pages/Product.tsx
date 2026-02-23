@@ -161,9 +161,6 @@ const ProductPage = () => {
 
   useEffect(() => {
     let cancelled = false;
-    let idleId: number | null = null;
-    let timeoutId: ReturnType<typeof setTimeout> | null = null;
-    let onLoad: (() => void) | null = null;
 
     const fetchProducts = async (showLoader: boolean) => {
       if (showLoader) setLoading(true);
@@ -194,30 +191,6 @@ const ProductPage = () => {
     if (initialProducts.length === 0) {
       // No prerender data available: fetch immediately.
       fetchProducts(true);
-    } else {
-      // Keep product LCP path clean; refresh catalog after full load + idle.
-      const scheduleRefresh = () => {
-        if (cancelled) return;
-        const runRefresh = () => {
-          if (!cancelled) fetchProducts(false);
-        };
-        if (typeof window !== "undefined" && "requestIdleCallback" in window) {
-          idleId = (
-            window as Window & {
-              requestIdleCallback: (cb: IdleRequestCallback, options?: IdleRequestOptions) => number;
-            }
-          ).requestIdleCallback(() => runRefresh(), { timeout: 4500 });
-          return;
-        }
-        timeoutId = setTimeout(runRefresh, 3200);
-      };
-
-      if (document.readyState === "complete") {
-        scheduleRefresh();
-      } else {
-        onLoad = () => scheduleRefresh();
-        window.addEventListener("load", onLoad, { once: true });
-      }
     }
 
     const onPageShow = (event: PageTransitionEvent) => {
@@ -229,11 +202,6 @@ const ProductPage = () => {
     window.addEventListener("pageshow", onPageShow);
     return () => {
       cancelled = true;
-      if (idleId !== null && typeof window !== "undefined" && "cancelIdleCallback" in window) {
-        (window as Window & { cancelIdleCallback: (id: number) => void }).cancelIdleCallback(idleId);
-      }
-      if (timeoutId) clearTimeout(timeoutId);
-      if (onLoad) window.removeEventListener("load", onLoad);
       window.removeEventListener("pageshow", onPageShow);
     };
   }, [initialProducts, locale, isEn]);
