@@ -38,6 +38,7 @@ const filterByClientSlug = (rows: any[], clientSlug: string) =>
 
 const overrideLoaders: Record<string, () => Promise<{ default: React.ComponentType<{ clientSlug: string; products: PreviewProduct[] }> }>> = {
   "bestfit-3d": () => import("@/previews/overrides/Bestfit3DPreview"),
+  bestfit3d: () => import("@/previews/overrides/Bestfit3DPreview"),
 };
 
 const PreviewShell = () => {
