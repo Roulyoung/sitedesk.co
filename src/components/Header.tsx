@@ -14,7 +14,6 @@ const navLinks = [
   { sectionKey: "sheets" as LandingSectionKey, labelKey: "nav.sheets", type: "hash" as const },
   { to: "/shop", labelKey: "nav.demo", type: "route" as const },
   { to: "/blog", labelKey: "nav.blog", type: "route" as const },
-  { to: "/zakelijke-websites", labelKey: "nav.business", type: "route" as const },
 ];
 
 const Header = () => {

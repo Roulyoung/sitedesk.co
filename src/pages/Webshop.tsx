@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
+import WebshopIntentSections from "@/components/WebshopIntentSections";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -986,6 +987,8 @@ const Webshop = () => {
             </div>
           </div>
         </section>
+
+        <WebshopIntentSections />
 
         {/* Managed service story */}
         <section className="container mx-auto pb-20 md:pb-28">

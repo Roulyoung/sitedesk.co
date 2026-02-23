@@ -76,6 +76,21 @@ const WebshopIntentSections = () => {
             </p>
           </div>
         </section>
+
+        <section className="rounded-2xl border border-border bg-secondary/40 p-6 md:p-8">
+          <p className="text-sm text-muted-foreground">
+            {isEn
+              ? "No ecommerce store needed yet? Start with a lightning-fast business website."
+              : "Nog geen webshop nodig? Start met een razendsnelle zakelijke website."}
+          </p>
+          <a
+            href={withLocalePath("/zakelijke-websites", locale)}
+            className="inline-flex items-center gap-2 mt-3 text-sm font-semibold text-accent hover:text-accent/80"
+          >
+            {isEn ? "View managed website option" : "Bekijk managed website optie"}
+            <ArrowRight size={14} />
+          </a>
+        </section>
       </div>
     </section>
   );
