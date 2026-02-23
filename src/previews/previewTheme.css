@@ -1,27 +1,27 @@
 .preview-scope[data-preview-theme="equestrian-luxe"] {
-  --background: 221 30% 10%;
-  --foreground: 40 35% 92%;
-  --card: 224 23% 14%;
-  --card-foreground: 40 35% 92%;
-  --popover: 224 23% 14%;
-  --popover-foreground: 40 35% 92%;
-  --primary: 42 38% 62%;
-  --primary-foreground: 224 30% 12%;
-  --secondary: 220 13% 20%;
-  --secondary-foreground: 40 28% 84%;
-  --muted: 223 14% 22%;
-  --muted-foreground: 40 18% 72%;
-  --accent: 42 38% 62%;
-  --accent-foreground: 224 30% 12%;
+  --background: 222 32% 9%;
+  --foreground: 42 46% 94%;
+  --card: 224 24% 14%;
+  --card-foreground: 42 46% 94%;
+  --popover: 224 24% 14%;
+  --popover-foreground: 42 46% 94%;
+  --primary: 41 42% 67%;
+  --primary-foreground: 224 31% 12%;
+  --secondary: 223 19% 20%;
+  --secondary-foreground: 42 35% 88%;
+  --muted: 224 16% 22%;
+  --muted-foreground: 42 25% 80%;
+  --accent: 41 42% 67%;
+  --accent-foreground: 224 31% 12%;
   --destructive: 0 70% 58%;
-  --destructive-foreground: 40 35% 92%;
-  --border: 220 15% 26%;
-  --input: 220 15% 26%;
-  --ring: 42 38% 62%;
+  --destructive-foreground: 42 40% 92%;
+  --border: 221 16% 30%;
+  --input: 221 16% 30%;
+  --ring: 41 42% 67%;
   background:
-    radial-gradient(1200px 520px at 15% -10%, rgba(201, 172, 122, 0.18), transparent 60%),
-    radial-gradient(900px 480px at 90% -20%, rgba(29, 45, 74, 0.72), transparent 60%),
-    linear-gradient(160deg, #0d1423 0%, #111827 58%, #0f172a 100%);
+    radial-gradient(1200px 520px at 15% -10%, rgba(208, 183, 138, 0.2), transparent 60%),
+    radial-gradient(900px 480px at 90% -20%, rgba(34, 52, 84, 0.7), transparent 60%),
+    linear-gradient(165deg, #0b1323 0%, #101726 56%, #0b1221 100%);
   min-height: 100vh;
   color: hsl(var(--foreground));
   font-family: "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
@@ -37,12 +37,14 @@
 .preview-scope[data-preview-theme="equestrian-luxe"] h3 {
   letter-spacing: 0.01em;
   font-weight: 600;
+  color: hsl(var(--foreground));
 }
 
 .preview-scope[data-preview-theme="equestrian-luxe"] [data-preview-hero] {
   box-shadow:
     0 1px 0 rgba(232, 211, 171, 0.18) inset,
     0 30px 90px rgba(3, 8, 20, 0.55);
+  border-color: rgba(208, 183, 138, 0.35);
 }
 
 .preview-scope[data-preview-theme="equestrian-luxe"] [data-preview-label] {
@@ -51,14 +53,14 @@
 
 .preview-scope[data-preview-theme="equestrian-luxe"] [data-preview-product-card="true"] {
   background: linear-gradient(180deg, rgba(24, 33, 52, 0.88), rgba(17, 24, 39, 0.95));
-  border-color: rgba(201, 172, 122, 0.2);
+  border-color: rgba(208, 183, 138, 0.34);
   box-shadow: 0 22px 45px rgba(4, 8, 18, 0.45);
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
 .preview-scope[data-preview-theme="equestrian-luxe"] [data-preview-product-card="true"]:hover {
   transform: translateY(-3px);
-  border-color: rgba(201, 172, 122, 0.42);
+  border-color: rgba(218, 196, 156, 0.56);
   box-shadow: 0 30px 65px rgba(3, 8, 20, 0.55);
 }
 
@@ -70,34 +72,68 @@
   color: hsl(var(--accent));
 }
 
+.preview-scope[data-preview-theme="equestrian-luxe"] .text-foreground {
+  color: hsl(var(--foreground));
+}
+
+.preview-scope[data-preview-theme="equestrian-luxe"] .text-muted-foreground {
+  color: hsl(var(--muted-foreground));
+}
+
 .preview-scope[data-preview-theme="equestrian-luxe"] .bg-primary {
   background-color: hsl(var(--accent));
   color: hsl(var(--accent-foreground));
 }
 
 .preview-scope[data-preview-theme="equestrian-luxe"] .bg-secondary {
-  background-color: rgba(29, 39, 58, 0.92);
+  background-color: rgba(27, 38, 58, 0.9);
   color: hsl(var(--foreground));
 }
 
 .preview-scope[data-preview-theme="equestrian-luxe"] .border-border {
-  border-color: rgba(201, 172, 122, 0.22);
+  border-color: rgba(208, 183, 138, 0.32);
 }
 
 .preview-scope[data-preview-theme="equestrian-luxe"] input,
 .preview-scope[data-preview-theme="equestrian-luxe"] select {
-  background: rgba(12, 19, 34, 0.78);
-  border-color: rgba(201, 172, 122, 0.26);
+  background: rgba(9, 16, 30, 0.84);
+  border-color: rgba(208, 183, 138, 0.38);
   color: hsl(var(--foreground));
+}
+
+.preview-scope[data-preview-theme="equestrian-luxe"] input::placeholder {
+  color: rgba(233, 221, 197, 0.7);
+}
+
+.preview-scope[data-preview-theme="equestrian-luxe"] button,
+.preview-scope[data-preview-theme="equestrian-luxe"] a {
+  transition: all 180ms ease;
+}
+
+.preview-scope[data-preview-theme="equestrian-luxe"] .bg-card {
+  background-color: rgba(16, 24, 39, 0.86);
+}
+
+.preview-scope[data-preview-theme="equestrian-luxe"] .bg-muted {
+  background-color: rgba(31, 42, 61, 0.85);
 }
 
 .preview-scope[data-preview-theme="equestrian-luxe"] [data-preview-product-layout="true"] {
   background:
     linear-gradient(180deg, rgba(23, 33, 52, 0.87), rgba(12, 18, 32, 0.94)),
-    radial-gradient(880px 420px at -10% -30%, rgba(201, 172, 122, 0.15), transparent 64%);
-  border-color: rgba(201, 172, 122, 0.28);
+    radial-gradient(880px 420px at -10% -30%, rgba(208, 183, 138, 0.2), transparent 64%);
+  border-color: rgba(208, 183, 138, 0.4);
 }
 
 .preview-scope[data-preview-theme="equestrian-luxe"] [data-preview-product-layout="true"] .text-emerald-600 {
   color: hsl(var(--accent));
+}
+
+.preview-scope[data-preview-theme="equestrian-luxe"] .ring-primary {
+  --tw-ring-color: hsl(var(--accent));
+}
+
+.preview-scope[data-preview-theme="equestrian-luxe"] .fixed.bottom-0.left-0.right-0 {
+  background: rgba(10, 16, 29, 0.95);
+  border-top-color: rgba(208, 183, 138, 0.35);
 }
