@@ -23,6 +23,7 @@ const blogBaseRoutes = posts.map((post) => `/blog/${post.id}`);
 const PRODUCTS_ENDPOINT =
   process.env.PRERENDER_PRODUCTS_ENDPOINT || "https://stripe-webhook.rdo90.workers.dev/products";
 const PRODUCT_ROUTE_LIMIT = Number(process.env.PRERENDER_PRODUCT_LIMIT || "120");
+const PREVIEW_ROUTE_LIMIT = Number(process.env.PRERENDER_PREVIEW_LIMIT || "200");
 const ENABLE_PRODUCT_PRERENDER = process.env.PRERENDER_PRODUCTS !== "false";
 
 const withLocalePath = (route, locale) => {
@@ -42,6 +43,12 @@ const getLocalizedSlug = (row, locale) => {
     }
   }
   return "";
+};
+
+const getClientSlug = (row) => {
+  const value = row?.client_slug;
+  if (value == null) return "";
+  return String(value).trim().toLowerCase();
 };
 
 const getProductRows = async () => {
@@ -75,16 +82,21 @@ const productRoutes = productRowsForPrerender
   )
   .filter(Boolean);
 
+const previewRoutes = [...new Set(productRowsForPrerender.map(getClientSlug).filter(Boolean))]
+  .filter((slug) => slug !== "default")
+  .slice(0, Math.max(0, PREVIEW_ROUTE_LIMIT))
+  .map((slug) => `/preview/${normalizeSegment(slug)}`);
+
 const baseRoutes = [...new Set([...staticBaseRoutes, ...blogBaseRoutes])];
 const localizedStaticRoutes = baseRoutes.flatMap((route) => locales.map((locale) => withLocalePath(route, locale)));
 
-const routes = [...new Set([...localizedStaticRoutes, ...productRoutes])].slice(
+const routes = [...new Set([...localizedStaticRoutes, ...productRoutes, ...previewRoutes])].slice(
   0,
-  Math.max(0, localizedStaticRoutes.length + PRODUCT_ROUTE_LIMIT * locales.length),
+  Math.max(0, localizedStaticRoutes.length + PRODUCT_ROUTE_LIMIT * locales.length + PREVIEW_ROUTE_LIMIT),
 );
 
 console.log(
-  `[prerender] locales=${locales.join(",")}, static=${localizedStaticRoutes.length}, blog=${blogBaseRoutes.length * locales.length}, product=${productRoutes.length}`,
+  `[prerender] locales=${locales.join(",")}, static=${localizedStaticRoutes.length}, blog=${blogBaseRoutes.length * locales.length}, product=${productRoutes.length}, preview=${previewRoutes.length}`,
 );
 
 const ensureDir = async (filePath) => {
@@ -94,7 +106,9 @@ const ensureDir = async (filePath) => {
 
 for (const route of routes) {
   const url = route;
-  if (route.includes("/product/") && productRowsForPrerender.length > 0) {
+  const needsProductsBootstrap =
+    (route.includes("/product/") || route.includes("/preview/")) && productRowsForPrerender.length > 0;
+  if (needsProductsBootstrap) {
     globalThis.__PRERENDER_PRODUCTS__ = productRowsForPrerender;
   } else {
     delete globalThis.__PRERENDER_PRODUCTS__;
@@ -102,7 +116,7 @@ for (const route of routes) {
 
   const { html, head } = await render(url);
   const productBootstrap =
-    route.includes("/product/") && productRowsForPrerender.length > 0
+    needsProductsBootstrap
       ? `<script>window.__PRERENDER_PRODUCTS__=${JSON.stringify(productRowsForPrerender).replace(/</g, "\\u003c")};</script>`
       : "";
 
@@ -118,3 +132,15 @@ for (const route of routes) {
   await fs.writeFile(outPath, page, "utf-8");
   console.log(`prerendered: ${route}`);
 }
+
+const sitemapRoutes = [...new Set([...localizedStaticRoutes, ...productRoutes])];
+const sitemapXml =
+  `<?xml version="1.0" encoding="UTF-8"?>\n` +
+  `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+  sitemapRoutes
+    .map((route) => `  <url><loc>https://sitedesk.co${route}</loc></url>`)
+    .join("\n") +
+  `\n</urlset>\n`;
+
+await fs.writeFile(path.join(distDir, "sitemap.xml"), sitemapXml, "utf-8");
+console.log(`[prerender] wrote sitemap.xml with ${sitemapRoutes.length} urls (preview excluded)`);

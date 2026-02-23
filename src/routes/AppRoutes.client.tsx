@@ -6,6 +6,7 @@ type RouteComponents = {
   Index?: React.ComponentType;
   NotFound?: React.ComponentType;
   Shop?: React.ComponentType;
+  PreviewShell?: React.ComponentType;
   Product?: React.ComponentType;
   Success?: React.ComponentType;
   Admin?: React.ComponentType;
@@ -19,6 +20,7 @@ type RouteComponents = {
 const LazyIndex = lazy(() => import("@/pages/Index"));
 const LazyNotFound = lazy(() => import("@/pages/NotFound"));
 const LazyShop = lazy(() => import("@/pages/Shop"));
+const LazyPreviewShell = lazy(() => import("@/pages/PreviewShell"));
 const LazyProduct = lazy(() => import("@/pages/Product"));
 const LazySuccess = lazy(() => import("@/pages/Success"));
 const LazyAdmin = lazy(() => import("@/pages/Admin"));
@@ -42,6 +44,10 @@ export const loadInitialRouteComponents = async (pathname: string): Promise<Rout
   if (normalizedPathname === "/shop") {
     const mod = await import("@/pages/Shop");
     return { Shop: mod.default };
+  }
+  if (normalizedPathname.startsWith("/preview/")) {
+    const mod = await import("@/pages/PreviewShell");
+    return { PreviewShell: mod.default };
   }
   if (normalizedPathname.startsWith("/product/")) {
     const mod = await import("@/pages/Product");
@@ -79,6 +85,7 @@ export const AppRoutesClient = ({ initialComponents }: { initialComponents?: Rou
   const Index = initialComponents?.Index ?? LazyIndex;
   const NotFound = initialComponents?.NotFound ?? LazyNotFound;
   const Shop = initialComponents?.Shop ?? LazyShop;
+  const PreviewShell = initialComponents?.PreviewShell ?? LazyPreviewShell;
   const Product = initialComponents?.Product ?? LazyProduct;
   const Success = initialComponents?.Success ?? LazySuccess;
   const Admin = initialComponents?.Admin ?? LazyAdmin;
@@ -94,6 +101,7 @@ export const AppRoutesClient = ({ initialComponents }: { initialComponents?: Rou
         <Route path="/" element={<Webshop />} />
         <Route path="/zakelijke-websites" element={<Index />} />
         <Route path="/shop" element={<Shop />} />
+        <Route path="/preview/:clientSlug" element={<PreviewShell />} />
         <Route path="/webshop" element={<Webshop />} />
         <Route path="/product/:id" element={<Product />} />
         <Route path="/cart" element={<Cart />} />
@@ -107,6 +115,7 @@ export const AppRoutesClient = ({ initialComponents }: { initialComponents?: Rou
             <Route index element={<Webshop />} />
             <Route path="zakelijke-websites" element={<Index />} />
             <Route path="shop" element={<Shop />} />
+            <Route path="preview/:clientSlug" element={<PreviewShell />} />
             <Route path="webshop" element={<Webshop />} />
             <Route path="product/:id" element={<Product />} />
             <Route path="cart" element={<Cart />} />

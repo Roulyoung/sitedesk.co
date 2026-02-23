@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Shop from "./pages/Shop";
+import PreviewShell from "./pages/PreviewShell";
 import Product from "./pages/Product";
 import Success from "./pages/Success";
 import Admin from "./pages/Admin";
@@ -35,6 +36,7 @@ export const AppRoutes = () => (
     <Route path="/" element={<Webshop />} />
     <Route path="/zakelijke-websites" element={<Index />} />
     <Route path="/shop" element={<Shop />} />
+    <Route path="/preview/:clientSlug" element={<PreviewShell />} />
     <Route path="/webshop" element={<Webshop />} />
     <Route path="/product/:id" element={<Product />} />
     <Route path="/cart" element={<Cart />} />
