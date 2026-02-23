@@ -1,12 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import FloatingContact from "@/components/FloatingContact";
 import { ArrowRight } from "lucide-react";
-import { addToCart as addToCartStore, loadCart, type CartItem } from "@/lib/cart";
-import { validateCartBeforeCheckout } from "@/lib/checkoutValidation";
-import { useToast } from "@/components/ui/use-toast";
+import type { CartItem } from "@/lib/cart";
 import { Helmet } from "react-helmet-async";
 import {
   getAlternateHrefLangs,
@@ -44,6 +40,7 @@ const CHECKOUT_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/create-check
 const CLOUDFLARE_IMAGE_HOST = "imagedelivery.net";
 const CF_MAIN_IMAGE_VARIANT = import.meta.env.VITE_CF_IMAGE_MAIN_VARIANT || "productmain";
 const CF_THUMB_IMAGE_VARIANT = import.meta.env.VITE_CF_IMAGE_THUMB_VARIANT || "productthumb";
+const PRODUCT_YEAR = new Date().getFullYear();
 
 const formatPrice = (cents: number) =>
   new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(cents / 100);
@@ -150,7 +147,6 @@ const ProductPage = () => {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const locale = getLocaleFromPath(location.pathname);
   const isEn = locale === "en";
   const pathWithoutLocale = stripLocaleFromPath(location.pathname);
@@ -167,11 +163,12 @@ const ProductPage = () => {
     let cancelled = false;
     let idleId: number | null = null;
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    let onLoad: (() => void) | null = null;
 
     const fetchProducts = async (showLoader: boolean) => {
       if (showLoader) setLoading(true);
       try {
-        const res = await fetch(PRODUCTS_ENDPOINT, { cache: "no-store" });
+        const res = await fetch(PRODUCTS_ENDPOINT, { cache: showLoader ? "default" : "no-store" });
         if (!res.ok) throw new Error(isEn ? "Could not load products" : "Kon producten niet laden");
         const text = await res.text();
         let data;
@@ -198,16 +195,28 @@ const ProductPage = () => {
       // No prerender data available: fetch immediately.
       fetchProducts(true);
     } else {
-      // Keep product LCP path clean; refresh catalog only when browser is idle.
-      const runRefresh = () => {
-        if (!cancelled) fetchProducts(false);
+      // Keep product LCP path clean; refresh catalog after full load + idle.
+      const scheduleRefresh = () => {
+        if (cancelled) return;
+        const runRefresh = () => {
+          if (!cancelled) fetchProducts(false);
+        };
+        if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+          idleId = (
+            window as Window & {
+              requestIdleCallback: (cb: IdleRequestCallback, options?: IdleRequestOptions) => number;
+            }
+          ).requestIdleCallback(() => runRefresh(), { timeout: 4500 });
+          return;
+        }
+        timeoutId = setTimeout(runRefresh, 3200);
       };
-      if (typeof window !== "undefined" && "requestIdleCallback" in window) {
-        idleId = (window as Window & { requestIdleCallback: (cb: IdleRequestCallback) => number }).requestIdleCallback(
-          () => runRefresh(),
-        );
+
+      if (document.readyState === "complete") {
+        scheduleRefresh();
       } else {
-        timeoutId = setTimeout(runRefresh, 2200);
+        onLoad = () => scheduleRefresh();
+        window.addEventListener("load", onLoad, { once: true });
       }
     }
 
@@ -224,6 +233,7 @@ const ProductPage = () => {
         (window as Window & { cancelIdleCallback: (id: number) => void }).cancelIdleCallback(idleId);
       }
       if (timeoutId) clearTimeout(timeoutId);
+      if (onLoad) window.removeEventListener("load", onLoad);
       window.removeEventListener("pageshow", onPageShow);
     };
   }, [initialProducts, locale, isEn]);
@@ -272,8 +282,9 @@ const ProductPage = () => {
   const mainVariantSrc = withCloudflareVariant(selectedMainSrc, CF_MAIN_IMAGE_VARIANT);
   const resolvedMainSrc = mainVariantFailed ? selectedMainSrc : mainVariantSrc;
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!product) return;
+    const { addToCart, loadCart } = await import("@/lib/cart");
     const item: CartItem = {
       id: product.id,
       name: product.name,
@@ -287,13 +298,16 @@ const ProductPage = () => {
       stock: product.stock || "",
     };
     const current = loadCart();
-    addToCartStore(current, item);
-    toast({ title: isEn ? "Added to cart" : "Toegevoegd aan winkelmand", description: product.name });
+    addToCart(current, item);
     navigate(withLocalePath("/cart", locale));
   };
 
   const handleCheckout = async () => {
     if (!product) return;
+    const [{ loadCart }, { validateCartBeforeCheckout }] = await Promise.all([
+      import("@/lib/cart"),
+      import("@/lib/checkoutValidation"),
+    ]);
     const existingCart = loadCart();
     const checkoutItem: CartItem = {
       id: product.id,
@@ -405,8 +419,16 @@ const ProductPage = () => {
             </div>
           </section>
         </main>
-        <Footer />
-        <FloatingContact className="hidden md:flex" />
+        <footer className="border-t border-border bg-white">
+          <div className="container mx-auto px-4 py-6 text-sm text-muted-foreground flex flex-wrap items-center justify-between gap-3">
+            <span>&copy; {PRODUCT_YEAR} Sitedesk</span>
+            <div className="flex items-center gap-4">
+              <Link to={withLocalePath("/shop", locale)} className="hover:text-foreground">Shop</Link>
+              <Link to={withLocalePath("/blog", locale)} className="hover:text-foreground">Blog</Link>
+              <Link to={withLocalePath("/", locale)} className="hover:text-foreground">Home</Link>
+            </div>
+          </div>
+        </footer>
       </div>
     );
   }
@@ -440,8 +462,16 @@ const ProductPage = () => {
             </Link>
           </div>
         </main>
-        <Footer />
-        <FloatingContact className="hidden md:flex" />
+        <footer className="border-t border-border bg-white">
+          <div className="container mx-auto px-4 py-6 text-sm text-muted-foreground flex flex-wrap items-center justify-between gap-3">
+            <span>&copy; {PRODUCT_YEAR} Sitedesk</span>
+            <div className="flex items-center gap-4">
+              <Link to={withLocalePath("/shop", locale)} className="hover:text-foreground">Shop</Link>
+              <Link to={withLocalePath("/blog", locale)} className="hover:text-foreground">Blog</Link>
+              <Link to={withLocalePath("/", locale)} className="hover:text-foreground">Home</Link>
+            </div>
+          </div>
+        </footer>
       </div>
     );
   }
@@ -626,8 +656,16 @@ const ProductPage = () => {
           </div>
         </section>
       </main>
-      <Footer />
-      <FloatingContact className="hidden md:flex" />
+      <footer className="border-t border-border bg-white">
+        <div className="container mx-auto px-4 py-6 text-sm text-muted-foreground flex flex-wrap items-center justify-between gap-3">
+          <span>&copy; {PRODUCT_YEAR} Sitedesk</span>
+          <div className="flex items-center gap-4">
+            <Link to={withLocalePath("/shop", locale)} className="hover:text-foreground">Shop</Link>
+            <Link to={withLocalePath("/blog", locale)} className="hover:text-foreground">Blog</Link>
+            <Link to={withLocalePath("/", locale)} className="hover:text-foreground">Home</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
