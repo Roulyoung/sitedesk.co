@@ -375,7 +375,11 @@ const ProductPage = () => {
 
   if (loading) {
     return (
-      <div className={`min-h-screen flex flex-col ${isPreview ? "preview-scope" : ""}`}>
+      <div
+        className={`min-h-screen flex flex-col ${isPreview ? "preview-scope" : ""}`}
+        data-preview-theme={isPreview ? "equestrian-luxe" : undefined}
+        data-preview-page={isPreview ? "product" : undefined}
+      >
         <Helmet>
           <title>{seoTitle}</title>
           <meta name="description" content={seoDescription} />
@@ -419,7 +423,11 @@ const ProductPage = () => {
 
   if (!product || error) {
     return (
-      <div className={`min-h-screen flex flex-col ${isPreview ? "preview-scope" : ""}`}>
+      <div
+        className={`min-h-screen flex flex-col ${isPreview ? "preview-scope" : ""}`}
+        data-preview-theme={isPreview ? "equestrian-luxe" : undefined}
+        data-preview-page={isPreview ? "product" : undefined}
+      >
         <Helmet>
           <title>{isEn ? "Product not found | Sitedesk" : "Product niet gevonden | Sitedesk"}</title>
           <meta
@@ -461,7 +469,11 @@ const ProductPage = () => {
   }
 
   return (
-    <div className={`min-h-screen flex flex-col bg-gray-50 text-gray-900 ${isPreview ? "preview-scope" : ""}`}>
+    <div
+      className={`min-h-screen flex flex-col bg-gray-50 text-gray-900 ${isPreview ? "preview-scope" : ""}`}
+      data-preview-theme={isPreview ? "equestrian-luxe" : undefined}
+      data-preview-page={isPreview ? "product" : undefined}
+    >
       <Helmet>
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />
@@ -502,7 +514,10 @@ const ProductPage = () => {
       </div>
       <main className="flex-1 bg-gradient-to-b from-gray-50 via-white to-gray-50">
         <section className="container mx-auto px-4 py-12">
-          <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur rounded-3xl shadow-xl overflow-hidden border border-border">
+          <div
+            className="max-w-5xl mx-auto bg-white/90 backdrop-blur rounded-3xl shadow-xl overflow-hidden border border-border"
+            data-preview-product-layout={isPreview ? "true" : undefined}
+          >
             <div className="grid md:grid-cols-2">
               <div className="bg-gray-100 relative aspect-square">
                 <img

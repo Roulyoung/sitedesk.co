@@ -515,7 +515,10 @@ const Shop = () => {
   };
 
   return (
-    <div className={`min-h-screen ${isPreview ? "preview-scope" : ""}`}>
+    <div
+      className={`min-h-screen ${isPreview ? "preview-scope" : ""}`}
+      data-preview-theme={isPreview ? "equestrian-luxe" : undefined}
+    >
       <Helmet>
         <title>{isPreview ? `Preview Shop | ${normalizedClientSlug} | Sitedesk` : title}</title>
         <meta name="description" content={description} />
@@ -534,7 +537,36 @@ const Shop = () => {
         <meta name="twitter:description" content={description} />
       </Helmet>
       <Header />
-      <main className="container mx-auto py-20 md:py-28">
+      <main className="container mx-auto py-20 md:py-28" data-preview-page={isPreview ? "shop" : undefined}>
+        {isPreview && (
+          <section className="mb-14 overflow-hidden rounded-3xl border border-border/60 bg-card shadow-xl" data-preview-hero>
+            <div className="grid gap-0 md:grid-cols-2">
+              <div className="relative min-h-[280px] md:min-h-[420px]">
+                <img
+                  src="https://images.unsplash.com/photo-1578319439584-104c94d37305?auto=format&fit=crop&w=1400&q=80"
+                  alt="Professional equestrian rider in luxury setting"
+                  className="h-full w-full object-cover"
+                  loading="eager"
+                  decoding="async"
+                  fetchpriority="high"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/55 to-black/10" />
+              </div>
+              <div className="flex flex-col justify-center gap-5 p-8 md:p-12">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent" data-preview-label>
+                  Bespoke Equestrian Atelier
+                </p>
+                <h2 className="text-3xl font-bold leading-tight md:text-5xl">
+                  Quiet Luxury for Rider and Horse
+                </h2>
+                <p className="max-w-lg text-sm text-muted-foreground md:text-base">
+                  Handcrafted leather boots, refined stable essentials, and premium riding gear with timeless
+                  tailoring and modern performance.
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
         <div className="text-center mb-12">
           <p className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium">
             <ArrowRight size={16} />
@@ -728,6 +760,7 @@ const Shop = () => {
               <div
                 key={product.id || product.slug || product.name}
                 className="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col gap-4"
+                data-preview-product-card={isPreview ? "true" : undefined}
               >
                 <Link
                   to={productPath(product)}
