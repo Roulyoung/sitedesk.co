@@ -38,6 +38,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate site boundary
+        run: npm run check:site-boundary
+
       - name: Run Prerender Script
         run: npm run build
 
