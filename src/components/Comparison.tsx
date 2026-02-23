@@ -53,7 +53,7 @@ const comparisonData = [
 
 const Comparison = () => {
   return (
-    <section className="py-20 md:py-32 gradient-subtle">
+    <section id="vergelijking" className="py-20 md:py-32 gradient-subtle">
       <div className="container mx-auto">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
@@ -64,7 +64,7 @@ const Comparison = () => {
             Waarom ondernemers voor de Desk kiezen
           </h2>
           <p className="text-lg text-muted-foreground">
-            Zie zelf het verschil met traditionele websitebouwers.
+            Zie het verschil met traditionele bouwers en trage WooCommerce-stacks.
           </p>
         </div>
 

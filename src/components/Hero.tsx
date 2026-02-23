@@ -9,7 +9,7 @@ const Hero = () => {
   const isEn = locale === "en";
 
   return (
-    <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+    <section id="webshop-ontwikkelen" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
       <div className="absolute inset-0 gradient-subtle" />
       <div className="absolute top-1/4 right-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
       <div className="absolute bottom-1/4 left-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
@@ -33,6 +33,11 @@ const Hero = () => {
               {isEn
                 ? "Stop the stress, start growing online. We build, host, and maintain everything. You focus on your business."
                 : "Stop met stress, start met online succes. Wij bouwen, hosten en onderhouden alles. Jij focust op je business."}
+            </p>
+            <p className="text-sm md:text-base text-muted-foreground/90 mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-up stagger-2">
+              {isEn
+                ? "Need an ecommerce store built? We develop custom stores and managed websites."
+                : "Webshop laten ontwikkelen? Wij bouwen maatwerk webshops en managed websites."}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-up stagger-3">

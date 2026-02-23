@@ -15,7 +15,7 @@ const CTA = () => {
   ];
 
   return (
-    <section className="py-20 md:py-32 gradient-hero text-primary-foreground">
+    <section id="start-webshop" className="py-20 md:py-32 gradient-hero text-primary-foreground">
       <div className="container mx-auto">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">{isEn ? "Ready to go live?" : "Klaar om online te gaan?"}</h2>

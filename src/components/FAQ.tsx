@@ -32,6 +32,24 @@ const FAQ = () => {
         : "Gemiddeld binnen 5-7 werkdagen. Na een korte intake gaan we direct aan de slag.",
     },
     {
+      question: isEn ? "What does it cost to have an ecommerce store developed?" : "Wat kost een webshop laten ontwikkelen?",
+      answer: isEn
+        ? "Costs depend on scope, integrations, and migration needs. We first define scope, then share a clear fixed proposal."
+        : "Dat hangt af van scope, koppelingen en migratie. We bepalen eerst de scope en geven daarna een heldere vaste prijsopgave.",
+    },
+    {
+      question: isEn ? "I am looking for an ecommerce builder. What is your timeline?" : "Ik zoek een webshop bouwer. Wat is jullie doorlooptijd?",
+      answer: isEn
+        ? "Most projects go live in phases. A first conversion-ready version is usually delivered within a few weeks."
+        : "De meeste trajecten gaan gefaseerd live. Een eerste conversiegerichte versie leveren we meestal binnen enkele weken op.",
+    },
+    {
+      question: isEn ? "Can you migrate from WooCommerce or Shopify?" : "Kunnen jullie migreren vanaf WooCommerce of Shopify?",
+      answer: isEn
+        ? "Yes. We migrate structure, key content, and products to a cleaner setup and optimize performance during migration."
+        : "Ja. We migreren structuur, kerncontent en producten naar een schonere setup en optimaliseren performance tijdens de overstap.",
+    },
+    {
       question: isEn ? "How do I request changes?" : "Wat als ik wijzigingen wil doorvoeren?",
       answer: isEn
         ? "Send updates by email or WhatsApp to your Desk contact and we implement them quickly."

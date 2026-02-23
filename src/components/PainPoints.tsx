@@ -32,7 +32,7 @@ const PainPoints = () => {
   ];
 
   return (
-    <section className="py-20 md:py-32 gradient-hero text-primary-foreground">
+    <section id="woocommerce-pijn" className="py-20 md:py-32 gradient-hero text-primary-foreground">
       <div className="container mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div>
