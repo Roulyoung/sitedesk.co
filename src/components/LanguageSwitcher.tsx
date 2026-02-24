@@ -14,8 +14,28 @@ const LanguageSwitcher = () => {
   const location = useLocation();
   const currentLocale = getLocaleFromPath(location.pathname);
   const basePath = stripLocaleFromPath(location.pathname);
+  const isProductDetail = basePath.startsWith("/product/");
+
+  const getAlternatePath = (targetLocale: SupportedLocale) => {
+    if (typeof document === "undefined") return "";
+    const node = document.querySelector(
+      `link[rel="alternate"][hrefLang="${targetLocale}"], link[rel="alternate"][hreflang="${targetLocale}"]`,
+    ) as HTMLLinkElement | null;
+    if (!node?.href) return "";
+    try {
+      const url = new URL(node.href);
+      return `${url.pathname}${url.search}${url.hash}`;
+    } catch {
+      return "";
+    }
+  };
 
   const toLocaleUrl = (targetLocale: SupportedLocale) => {
+    if (isProductDetail) {
+      const alternatePath = getAlternatePath(targetLocale);
+      if (alternatePath) return alternatePath;
+    }
+
     const localizedPath = withLocalePath(basePath, targetLocale);
     const search = location.search || "";
     const hash =
