@@ -10,22 +10,18 @@ Use this for product translations without expensive live formulas.
 
 ## 1) Product column structure (scalable)
 
-In your `Products` sheet, keep base columns and add per-language columns:
+In your `Products` sheet, use paired locale columns per field:
 
-- Base:
-  - `slug`
-  - `name`
-  - `description`
-- Per target language `<lang>`:
-  - `slug_<lang>`
-  - `name_<lang>`
-  - `description_<lang>`
+- `title_nl`, `title_en`, `title_de`
+- `description_nl`, `description_en`, `description_de`
+- `slug_nl`, `slug_en`, `slug_de`
 
-Example for English:
-- `slug_en`, `name_en`, `description_en`
+Optional backward-compatible columns still supported by frontend:
+- `name`, `name_<lang>`
+- `description`, `description_<lang>`
+- `slug`
 
-Example for German later:
-- `slug_de`, `name_de`, `description_de`
+Recommended for new clients: standardize on `title_*` + `description_*` + `slug_*`.
 
 ## 2) Install the Apps Script tools
 
@@ -64,22 +60,28 @@ Safety built in:
 ## 5) Client editing behavior
 
 After initial fill:
-- Client edits `name_en`, `description_en`, `slug_en` directly.
+- Client edits `title_en`, `description_en`, `slug_en` directly.
 - Those edits remain stable and are not recalculated on page reload.
 
 This is exactly what you want for non-technical users.
 
-## 6) Why this is better than formulas
+## 6) Formula option (fast bootstrap)
 
-Avoid:
-- `=GOOGLETRANSLATE(...)` per cell forever.
+If you want auto-fill in Sheets, use formulas in locale columns, for example:
 
-Because formulas:
-- re-evaluate and can change unexpectedly,
-- are harder for non-technical clients,
-- complicate manual overrides.
+- `=GOOGLETRANSLATE(A2; "nl"; "en")` (EU separator)
+- `=GOOGLETRANSLATE(A2, "nl", "en")` (US separator)
 
-Use one-time write-as-value workflow instead.
+Typical pattern:
+- `title_en` translates from `title_nl`
+- `description_en` translates from `description_nl`
+- `slug_en` can be manually curated for SEO quality
+
+Keep in mind:
+- Formula output can shift when source copy changes.
+- For final go-live stability, paste-as-values after review.
+
+You can still use the menu workflow for one-time value writes.
 
 ## 7) Optional: use ChatGPT instead of Google translate
 
@@ -93,8 +95,8 @@ So architecture remains stable even if translation provider changes.
 
 Current frontend already supports locale product fields:
 - `slug_<lang>`
-- `name_<lang>`
+- `title_<lang>` (preferred) and `name_<lang>` (legacy)
 - `description_<lang>`
 
 Fallback behavior:
-- if localized field is missing, it falls back to base (`slug`, `name`, `description`).
+- if localized field is missing, it falls back to default locale fields and then base fields.

@@ -118,6 +118,48 @@ export const getLocalizedSlug = (row: Record<string, unknown>, locale: Supported
   return "";
 };
 
+const getFirstNonEmpty = (row: Record<string, unknown>, keys: string[]) => {
+  for (const key of keys) {
+    const value = row[key];
+    if (value != null && String(value).trim() !== "") return String(value);
+  }
+  return "";
+};
+
+export const getLocalizedProductTitle = (row: Record<string, unknown>, locale: SupportedLocale) => {
+  const localizedKeys = [
+    `title_${locale}`,
+    `${locale}_title`,
+    `name_${locale}`,
+    `${locale}_name`,
+  ];
+  const defaultKeys = [
+    `title_${DEFAULT_LOCALE}`,
+    `${DEFAULT_LOCALE}_title`,
+    `name_${DEFAULT_LOCALE}`,
+    `${DEFAULT_LOCALE}_name`,
+  ];
+  const baseKeys = ["title", "name", "naam"];
+  return getFirstNonEmpty(row, [...localizedKeys, ...defaultKeys, ...baseKeys]);
+};
+
+export const getLocalizedProductDescription = (row: Record<string, unknown>, locale: SupportedLocale) => {
+  const localizedKeys = [
+    `description_${locale}`,
+    `${locale}_description`,
+    `omschrijving_${locale}`,
+    `${locale}_omschrijving`,
+  ];
+  const defaultKeys = [
+    `description_${DEFAULT_LOCALE}`,
+    `${DEFAULT_LOCALE}_description`,
+    `omschrijving_${DEFAULT_LOCALE}`,
+    `${DEFAULT_LOCALE}_omschrijving`,
+  ];
+  const baseKeys = ["description", "omschrijving"];
+  return getFirstNonEmpty(row, [...localizedKeys, ...defaultKeys, ...baseKeys]);
+};
+
 export const getNonDefaultLocales = () => ACTIVE_NON_DEFAULT_LOCALES;
 
 export type LandingSectionKey =

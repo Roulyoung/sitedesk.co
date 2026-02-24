@@ -99,6 +99,6 @@ Always verify mode via:
 - Prerender locales env:
   - `PRERENDER_LOCALES=nl,en,de` (build-time)
 - Product sheet translation columns per locale:
-  - `slug_<lang>`, `name_<lang>`, `description_<lang>`
-  - example: `slug_en`, `name_en`, `description_en`
-- Keep default columns (`slug`, `name`, `description`) as fallback for missing translations.
+  - `slug_<lang>`, `title_<lang>`, `description_<lang>`
+  - example: `slug_en`, `title_en`, `description_en`
+- Keep legacy columns (`slug`, `name`, `description`) only as fallback compatibility.

@@ -12,8 +12,9 @@ import "@/previews/previewTheme.css";
 import {
   getAlternateHrefLangs,
   getLocaleFromPath,
+  getLocalizedProductDescription,
+  getLocalizedProductTitle,
   getLocalizedSlug,
-  getLocalizedValue,
   stripLocaleFromPath,
   withLocalePath,
 } from "@/lib/i18n";
@@ -107,10 +108,11 @@ const Shop = () => {
           rows.filter((row) => normalizeClientSlug(String(row.client_slug || "")) === normalizedClientSlug);
         const mapRows = (rows: any[]) =>
           rows.map((row: any, idx: number) => {
-            const localizedName = getLocalizedValue(row, "name", locale);
-            const localizedDescription = getLocalizedValue(row, "description", locale);
+            const localizedName = getLocalizedProductTitle(row, locale);
+            const localizedDescription = getLocalizedProductDescription(row, locale);
             const name =
               localizedName ||
+              row.title ||
               row.name ||
               row.naam ||
               row.omschrijving ||

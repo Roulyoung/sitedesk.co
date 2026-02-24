@@ -8,8 +8,9 @@ import "@/previews/previewTheme.css";
 import {
   getAlternateHrefLangs,
   getLocaleFromPath,
+  getLocalizedProductDescription,
+  getLocalizedProductTitle,
   getLocalizedSlug,
-  getLocalizedValue,
   stripLocaleFromPath,
   ACTIVE_LOCALES,
   withLocalePath,
@@ -54,10 +55,11 @@ const parsePriceToCents = (value: string) => {
 };
 
 const mapProductRow = (row: any, idx: number, locale: SupportedLocale): Product => {
-  const localizedName = getLocalizedValue(row, "name", locale);
-  const localizedDescription = getLocalizedValue(row, "description", locale);
+  const localizedName = getLocalizedProductTitle(row, locale);
+  const localizedDescription = getLocalizedProductDescription(row, locale);
   const name =
     localizedName ||
+    row.title ||
     row.name ||
     row.naam ||
     row.omschrijving ||

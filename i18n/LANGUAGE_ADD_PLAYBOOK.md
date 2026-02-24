@@ -13,24 +13,56 @@ Related:
 
 - Use ISO code (example: `de`, `fr`, `es`).
 
-## 2) Activate locale in frontend
+## 2) Update Google Sheets product schema
 
-- Update `VITE_ACTIVE_LOCALES` (comma-separated), for example:
-  - `nl,en,de`
+Preferred product i18n columns (paired per locale):
+- `title_nl`, `title_en`, `title_de`, ...
+- `description_nl`, `description_en`, `description_de`, ...
+- `slug_nl`, `slug_en`, `slug_de`, ...
 
-This controls which locales are visible in the switcher and active routes.
+Minimal-cell rollout for existing sheets is allowed:
+- keep base NL columns (`name`, `description_nl`, `slug`)
+- only add new locale columns (`title_<lang>`, `description_<lang>`, `slug_<lang>`)
 
-## 3) Product columns in Google Sheets
+Legacy compatibility:
+- frontend still supports `name_<lang>` as fallback
+- new standard is `title_<lang>`
 
-Add these columns:
-- `slug_<lang>`
-- `name_<lang>`
-- `description_<lang>`
+## 3) Fill translation values in Sheets
 
-Example for German:
-- `slug_de`, `name_de`, `description_de`
+If using formulas (fast bootstrap), start at row 2:
 
-## 4) Scaffold blog rewrite drafts
+- `title_<lang>` from NL title
+- `description_<lang>` from NL description
+- `slug_<lang>` from NL slug (then manual SEO cleanup)
+
+Example for EN with EU separators:
+
+```gs
+=IF($C2="";"";GOOGLETRANSLATE($C2;"nl";"en"))
+```
+
+For large catalogs:
+- after review, copy translated columns and paste values-only
+- this reduces recalc overhead and keeps Sheets responsive.
+
+## 4) Activate locale in frontend + prerender
+
+Set both:
+- `VITE_ACTIVE_LOCALES=nl,en,<lang>`
+- `PRERENDER_LOCALES=nl,en,<lang>`
+
+This controls:
+- active locale routes in frontend
+- which localized static/product routes are emitted during prerender.
+
+## 5) Worker/storage compatibility checks
+
+- Worker already reads product rows dynamically by header names; no locale-specific code change required.
+- Keep append range wide enough for added columns:
+  - `worker/worker.js` uses `A:AZ` for admin append path.
+
+## 6) Scaffold blog rewrite drafts (if blog also needs new locale)
 
 Run:
 
@@ -63,18 +95,18 @@ npm run i18n:blog:clean -- --lang=<lang> --scope=public
 npm run i18n:blog:clean -- --lang=<lang> --scope=all
 ```
 
-## 5) Rewrite with prompt pack (Codex workflow)
+## 7) Rewrite with prompt pack (Codex workflow)
 
 - Use `i18n/BLOG_REWRITE_PROMPTS.md`
 - Rewrite each draft (not literal translate).
 - Validate JSON contract per post.
 
-## 6) Apply rewritten posts
+## 8) Apply rewritten posts
 
 - Insert finalized localized post objects into your target locale content source.
 - Keep fallback behavior to base locale when localized post is missing.
 
-## 7) SEO checks
+## 9) SEO checks
 
 - Ensure localized pages exist with canonical + hreflang.
 - Rebuild and verify:
@@ -82,7 +114,16 @@ npm run i18n:blog:clean -- --lang=<lang> --scope=all
   - `/lang/blog`
   - `/lang/product/<localized-slug>`
 
-## 8) Performance Guardrails (Keep Product Pages at 100)
+## 10) Deploy + cache purge procedure (required)
+
+1. Push to `main` (or trigger deployment workflow).
+2. Wait for Cloudflare Pages deploy success.
+3. Purge Cloudflare cache:
+   - either via dashboard `Purge Everything`
+   - or via the Google Sheets purge button.
+4. Re-open localized URLs in an incognito session and verify live HTML source.
+
+## 11) Performance Guardrails (Keep Product Pages at 100)
 
 - Do not introduce blocking product API fetches in first render for localized product pages.
 - Product detail route must render from prerender seed first (`window.__PRERENDER_PRODUCTS__`), for all locales.
@@ -98,7 +139,7 @@ npm run i18n:blog:clean -- --lang=<lang> --scope=all
   - `/en/product/<slug>/`
   and confirm no `/products` request appears in the critical network chain before LCP.
 
-## 9) Canonical Guardrails for Localized Home
+## 12) Canonical Guardrails for Localized Home
 
 - In this repo, localized home (`/en/`) is served by `Webshop` route.
 - Do not assume `Index.tsx` controls homepage SEO tags.
@@ -108,7 +149,7 @@ npm run i18n:blog:clean -- --lang=<lang> --scope=all
 - After deploy, validate live HTML for `/en/` before Lighthouse:
   - canonical must not point to root `/` when testing `/en/`.
 
-## 10) Localized Hash Anchors (Important)
+## 13) Localized Hash Anchors (Important)
 
 - Never hardcode Dutch section hashes in shared navigation.
 - Use centralized helpers from `src/lib/i18n.ts`:
@@ -129,3 +170,12 @@ npm run i18n:blog:clean -- --lang=<lang> --scope=all
 - Regression check after deploy:
   - Open `/en#comparison` and confirm it scrolls to the comparison section.
   - Open `/#concurrentievergelijking` and confirm NL still works.
+
+## 14) Final go-live verification checklist (new language)
+
+1. `/<lang>/` returns 200 and canonical points to `/<lang>/`.
+2. `/<lang>/shop` shows translated product titles/descriptions.
+3. `/<lang>/product/<slug_lang>` opens the correct product.
+4. Product page head contains `hreflang` alternates including `x-default`.
+5. No React hydration errors (`#418/#423`) in console.
+6. Cloudflare cache purge completed after deploy.

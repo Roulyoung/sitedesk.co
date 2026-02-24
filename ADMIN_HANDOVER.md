@@ -90,7 +90,8 @@ Each client must have isolated resources:
   - routing supports both default and prefixed paths.
 - Product translation source is Google Sheets product tab:
   - localized slugs: `slug_en`, `slug_de` (and `slug_nl` optional)
-  - localized text fields: `name_<lang>`, `description_<lang>`
+  - localized text fields (preferred): `title_<lang>`, `description_<lang>`
+  - legacy text fields still supported: `name_<lang>`, `description_<lang>`
   - fallback chain: localized field -> default field.
 - Prerender now outputs locale route trees:
   - `/`, `/shop`, `/product/:slug`, `/blog`, `/blog/:slug`
@@ -103,10 +104,10 @@ Each client must have isolated resources:
 ## 10) I18n Sheet Rules (for next clients)
 
 - Required product columns:
-  - `slug` (default)
-  - `slug_en`, `slug_de`
-  - `name`, `name_en`, `name_de`
-  - `description`, `description_en`, `description_de`
+  - `slug_nl`, `slug_en`, `slug_de`
+  - `title_nl`, `title_en`, `title_de`
+  - `description_nl`, `description_en`, `description_de`
+  - legacy optional fallback: `slug`, `name`, `name_<lang>`, `description`
 - Slug rules:
   - lowercase
   - hyphen-separated

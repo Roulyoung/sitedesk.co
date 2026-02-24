@@ -944,7 +944,7 @@ async function replaceRow({ env, sheetName, headers, rowNumber, values }) {
 
 async function appendProductRow({ env, sheetName, values }) {
   const token = await getGoogleAccessToken(env);
-  const range = `${sheetName}!A:Z`;
+  const range = `${sheetName}!A:AZ`;
   const res = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${env.SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED`,
     {
