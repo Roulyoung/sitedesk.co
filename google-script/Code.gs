@@ -59,15 +59,15 @@ function doPost(e) {
     var sheet = getLeadSheet_();
     sheet.appendRow([
       new Date(),
-      leadType,
       name,
       email,
+      message,
+      leadType,
       phone,
       shopUrl,
       monthlyRevenue,
       currentLoadTime,
       estimatedLoss,
-      message,
     ]);
 
     var subject =
@@ -117,15 +117,15 @@ function getLeadSheet_() {
   if (sheet.getLastRow() === 0) {
     sheet.appendRow([
       "timestamp",
+      "Naam",
+      "Email",
+      "Bericht",
       "leadType",
-      "name",
-      "email",
       "phone",
       "shopUrl",
       "monthlyRevenue",
       "currentLoadTime",
       "estimatedLoss",
-      "message",
     ]);
   }
 
