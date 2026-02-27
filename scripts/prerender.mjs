@@ -26,6 +26,8 @@ const staticBaseRoutes = [
   "/migratie",
   "/shopify-alternatief",
   "/lightspeed-alternatief",
+  "/magento-alternatief",
+  "/prestashop-alternatief",
   "/blog",
   "/over-ons",
 ];

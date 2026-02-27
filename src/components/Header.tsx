@@ -5,7 +5,7 @@ import { Menu, X, MessageCircle, ChevronDown } from "lucide-react";
 import { getLandingSectionHash, getLocaleFromPath, withLocalePath } from "@/lib/i18n";
 import { t } from "@/lib/messages";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { migrationPlatforms } from "@/lib/platformMigrationConfigs";
+import { getMigrationMenuLabel, migrationPlatforms } from "@/lib/platformMigrationConfigs";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -52,18 +52,7 @@ const Header = () => {
   const migrationRoutes = migrationPlatforms.map((platform) => ({
     key: platform.key,
     to: withLocalePath(platform.route, locale),
-    label:
-      locale === "en"
-        ? platform.key === "woocommerce"
-          ? "WooCommerce migration"
-          : platform.key === "shopify"
-            ? "Shopify alternative"
-            : "Lightspeed alternative"
-        : platform.key === "woocommerce"
-          ? "WooCommerce migratie"
-          : platform.key === "shopify"
-            ? "Shopify alternatief"
-            : "Lightspeed alternatief",
+    label: getMigrationMenuLabel(platform, locale),
   }));
   const demoTo = withLocalePath("/demo", locale);
   const blogTo = withLocalePath("/blog", locale);

@@ -10,6 +10,8 @@ type RouteComponents = {
   Migration?: React.ComponentType;
   ShopifyAlternative?: React.ComponentType;
   LightspeedAlternative?: React.ComponentType;
+  MagentoAlternative?: React.ComponentType;
+  PrestashopAlternative?: React.ComponentType;
   Product?: React.ComponentType;
   Success?: React.ComponentType;
   Admin?: React.ComponentType;
@@ -27,6 +29,8 @@ const LazyShop = lazy(() => import("@/pages/Shop"));
 const LazyMigration = lazy(() => import("@/pages/Migration"));
 const LazyShopifyAlternative = lazy(() => import("@/pages/ShopifyAlternative"));
 const LazyLightspeedAlternative = lazy(() => import("@/pages/LightspeedAlternative"));
+const LazyMagentoAlternative = lazy(() => import("@/pages/MagentoAlternative"));
+const LazyPrestashopAlternative = lazy(() => import("@/pages/PrestashopAlternative"));
 const LazyProduct = lazy(() => import("@/pages/Product"));
 const LazySuccess = lazy(() => import("@/pages/Success"));
 const LazyAdmin = lazy(() => import("@/pages/Admin"));
@@ -66,6 +70,14 @@ export const loadInitialRouteComponents = async (pathname: string): Promise<Rout
   if (normalizedPathname === "/lightspeed-alternatief") {
     const mod = await import("@/pages/LightspeedAlternative");
     return { LightspeedAlternative: mod.default };
+  }
+  if (normalizedPathname === "/magento-alternatief") {
+    const mod = await import("@/pages/MagentoAlternative");
+    return { MagentoAlternative: mod.default };
+  }
+  if (normalizedPathname === "/prestashop-alternatief") {
+    const mod = await import("@/pages/PrestashopAlternative");
+    return { PrestashopAlternative: mod.default };
   }
   if (normalizedPathname.startsWith("/preview/")) {
     if (normalizedPathname.includes("/product/")) {
@@ -119,6 +131,8 @@ export const AppRoutesClient = ({ initialComponents }: { initialComponents?: Rou
   const Migration = initialComponents?.Migration ?? LazyMigration;
   const ShopifyAlternative = initialComponents?.ShopifyAlternative ?? LazyShopifyAlternative;
   const LightspeedAlternative = initialComponents?.LightspeedAlternative ?? LazyLightspeedAlternative;
+  const MagentoAlternative = initialComponents?.MagentoAlternative ?? LazyMagentoAlternative;
+  const PrestashopAlternative = initialComponents?.PrestashopAlternative ?? LazyPrestashopAlternative;
   const Product = initialComponents?.Product ?? LazyProduct;
   const Success = initialComponents?.Success ?? LazySuccess;
   const Admin = initialComponents?.Admin ?? LazyAdmin;
@@ -138,6 +152,8 @@ export const AppRoutesClient = ({ initialComponents }: { initialComponents?: Rou
         <Route path="/migratie" element={<Migration />} />
         <Route path="/shopify-alternatief" element={<ShopifyAlternative />} />
         <Route path="/lightspeed-alternatief" element={<LightspeedAlternative />} />
+        <Route path="/magento-alternatief" element={<MagentoAlternative />} />
+        <Route path="/prestashop-alternatief" element={<PrestashopAlternative />} />
         <Route path="/preview/:clientSlug" element={<PreviewOffer />} />
         <Route path="/preview/:clientSlug/shop" element={<Shop />} />
         <Route path="/preview/:clientSlug/product/:id" element={<Product />} />
@@ -158,6 +174,8 @@ export const AppRoutesClient = ({ initialComponents }: { initialComponents?: Rou
             <Route path="migratie" element={<Migration />} />
             <Route path="shopify-alternatief" element={<ShopifyAlternative />} />
             <Route path="lightspeed-alternatief" element={<LightspeedAlternative />} />
+            <Route path="magento-alternatief" element={<MagentoAlternative />} />
+            <Route path="prestashop-alternatief" element={<PrestashopAlternative />} />
             <Route path="preview/:clientSlug" element={<PreviewOffer />} />
             <Route path="preview/:clientSlug/shop" element={<Shop />} />
             <Route path="preview/:clientSlug/product/:id" element={<Product />} />

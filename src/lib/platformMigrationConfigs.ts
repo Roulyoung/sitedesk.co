@@ -45,6 +45,9 @@ export type PlatformMigrationConfig = {
   rebuildTitle: LocalizedText;
   rebuildCopy: LocalizedText;
   rebuildExtra: LocalizedText;
+  keywordTitle: LocalizedText;
+  keywordIntro: LocalizedText;
+  keywordPhrases: LocalizedTextList;
   riskTitle: LocalizedText;
   riskCopy: LocalizedText;
   timelineTitle: LocalizedText;
@@ -64,6 +67,43 @@ export const getLocalizedMigrationText = (
   value: LocalizedText | LocalizedTextList,
   locale: SupportedLocale,
 ) => value[locale] ?? value.en ?? value.nl ?? (Array.isArray(value.en) ? [] : "");
+
+export const getMigrationMenuLabel = (
+  platform: Pick<PlatformMigrationConfig, "key">,
+  locale: SupportedLocale,
+) => {
+  if (locale === "en") {
+    switch (platform.key) {
+      case "woocommerce":
+        return "WooCommerce migration";
+      case "shopify":
+        return "Shopify alternative";
+      case "lightspeed":
+        return "Lightspeed alternative";
+      case "magento":
+        return "Magento alternative";
+      case "prestashop":
+        return "PrestaShop alternative";
+      default:
+        return "Migration";
+    }
+  }
+
+  switch (platform.key) {
+    case "woocommerce":
+      return "WooCommerce migratie";
+    case "shopify":
+      return "Shopify alternatief";
+    case "lightspeed":
+      return "Lightspeed alternatief";
+    case "magento":
+      return "Magento alternatief";
+    case "prestashop":
+      return "PrestaShop alternatief";
+    default:
+      return "Migratie";
+  }
+};
 
 const sharedTimeline: TimelineStep[] = [
   {
@@ -253,6 +293,32 @@ export const migrationPlatforms: PlatformMigrationConfig[] = [
       "Gebruik je MyParcel, Mollie, PostNL, een ERP-koppeling of maatwerk voor staffelkorting? Dan bouwen we precies dat deel opnieuw, zonder de ballast van de rest.",
       "Using MyParcel, Mollie, PostNL, an ERP connection or custom volume pricing? We rebuild exactly that part, without dragging the rest of the plugin stack along.",
     ),
+    keywordTitle: t(
+      "De zoekopdrachten die hierachter zitten",
+      "The search intent behind this page",
+    ),
+    keywordIntro: t(
+      "Mensen die vastlopen op WooCommerce zoeken zelden op een technisch probleem. Ze zoeken op symptomen: trage pagina's, kapotte updates en oplopende developer-kosten.",
+      "People who are stuck on WooCommerce rarely search for the technical root problem. They search for symptoms: slow pages, broken updates and rising developer costs.",
+    ),
+    keywordPhrases: list(
+      [
+        "woocommerce migratie",
+        "woocommerce alternatief",
+        "woocommerce traag oplossen",
+        "woocommerce developer kosten",
+        "woocommerce plugin chaos",
+        "woocommerce sneller maken",
+      ],
+      [
+        "woocommerce migration",
+        "woocommerce alternative",
+        "fix slow woocommerce store",
+        "woocommerce developer costs",
+        "woocommerce plugin chaos",
+        "make woocommerce faster",
+      ],
+    ),
     riskTitle: t("Niet sneller? Geen factuur.", "Not faster? No invoice."),
     riskCopy: t(
       "Als je nieuwe shop niet merkbaar sneller en stabieler voelt dan je huidige WooCommerce-omgeving, hoort daar geen migratiefactuur bij.",
@@ -416,6 +482,32 @@ export const migrationPlatforms: PlatformMigrationConfig[] = [
     rebuildExtra: t(
       "Het resultaat is minder complexiteit, minder vendor-lock-in en veel meer controle over wat je storefront precies doet.",
       "The result is less complexity, less vendor lock-in and much more control over what your storefront actually does.",
+    ),
+    keywordTitle: t(
+      "De zoekopdrachten die hierachter zitten",
+      "The search intent behind this page",
+    ),
+    keywordIntro: t(
+      "Shopify-problemen worden meestal niet beschreven als een platformprobleem. Ze komen binnen als app-bloat, theme-beperkingen of oplopende maandkosten.",
+      "Shopify pain rarely gets described as a platform problem. It shows up as app bloat, theme limits or rising monthly costs.",
+    ),
+    keywordPhrases: list(
+      [
+        "shopify alternatief",
+        "shopify apps te duur",
+        "shopify maatwerk zonder apps",
+        "shopify sneller maken",
+        "shopify theme beperkingen",
+        "shopify migratie",
+      ],
+      [
+        "shopify alternative",
+        "shopify apps too expensive",
+        "shopify custom without apps",
+        "make shopify faster",
+        "shopify theme limitations",
+        "shopify migration",
+      ],
     ),
     riskTitle: t(
       "Niet merkbaar beter? Dan was het de overstap niet waard.",
@@ -584,6 +676,32 @@ export const migrationPlatforms: PlatformMigrationConfig[] = [
       "Het resultaat is een shop die niet alleen sneller laadt, maar ook sneller doorontwikkelt zodra je iets nieuws wilt testen.",
       "The result is a store that not only loads faster, but also evolves faster the moment you want to test something new.",
     ),
+    keywordTitle: t(
+      "De zoekopdrachten die hierachter zitten",
+      "The search intent behind this page",
+    ),
+    keywordIntro: t(
+      "Lightspeed-frictie wordt vaak omschreven als traagheid, template-beperkingen of gedoe bij doorontwikkeling. Dat is precies waar deze pagina op inspeelt.",
+      "Lightspeed friction often gets described as slowness, template limits or friction during further development. That is exactly what this page addresses.",
+    ),
+    keywordPhrases: list(
+      [
+        "lightspeed alternatief",
+        "lightspeed trage webshop",
+        "lightspeed maatwerk",
+        "lightspeed migratie",
+        "lightspeed theme beperkingen",
+        "lightspeed developer kosten",
+      ],
+      [
+        "lightspeed alternative",
+        "slow lightspeed webshop",
+        "lightspeed custom development",
+        "lightspeed migration",
+        "lightspeed theme limitations",
+        "lightspeed developer costs",
+      ],
+    ),
     riskTitle: t(
       "Niet merkbaar lichter en sneller? Dan schiet de overstap zijn doel voorbij.",
       "If it is not clearly lighter and faster, the switch misses the point.",
@@ -617,6 +735,392 @@ export const migrationPlatforms: PlatformMigrationConfig[] = [
     stickyPrompt: t(
       "Benieuwd hoeveel Lightspeed-frictie je nu kost?",
       "Curious what Lightspeed friction is costing you right now?",
+    ),
+  },
+  {
+    key: "magento",
+    route: "/magento-alternatief",
+    title: t(
+      "Magento Alternatief voor Minder Complexiteit | Sitedesk",
+      "Magento Alternative with Less Complexity | Sitedesk",
+    ),
+    description: t(
+      "Van Magento naar een lichter systeem zonder enterprise ballast. Minder onderhoud, minder technische schuld en meer snelheid.",
+      "Move from Magento to a lighter system without enterprise ballast. Less maintenance, less technical debt and more speed.",
+    ),
+    navLabel: t("Magento", "Magento"),
+    heroEyebrow: t("Magento Alternatief", "Magento Alternative"),
+    heroTitle: t(
+      "Magento kan alles. De vraag is alleen hoeveel tijd, geld en geduld dat je kost.",
+      "Magento can do almost everything. The question is how much time, money and patience that costs you.",
+    ),
+    heroCopy: t(
+      "Wij vervangen enterprise-complexiteit, trage releases en zware onderhoudslasten door een custom storefront die sneller te beheren, sneller te bouwen en sneller te laden is.",
+      "We replace enterprise complexity, slow releases and heavy maintenance overhead with a custom storefront that is faster to manage, faster to develop and faster to load.",
+    ),
+    heroLeftLabel: t("Magento", "Magento"),
+    heroLeftItems: list(
+      ["Modules", "Deploy gedoe", "Indexers", "Legacy code", "Hoge onderhoudslast"],
+      ["Modules", "Deploy friction", "Indexers", "Legacy code", "High maintenance load"],
+    ),
+    heroRightLabel: t("Sitedesk", "Sitedesk"),
+    matrixTitle: t(
+      "Waarom Magento vaak zwaarder wordt dan je business nodig heeft",
+      "Why Magento often becomes heavier than your business actually needs",
+    ),
+    matrixRows: [
+      {
+        problem: t("Complexiteit", "Complexity"),
+        nightmare: t(
+          "Nieuwe wensen lopen snel vast in modules, dependencies en deployment-risico's.",
+          "New requirements quickly get tangled up in modules, dependencies and deployment risk.",
+        ),
+        solution: t(
+          "Wij bouwen alleen wat je echt nodig hebt, zonder enterprise ballast.",
+          "We build only what you actually need, without enterprise ballast.",
+        ),
+      },
+      {
+        problem: t("Onderhoud", "Maintenance"),
+        nightmare: t(
+          "Beheer, hosting en releases vreten tijd en budget nog voordat je iets nieuws oplevert.",
+          "Hosting, maintenance and releases eat time and budget before you ship anything new.",
+        ),
+        solution: t(
+          "Een lichtere stack met minder moving parts en veel minder technische schuld.",
+          "A lighter stack with fewer moving parts and far less technical debt.",
+        ),
+      },
+      {
+        problem: t("Snelheid", "Speed"),
+        nightmare: t(
+          "Magento kan krachtig zijn, maar voelt voor veel shops te zwaar op mobiel en te stroperig in iteratie.",
+          "Magento can be powerful, but for many stores it feels too heavy on mobile and too slow to iterate on.",
+        ),
+        solution: t(
+          "Snelle frontend delivery en maatwerk zonder het gewicht van een volledige Magento-stack.",
+          "Fast frontend delivery and custom functionality without the weight of a full Magento stack.",
+        ),
+      },
+      {
+        problem: t("Kosten", "Costs"),
+        nightmare: t(
+          "Je betaalt voor enterprise-complexiteit ook als je maar een deel van die kracht echt benut.",
+          "You pay for enterprise complexity even when you use only a fraction of its capabilities.",
+        ),
+        solution: t(
+          "Meer focus op wat verkoopt, minder budget op wat alleen het systeem in leven houdt.",
+          "More focus on what sells, less budget on what merely keeps the system alive.",
+        ),
+      },
+    ],
+    checkTitle: t(
+      "Laat ons je Magento-stack en onderhoudslast analyseren",
+      "Let us analyze your Magento stack and maintenance load",
+    ),
+    checkCopy: t(
+      "Stuur je URL en context door. Dan beoordelen wij welke delen van Magento je echt nodig hebt, wat ballast is geworden en hoe een slimmere custom setup eruitziet.",
+      "Send your URL and context. We assess which parts of Magento you truly need, what has become ballast and what a smarter custom setup looks like.",
+    ),
+    checkDeliverables: list(
+      [
+        "Welke Magento-complexiteit je kunt afbouwen",
+        "Welke modules of processen maatwerk moeten blijven",
+        "Waar onderhoud en hosting nu onnodig budget verbruiken",
+        "Een realistische overstapinschatting",
+      ],
+      [
+        "Which Magento complexity you can remove",
+        "Which modules or processes should remain as custom functionality",
+        "Where maintenance and hosting are wasting budget today",
+        "A realistic switch estimate",
+      ],
+    ),
+    defaultPlatform: "Magento",
+    zeroEffortTitle: t(
+      "Jij houdt de omzet draaiend, wij halen de enterprise ballast eruit.",
+      "You keep revenue moving, we strip out the enterprise ballast.",
+    ),
+    zeroEffortCopy: t(
+      "Je hoeft niet zelf uit te zoeken welke Magento-onderdelen kritisch zijn en welke alleen complexiteit toevoegen. Wij brengen die scheiding voor je aan en bouwen daarna een lichtere omgeving.",
+      "You do not need to figure out which Magento parts are critical and which only add complexity. We draw that line for you and then build a lighter environment.",
+    ),
+    threeDTitle: t(
+      "Rijke productervaring mag niet nog meer technische zwaarte toevoegen.",
+      "Rich product experiences should not add even more technical weight.",
+    ),
+    threeDCopy: t(
+      "Magento-projecten worden vaak al zwaar genoeg door modules en releases. Dan wil je onderscheidende features zoals 3D of configuratie niet nog in diezelfde zware laag proppen.",
+      "Magento projects are usually heavy enough because of modules and release overhead. You do not want to cram differentiated features like 3D or configuration into that same heavy layer.",
+    ),
+    threeDFootnote: t(
+      "Hier laat je maatwerk zien zonder er nog een nieuwe laag complexiteit bij te bouwen.",
+      "Here you show off custom functionality without creating another layer of complexity.",
+    ),
+    rebuildTitle: t(
+      "Wij houden de businesslogica, niet de overkill",
+      "We keep the business logic, not the overkill",
+    ),
+    rebuildCopy: t(
+      "Denk aan pricing rules, B2B uitzonderingen, complexe cataloguslogica of specifieke orderflows. We behouden wat omzet draagt en laten de rest achter.",
+      "Think pricing rules, B2B exceptions, complex catalog logic or specific order flows. We keep what carries revenue and leave the rest behind.",
+    ),
+    rebuildExtra: t(
+      "Het resultaat is geen afgeslankte Magento-kopie, maar een gerichter systeem dat sneller werkt voor je team en je klant.",
+      "The result is not a slimmed-down Magento clone, but a more focused system that works faster for both your team and your customer.",
+    ),
+    keywordTitle: t(
+      "De zoekopdrachten die hierachter zitten",
+      "The search intent behind this page",
+    ),
+    keywordIntro: t(
+      "Magento-frustratie wordt meestal omschreven als complexiteit, dure development of een systeem dat te zwaar voelt voor wat je business nodig heeft.",
+      "Magento frustration usually gets described as complexity, expensive development or a system that feels too heavy for what the business actually needs.",
+    ),
+    keywordPhrases: list(
+      [
+        "magento alternatief",
+        "magento te duur",
+        "magento developer kosten",
+        "magento migratie",
+        "magento te complex",
+        "sneller dan magento",
+      ],
+      [
+        "magento alternative",
+        "magento too expensive",
+        "magento developer costs",
+        "magento migration",
+        "magento too complex",
+        "faster than magento",
+      ],
+    ),
+    riskTitle: t(
+      "Als het niet eenvoudiger en sneller voelt, heeft de overstap weinig zin.",
+      "If it does not feel simpler and faster, the switch has little value.",
+    ),
+    riskCopy: t(
+      "Magento verlaten heeft alleen zin als je er niet een andere vorm van technische ballast voor terugkrijgt. Daarom focussen we niet op vervanging, maar op vereenvoudiging.",
+      "Leaving Magento only makes sense if you do not replace it with another kind of technical ballast. That is why we focus on simplification, not just replacement.",
+    ),
+    timelineTitle: t(
+      "Van Magento naar custom live in 7 dagen",
+      "From Magento to custom live in 7 days",
+    ),
+    timelineSteps: sharedTimeline,
+    extraMileTitle: t(
+      "Waarom Magento-overstappers vooral opluchting terugkrijgen",
+      "Why Magento switchers mainly get relief back",
+    ),
+    extraMileCards: sharedExtraMileCards,
+    seoTitle: t(
+      "Je bestaande zichtbaarheid meenemen zonder de oude complexiteit te bewaren",
+      "Carry over visibility without carrying over the old complexity",
+    ),
+    seoCopy: t(
+      "We behouden je URL-logica en content waar dat waardevol is, maar nemen niet blind de technische schuld van Magento mee.",
+      "We preserve your URL logic and content where it matters, without blindly carrying Magento's technical debt forward.",
+    ),
+    seoExtra: t(
+      "De winst zit niet alleen in SEO-behoud, maar in een stack die daarna eindelijk sneller te ontwikkelen en sneller te verkopen is.",
+      "The upside is not just preserving SEO, but ending up with a stack that is finally faster to build on and faster to sell from.",
+    ),
+    stickyPrompt: t(
+      "Benieuwd hoeveel Magento-complexiteit je nu kost?",
+      "Curious what Magento complexity is costing you right now?",
+    ),
+  },
+  {
+    key: "prestashop",
+    route: "/prestashop-alternatief",
+    title: t(
+      "PrestaShop Alternatief voor Meer Snelheid | Sitedesk",
+      "PrestaShop Alternative for More Speed | Sitedesk",
+    ),
+    description: t(
+      "Van PrestaShop naar een sneller en moderner storefront. Minder module-gedoe, minder onderhoud en meer grip op conversie.",
+      "Move from PrestaShop to a faster, more modern storefront. Less module friction, less maintenance and more control over conversion.",
+    ),
+    navLabel: t("PrestaShop", "PrestaShop"),
+    heroEyebrow: t("PrestaShop Alternatief", "PrestaShop Alternative"),
+    heroTitle: t(
+      "PrestaShop houdt je shop online, maar niet altijd snel, strak en makkelijk schaalbaar.",
+      "PrestaShop keeps your store online, but not always fast, clean and easy to scale.",
+    ),
+    heroCopy: t(
+      "Wij vervangen module-stapeling, verouderde theme-logica en omslachtige doorontwikkeling door een storefront die sneller laadt en makkelijker converteert.",
+      "We replace module stacking, dated theme logic and slow iteration with a storefront that loads faster and converts more cleanly.",
+    ),
+    heroLeftLabel: t("PrestaShop", "PrestaShop"),
+    heroLeftItems: list(
+      ["Modules", "Theme overrides", "Backoffice frictie", "Langzame categorieën", "Veel kleine fixes"],
+      ["Modules", "Theme overrides", "Back office friction", "Slow category pages", "Many small fixes"],
+    ),
+    heroRightLabel: t("Sitedesk", "Sitedesk"),
+    matrixTitle: t(
+      "Waarom PrestaShop vaak blijft hangen in kleine technische remmen",
+      "Why PrestaShop often gets stuck in many small technical bottlenecks",
+    ),
+    matrixRows: [
+      {
+        problem: t("Modules", "Modules"),
+        nightmare: t(
+          "Extra functionaliteit betekent al snel nog een module en nog een afhankelijkheid.",
+          "Extra functionality quickly means another module and another dependency.",
+        ),
+        solution: t(
+          "Wij bouwen de kritieke functies direct in, zonder extra modulelaag.",
+          "We build the critical functionality directly into the system without another module layer.",
+        ),
+      },
+      {
+        problem: t("Theme-logica", "Theme logic"),
+        nightmare: t(
+          "Aanpassingen belanden in overrides en kleine workarounds die later weer breken.",
+          "Changes end up in overrides and small workarounds that later break again.",
+        ),
+        solution: t(
+          "Een heldere storefront-architectuur zonder thema-pleisters.",
+          "A clear storefront architecture without theme band-aids.",
+        ),
+      },
+      {
+        problem: t("Snelheid", "Speed"),
+        nightmare: t(
+          "Vooral op mobiel gaat conversie verloren door frictie in scripts, pagina-opbouw en interacties.",
+          "Especially on mobile, conversion gets lost through friction in scripts, page structure and interactions.",
+        ),
+        solution: t(
+          "Snelle product- en categoriepagina's met veel minder frontend ballast.",
+          "Fast product and category pages with far less frontend ballast.",
+        ),
+      },
+      {
+        problem: t("Doorontwikkeling", "Iteration"),
+        nightmare: t(
+          "Je blijft kleine bugs en uitzonderingen oplossen in plaats van echt beter te bouwen.",
+          "You keep solving small bugs and exceptions instead of building something better.",
+        ),
+        solution: t(
+          "Een systeem dat makkelijker te verbeteren is zodra je nieuwe ideeën wilt testen.",
+          "A system that is easier to improve the moment you want to test new ideas.",
+        ),
+      },
+    ],
+    checkTitle: t(
+      "Laat ons je PrestaShop-setup en technische remmen analyseren",
+      "Let us analyze your PrestaShop setup and its technical bottlenecks",
+    ),
+    checkCopy: t(
+      "Stuur je URL en context door. Dan beoordelen wij waar modules, theme-logica of front-end frictie je nu afremmen en hoe een sneller alternatief eruitziet.",
+      "Send your URL and context. We assess where modules, theme logic or frontend friction are slowing you down and what a faster alternative looks like.",
+    ),
+    checkDeliverables: list(
+      [
+        "Welke modules of overrides je nu afremmen",
+        "Waar mobiele conversie onnodig lekt",
+        "Welke functies custom slimmer gebouwd worden",
+        "Een realistische overstapinschatting",
+      ],
+      [
+        "Which modules or overrides are slowing you down",
+        "Where mobile conversion is leaking unnecessarily",
+        "Which functions are smarter to build custom",
+        "A realistic switch estimate",
+      ],
+    ),
+    defaultPlatform: "PrestaShop",
+    zeroEffortTitle: t(
+      "Jij hoeft geen module-oorlog uit te pluizen. Wij doen dat.",
+      "You do not need to untangle a module war. We do that.",
+    ),
+    zeroEffortCopy: t(
+      "Je hoeft niet zelf te bepalen wat essentieel is, wat weg kan en waar de echte vertraging zit. Wij brengen dat terug tot een scherpe blueprint en bouwen daarna de betere versie.",
+      "You do not need to decide what is essential, what can go and where the real slowdown lives. We reduce that to a sharp blueprint and then build the better version.",
+    ),
+    threeDTitle: t(
+      "Als je al frictie voelt in je frontend, wil je geen extra laag module-logica toevoegen.",
+      "If your frontend already feels strained, you do not want to add another layer of module logic.",
+    ),
+    threeDCopy: t(
+      "PrestaShop-projecten verliezen vaak snelheid in kleine optelsommen. Dan moet onderscheidende productbeleving juist schoon gebouwd worden, niet eraan vastgelijmd.",
+      "PrestaShop projects often lose speed through many small accumulations. That is exactly why differentiating product experiences should be built cleanly, not glued on top.",
+    ),
+    threeDFootnote: t(
+      "Zo hoort maatwerk eruit te zien: sneller, rijker en zonder nieuwe technische rommel.",
+      "This is what custom should look like: faster, richer and without new technical clutter.",
+    ),
+    rebuildTitle: t(
+      "Wij behouden wat werkt en slopen de frictie eromheen weg",
+      "We keep what works and remove the friction around it",
+    ),
+    rebuildCopy: t(
+      "Denk aan filters, cataloguslogica, verzendregels, promoties en landingspagina's. Alles wat omzet ondersteunt blijft. Alleen de technische ballast gaat eruit.",
+      "Think filters, catalog logic, shipping rules, promotions and landing pages. Everything that supports revenue stays. Only the technical ballast goes.",
+    ),
+    rebuildExtra: t(
+      "Zo wordt je volgende stap niet opnieuw een theme-tweak of module-fix, maar echte verbetering aan je storefront.",
+      "That way your next step is not another theme tweak or module fix, but a real storefront improvement.",
+    ),
+    keywordTitle: t(
+      "De zoekopdrachten die hierachter zitten",
+      "The search intent behind this page",
+    ),
+    keywordIntro: t(
+      "PrestaShop-problemen worden vaak omschreven als modules, overrides of een shop die op mobiel gewoon niet strak genoeg voelt.",
+      "PrestaShop issues are often described as modules, overrides or a storefront that simply does not feel clean enough on mobile.",
+    ),
+    keywordPhrases: list(
+      [
+        "prestashop alternatief",
+        "prestashop trage webshop",
+        "prestashop migratie",
+        "prestashop modules probleem",
+        "prestashop sneller maken",
+        "prestashop maatwerk",
+      ],
+      [
+        "prestashop alternative",
+        "slow prestashop webshop",
+        "prestashop migration",
+        "prestashop module problems",
+        "make prestashop faster",
+        "prestashop custom development",
+      ],
+    ),
+    riskTitle: t(
+      "Als je niet direct minder frictie voelt, hebben we niet genoeg opgeruimd.",
+      "If you do not immediately feel less friction, we did not clean up enough.",
+    ),
+    riskCopy: t(
+      "Een overstap weg van PrestaShop moet niet alleen sneller zijn op papier, maar merkbaar fijner in beheer, ontwikkeling en conversie.",
+      "A move away from PrestaShop should not just be faster on paper, but clearly better in maintenance, development and conversion.",
+    ),
+    timelineTitle: t(
+      "Van PrestaShop naar custom live in 7 dagen",
+      "From PrestaShop to custom live in 7 days",
+    ),
+    timelineSteps: sharedTimeline,
+    extraMileTitle: t(
+      "Waarom PrestaShop-overstappers eindelijk een schonere basis krijgen",
+      "Why PrestaShop switchers finally get a cleaner foundation",
+    ),
+    extraMileCards: sharedExtraMileCards,
+    seoTitle: t(
+      "Je bestaande content en rankings meenemen zonder de oude frictie",
+      "Carry over content and rankings without carrying over the old friction",
+    ),
+    seoCopy: t(
+      "We behouden wat zoekverkeer oplevert, maar vervangen de technische laag waar PrestaShop je nu remt.",
+      "We preserve what drives search traffic while replacing the technical layer that is slowing you down today.",
+    ),
+    seoExtra: t(
+      "Zo eindig je niet alleen met dezelfde zichtbaarheid, maar met een shop die daar veel meer uit kan halen.",
+      "That way you do not just keep the same visibility, you end up with a storefront that can get much more out of it.",
+    ),
+    stickyPrompt: t(
+      "Benieuwd hoeveel PrestaShop-frictie je nu kost?",
+      "Curious what PrestaShop friction is costing you right now?",
     ),
   },
 ];

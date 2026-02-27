@@ -153,6 +153,10 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
   const rebuildTitle = String(getLocalizedMigrationText(config.rebuildTitle, locale));
   const rebuildCopy = String(getLocalizedMigrationText(config.rebuildCopy, locale));
   const rebuildExtra = String(getLocalizedMigrationText(config.rebuildExtra, locale));
+  const keywordTitle = String(getLocalizedMigrationText(config.keywordTitle, locale));
+  const keywordIntro = String(getLocalizedMigrationText(config.keywordIntro, locale));
+  const keywordPhrases = getLocalizedMigrationText(config.keywordPhrases, locale) as string[];
+  const keywordMeta = keywordPhrases.join(", ");
   const riskTitle = String(getLocalizedMigrationText(config.riskTitle, locale));
   const riskCopy = String(getLocalizedMigrationText(config.riskCopy, locale));
   const timelineTitle = String(getLocalizedMigrationText(config.timelineTitle, locale));
@@ -267,6 +271,7 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
+        <meta name="keywords" content={keywordMeta} />
         <link rel="canonical" href={canonical} />
         {alternateLinks.map((alt) => (
           <link key={alt.locale} rel="alternate" hrefLang={alt.locale} href={alt.href} />
@@ -513,6 +518,23 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
             <h2 className="mb-4 text-3xl md:text-4xl font-bold text-foreground">{rebuildTitle}</h2>
             <p className="text-lg text-muted-foreground">{rebuildCopy}</p>
             <p className="mt-4 text-base text-muted-foreground">{rebuildExtra}</p>
+          </div>
+        </section>
+
+        <section className="container mx-auto py-12 md:py-16">
+          <div className="rounded-2xl border border-border/70 bg-card/60 p-8">
+            <h2 className="mb-4 text-3xl md:text-4xl font-bold text-foreground">{keywordTitle}</h2>
+            <p className="text-lg text-muted-foreground">{keywordIntro}</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              {keywordPhrases.map((phrase) => (
+                <span
+                  key={phrase}
+                  className="rounded-full border border-accent/30 bg-accent/10 px-4 py-2 text-sm font-medium text-foreground"
+                >
+                  {phrase}
+                </span>
+              ))}
+            </div>
           </div>
         </section>
 
