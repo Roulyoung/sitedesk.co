@@ -17,7 +17,7 @@ const template = await fs.readFile(path.join(distDir, "index.html"), "utf-8");
 
 const { render, posts } = await import(pathToFileURL(ssrEntry).href);
 
-const staticBaseRoutes = ["/", "/zakelijke-websites", "/shop", "/webshop", "/blog", "/over-ons"];
+const staticBaseRoutes = ["/", "/zakelijke-websites", "/shop", "/demo", "/webshop", "/migratie", "/blog", "/over-ons"];
 const blogBaseRoutes = posts.map((post) => `/blog/${post.id}`);
 
 const PRODUCTS_ENDPOINT =

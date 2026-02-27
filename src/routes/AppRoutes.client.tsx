@@ -5,7 +5,9 @@ import { getNonDefaultLocales, stripLocaleFromPath } from "@/lib/i18n";
 type RouteComponents = {
   Index?: React.ComponentType;
   NotFound?: React.ComponentType;
+  PreviewOffer?: React.ComponentType;
   Shop?: React.ComponentType;
+  Migration?: React.ComponentType;
   Product?: React.ComponentType;
   Success?: React.ComponentType;
   Admin?: React.ComponentType;
@@ -18,7 +20,9 @@ type RouteComponents = {
 
 const LazyIndex = lazy(() => import("@/pages/Index"));
 const LazyNotFound = lazy(() => import("@/pages/NotFound"));
+const LazyPreviewOffer = lazy(() => import("@/pages/PreviewOffer"));
 const LazyShop = lazy(() => import("@/pages/Shop"));
+const LazyMigration = lazy(() => import("@/pages/Migration"));
 const LazyProduct = lazy(() => import("@/pages/Product"));
 const LazySuccess = lazy(() => import("@/pages/Success"));
 const LazyAdmin = lazy(() => import("@/pages/Admin"));
@@ -43,13 +47,25 @@ export const loadInitialRouteComponents = async (pathname: string): Promise<Rout
     const mod = await import("@/pages/Shop");
     return { Shop: mod.default };
   }
+  if (normalizedPathname === "/demo") {
+    const mod = await import("@/pages/Shop");
+    return { Shop: mod.default };
+  }
+  if (normalizedPathname === "/migratie") {
+    const mod = await import("@/pages/Migration");
+    return { Migration: mod.default };
+  }
   if (normalizedPathname.startsWith("/preview/")) {
     if (normalizedPathname.includes("/product/")) {
       const mod = await import("@/pages/Product");
       return { Product: mod.default };
     }
-    const mod = await import("@/pages/Shop");
-    return { Shop: mod.default };
+    if (normalizedPathname.endsWith("/shop")) {
+      const mod = await import("@/pages/Shop");
+      return { Shop: mod.default };
+    }
+    const mod = await import("@/pages/PreviewOffer");
+    return { PreviewOffer: mod.default };
   }
   if (normalizedPathname.startsWith("/product/")) {
     const mod = await import("@/pages/Product");
@@ -86,7 +102,9 @@ export const loadInitialRouteComponents = async (pathname: string): Promise<Rout
 export const AppRoutesClient = ({ initialComponents }: { initialComponents?: RouteComponents }) => {
   const Index = initialComponents?.Index ?? LazyIndex;
   const NotFound = initialComponents?.NotFound ?? LazyNotFound;
+  const PreviewOffer = initialComponents?.PreviewOffer ?? LazyPreviewOffer;
   const Shop = initialComponents?.Shop ?? LazyShop;
+  const Migration = initialComponents?.Migration ?? LazyMigration;
   const Product = initialComponents?.Product ?? LazyProduct;
   const Success = initialComponents?.Success ?? LazySuccess;
   const Admin = initialComponents?.Admin ?? LazyAdmin;
@@ -102,7 +120,9 @@ export const AppRoutesClient = ({ initialComponents }: { initialComponents?: Rou
         <Route path="/" element={<Webshop />} />
         <Route path="/zakelijke-websites" element={<Index />} />
         <Route path="/shop" element={<Shop />} />
-        <Route path="/preview/:clientSlug" element={<Shop />} />
+        <Route path="/demo" element={<Shop />} />
+        <Route path="/migratie" element={<Migration />} />
+        <Route path="/preview/:clientSlug" element={<PreviewOffer />} />
         <Route path="/preview/:clientSlug/shop" element={<Shop />} />
         <Route path="/preview/:clientSlug/product/:id" element={<Product />} />
         <Route path="/webshop" element={<Webshop />} />
@@ -118,7 +138,9 @@ export const AppRoutesClient = ({ initialComponents }: { initialComponents?: Rou
             <Route index element={<Webshop />} />
             <Route path="zakelijke-websites" element={<Index />} />
             <Route path="shop" element={<Shop />} />
-            <Route path="preview/:clientSlug" element={<Shop />} />
+            <Route path="demo" element={<Shop />} />
+            <Route path="migratie" element={<Migration />} />
+            <Route path="preview/:clientSlug" element={<PreviewOffer />} />
             <Route path="preview/:clientSlug/shop" element={<Shop />} />
             <Route path="preview/:clientSlug/product/:id" element={<Product />} />
             <Route path="webshop" element={<Webshop />} />

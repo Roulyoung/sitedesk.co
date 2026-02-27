@@ -1,23 +1,14 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, MessageCircle } from "lucide-react";
-import { getLandingSectionHash, getLocaleFromPath, withLocalePath, type LandingSectionKey } from "@/lib/i18n";
+import { Menu, X, MessageCircle, ChevronDown } from "lucide-react";
+import { getLandingSectionHash, getLocaleFromPath, withLocalePath } from "@/lib/i18n";
 import { t } from "@/lib/messages";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
-const navLinks = [
-  { sectionKey: "tech" as LandingSectionKey, labelKey: "nav.tech", type: "hash" as const },
-  { sectionKey: "calculator" as LandingSectionKey, labelKey: "nav.calculator", type: "hash" as const },
-  { sectionKey: "comparison" as LandingSectionKey, labelKey: "nav.comparison", type: "hash" as const },
-  { sectionKey: "offer" as LandingSectionKey, labelKey: "nav.offer", type: "hash" as const },
-  { sectionKey: "sheets" as LandingSectionKey, labelKey: "nav.sheets", type: "hash" as const },
-  { to: "/shop", labelKey: "nav.demo", type: "route" as const },
-  { to: "/blog", labelKey: "nav.blog", type: "route" as const },
-];
-
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobileTechOpen, setIsMobileTechOpen] = useState(false);
   const location = useLocation();
   const [prevPath, setPrevPath] = useState(location.pathname);
   const locale = getLocaleFromPath(location.pathname);
@@ -50,6 +41,15 @@ const Header = () => {
     return location.pathname === url.pathname;
   };
 
+  const homeTo = withLocalePath("/", locale);
+  const comparisonTo = `${homeTo}${getLandingSectionHash(locale, "comparison")}`;
+  const sheetsTo = `${homeTo}${getLandingSectionHash(locale, "sheets")}`;
+  const calculatorTo = `${homeTo}${getLandingSectionHash(locale, "calculator")}`;
+  const migrationTo = withLocalePath("/migratie", locale);
+  const demoTo = withLocalePath("/demo", locale);
+  const blogTo = withLocalePath("/blog", locale);
+  const techActive = isActive(comparisonTo, "hash") || isActive(sheetsTo, "hash");
+
   const scrollToHash = (targetId: string) => {
     if (!isBrowser) return;
     const el = document.getElementById(targetId);
@@ -74,7 +74,7 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border/50">
       <div className="container mx-auto flex items-center justify-between h-16 md:h-20">
-        <a href={withLocalePath("/", locale)} className="flex items-center gap-2">
+        <a href={homeTo} className="flex items-center gap-2">
           <img
             src="/icon-sitedesk.png"
             alt="Sitedesk logo"
@@ -88,30 +88,114 @@ const Header = () => {
         </a>
 
         <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => {
-            const resolvedTo =
-              link.type === "hash"
-                ? `${withLocalePath("/", locale)}${getLandingSectionHash(locale, link.sectionKey)}`
-                : withLocalePath(link.to, locale);
-            const active = isActive(resolvedTo, link.type);
-            return (
+          <NavLink
+            to={homeTo}
+            className={`text-sm font-medium transition-colors ${
+              isActive(homeTo, "route")
+                ? "text-foreground border-b-2 border-accent pb-1"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {t(locale, "nav.home")}
+          </NavLink>
+
+          <div className="relative group">
+            <button
+              type="button"
+              className={`inline-flex items-center gap-1 text-sm font-medium transition-colors ${
+                techActive
+                  ? "text-foreground border-b-2 border-accent pb-1"
+                  : "text-muted-foreground group-hover:text-foreground"
+              }`}
+              aria-haspopup="menu"
+              aria-expanded="false"
+            >
+              {t(locale, "nav.tech")}
+              <ChevronDown className="h-4 w-4" />
+            </button>
+            <div className="absolute left-0 top-full z-50 mt-2 hidden min-w-56 rounded-md border border-border bg-card p-2 shadow-lg group-hover:block group-focus-within:block">
               <NavLink
-                key={link.type === "hash" ? link.sectionKey : link.to}
-                to={resolvedTo}
-                className={`text-sm font-medium transition-colors ${
-                  active
-                    ? "text-foreground border-b-2 border-accent pb-1"
-                    : "text-muted-foreground hover:text-foreground"
+                to={comparisonTo}
+                className={`block rounded px-3 py-2 text-sm transition-colors ${
+                  isActive(comparisonTo, "hash")
+                    ? "text-foreground bg-accent/15"
+                    : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
                 }`}
                 onClick={(e) => {
                   setIsMenuOpen(false);
-                  handleNavClick(e, resolvedTo, link.type);
+                  handleNavClick(e, comparisonTo, "hash");
                 }}
               >
-                {t(locale, link.labelKey)}
+                {t(locale, "nav.comparison")}
               </NavLink>
-            );
-          })}
+              <NavLink
+                to={sheetsTo}
+                className={`block rounded px-3 py-2 text-sm transition-colors ${
+                  isActive(sheetsTo, "hash")
+                    ? "text-foreground bg-accent/15"
+                    : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                }`}
+                onClick={(e) => {
+                  setIsMenuOpen(false);
+                  handleNavClick(e, sheetsTo, "hash");
+                }}
+              >
+                {t(locale, "nav.sheets")}
+              </NavLink>
+            </div>
+          </div>
+
+          <NavLink
+            to={calculatorTo}
+            className={`text-sm font-medium transition-colors ${
+              isActive(calculatorTo, "hash")
+                ? "text-foreground border-b-2 border-accent pb-1"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+            onClick={(e) => {
+              setIsMenuOpen(false);
+              handleNavClick(e, calculatorTo, "hash");
+            }}
+          >
+            {t(locale, "nav.calculator")}
+          </NavLink>
+
+          <NavLink
+            to={migrationTo}
+            className={`text-sm font-medium transition-colors ${
+              isActive(migrationTo, "route")
+                ? "text-foreground border-b-2 border-accent pb-1"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {t(locale, "nav.migration")}
+          </NavLink>
+
+          <NavLink
+            to={demoTo}
+            className={`text-sm font-medium transition-colors ${
+              isActive(demoTo, "route")
+                ? "text-foreground border-b-2 border-accent pb-1"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {t(locale, "nav.demo")}
+          </NavLink>
+
+          <NavLink
+            to={blogTo}
+            className={`text-sm font-medium transition-colors ${
+              isActive(blogTo, "route")
+                ? "text-foreground border-b-2 border-accent pb-1"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {t(locale, "nav.blog")}
+          </NavLink>
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
@@ -141,30 +225,112 @@ const Header = () => {
       {isMenuOpen && (
         <div id="mobile-nav" className="container mx-auto md:hidden py-4 border-t border-border/50 animate-fade-in">
           <nav className="flex flex-col gap-4">
-            {navLinks.map((link) => {
-              const resolvedTo =
-                link.type === "hash"
-                  ? `${withLocalePath("/", locale)}${getLandingSectionHash(locale, link.sectionKey)}`
-                  : withLocalePath(link.to, locale);
-              const active = isActive(resolvedTo, link.type);
-              return (
-                <NavLink
-                  key={link.type === "hash" ? link.sectionKey : link.to}
-                  to={resolvedTo}
-                  className={`text-base font-medium py-2 ${
-                    active
-                      ? "text-foreground border-b-2 border-accent pb-1"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                  onClick={(e) => {
-                    setIsMenuOpen(false);
-                    handleNavClick(e, resolvedTo, link.type);
-                  }}
-                >
-                  {t(locale, link.labelKey)}
-                </NavLink>
-              );
-            })}
+            <NavLink
+              to={homeTo}
+              className={`text-base font-medium py-2 ${
+                isActive(homeTo, "route")
+                  ? "text-foreground border-b-2 border-accent pb-1"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {t(locale, "nav.home")}
+            </NavLink>
+
+            <div>
+              <button
+                type="button"
+                className={`w-full text-left text-base font-medium py-2 inline-flex items-center justify-between ${
+                  techActive ? "text-foreground" : "text-muted-foreground"
+                }`}
+                onClick={() => setIsMobileTechOpen((value) => !value)}
+                aria-expanded={isMobileTechOpen}
+              >
+                {t(locale, "nav.tech")}
+                <ChevronDown className={`h-4 w-4 transition-transform ${isMobileTechOpen ? "rotate-180" : ""}`} />
+              </button>
+              {isMobileTechOpen && (
+                <div className="pl-4 border-l border-border/60 flex flex-col gap-2 mt-1">
+                  <NavLink
+                    to={comparisonTo}
+                    className={`text-sm py-1 ${
+                      isActive(comparisonTo, "hash") ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                    onClick={(e) => {
+                      setIsMenuOpen(false);
+                      setIsMobileTechOpen(false);
+                      handleNavClick(e, comparisonTo, "hash");
+                    }}
+                  >
+                    {t(locale, "nav.comparison")}
+                  </NavLink>
+                  <NavLink
+                    to={sheetsTo}
+                    className={`text-sm py-1 ${
+                      isActive(sheetsTo, "hash") ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                    onClick={(e) => {
+                      setIsMenuOpen(false);
+                      setIsMobileTechOpen(false);
+                      handleNavClick(e, sheetsTo, "hash");
+                    }}
+                  >
+                    {t(locale, "nav.sheets")}
+                  </NavLink>
+                </div>
+              )}
+            </div>
+
+            <NavLink
+              to={calculatorTo}
+              className={`text-base font-medium py-2 ${
+                isActive(calculatorTo, "hash")
+                  ? "text-foreground border-b-2 border-accent pb-1"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              onClick={(e) => {
+                setIsMenuOpen(false);
+                handleNavClick(e, calculatorTo, "hash");
+              }}
+            >
+              {t(locale, "nav.calculator")}
+            </NavLink>
+
+            <NavLink
+              to={migrationTo}
+              className={`text-base font-medium py-2 ${
+                isActive(migrationTo, "route")
+                  ? "text-foreground border-b-2 border-accent pb-1"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {t(locale, "nav.migration")}
+            </NavLink>
+
+            <NavLink
+              to={demoTo}
+              className={`text-base font-medium py-2 ${
+                isActive(demoTo, "route")
+                  ? "text-foreground border-b-2 border-accent pb-1"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {t(locale, "nav.demo")}
+            </NavLink>
+
+            <NavLink
+              to={blogTo}
+              className={`text-base font-medium py-2 ${
+                isActive(blogTo, "route")
+                  ? "text-foreground border-b-2 border-accent pb-1"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {t(locale, "nav.blog")}
+            </NavLink>
             <div className="pt-1">
               <LanguageSwitcher />
             </div>

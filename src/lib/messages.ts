@@ -4,11 +4,13 @@ type MessageKey =
   | "lang.nl"
   | "lang.en"
   | "lang.de"
+  | "nav.home"
   | "nav.tech"
   | "nav.calculator"
   | "nav.comparison"
   | "nav.offer"
   | "nav.sheets"
+  | "nav.migration"
   | "nav.demo"
   | "nav.blog"
   | "nav.business"
@@ -37,11 +39,13 @@ const MESSAGES: Record<SupportedLocale, Record<MessageKey, string>> = {
     "lang.nl": "NL",
     "lang.en": "EN",
     "lang.de": "DE",
+    "nav.home": "Home",
     "nav.tech": "Techniek",
     "nav.calculator": "Calculator",
     "nav.comparison": "Vergelijking",
     "nav.offer": "Aanbod",
-    "nav.sheets": "Sheets",
+    "nav.sheets": "Sheets als Database",
+    "nav.migration": "Migratie",
     "nav.demo": "Demo",
     "nav.blog": "Blog",
     "nav.business": "Zakelijke Websites",
@@ -69,11 +73,13 @@ const MESSAGES: Record<SupportedLocale, Record<MessageKey, string>> = {
     "lang.nl": "NL",
     "lang.en": "EN",
     "lang.de": "DE",
+    "nav.home": "Home",
     "nav.tech": "Tech",
     "nav.calculator": "Calculator",
     "nav.comparison": "Comparison",
     "nav.offer": "Offer",
-    "nav.sheets": "Sheets",
+    "nav.sheets": "Sheets as Database",
+    "nav.migration": "Migration",
     "nav.demo": "Demo",
     "nav.blog": "Blog",
     "nav.business": "Business Websites",
@@ -101,11 +107,13 @@ const MESSAGES: Record<SupportedLocale, Record<MessageKey, string>> = {
     "lang.nl": "NL",
     "lang.en": "EN",
     "lang.de": "DE",
+    "nav.home": "Home",
     "nav.tech": "Technik",
     "nav.calculator": "Rechner",
     "nav.comparison": "Vergleich",
     "nav.offer": "Angebot",
-    "nav.sheets": "Sheets",
+    "nav.sheets": "Sheets als Datenbank",
+    "nav.migration": "Migration",
     "nav.demo": "Demo",
     "nav.blog": "Blog",
     "nav.business": "Business-Websites",
