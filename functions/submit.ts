@@ -23,7 +23,7 @@ function corsHeaders(origin: string | null) {
 // Shared secret for Apps Script
 const CONTACT_SECRET = "OHUASDFIHUO87AIHUASDF&^^^&%kuhA123"; // set the same value in Apps Script
 const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbzqhsYu7Ma2jqMicU3Hp_y1oWSMuDKTtlip1FoeRif-qbm7qnQDo7FNKnirbvOcKa3L7w/exec";
+  "https://script.google.com/macros/s/AKfycbzlUQPfbNeVh9XS7oz0alKRbG3k7pJiHHEnh7O4ceWJcGVU0NhHe0R2YwoIMnwCQBNOxg/exec";
 
 function normalizeAndValidateShopUrl(input: string) {
   const raw = (input || "").trim();
