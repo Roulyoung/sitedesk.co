@@ -29,6 +29,10 @@ function doPost(e) {
     var monthlyRevenue = toText(data.monthlyRevenue || data["Maandelijkse Omzet"]);
     var currentLoadTime = toText(data.currentLoadTime || data["Huidige Laadtijd"]);
     var estimatedLoss = toText(data.estimatedLoss || data["Geschat Verlies"]);
+    var mobilePerformanceScore = toText(data.mobilePerformanceScore || data["mobilePerformanceScore"]);
+    var desktopPerformanceScore = toText(data.desktopPerformanceScore || data["desktopPerformanceScore"]);
+    var scoreEstimatedLoss = toText(data.scoreEstimatedLoss || data["scoreEstimatedLoss"]);
+    var pagespeedSummary = toText(data.pagespeedSummary || data["pagespeedSummary"]);
 
     if (company) {
       return jsonResponse({ ok: true, message: "Ignored honeypot" });
@@ -48,6 +52,10 @@ function doPost(e) {
           "Maandelijkse omzet: " + (monthlyRevenue || "-"),
           "Huidige laadtijd: " + (currentLoadTime || "-"),
           "Geschat omzetverlies p/m: " + (estimatedLoss || "-"),
+          "Mobiele Lighthouse score: " + (mobilePerformanceScore ? mobilePerformanceScore + "/100" : "-"),
+          "Desktop Lighthouse score: " + (desktopPerformanceScore ? desktopPerformanceScore + "/100" : "-"),
+          "Geschat omzetverlies p/m op basis van live score: " + (scoreEstimatedLoss || "-"),
+          "Pagespeed samenvatting: " + (pagespeedSummary || "-"),
         ].join("\n");
       }
     } else {
@@ -68,6 +76,10 @@ function doPost(e) {
       monthlyRevenue,
       currentLoadTime,
       estimatedLoss,
+      mobilePerformanceScore,
+      desktopPerformanceScore,
+      scoreEstimatedLoss,
+      pagespeedSummary,
     ]);
 
     var subject =
@@ -84,6 +96,10 @@ function doPost(e) {
       "<p><strong>Maandelijkse omzet:</strong> " + escapeHtml(monthlyRevenue || "-") + "</p>" +
       "<p><strong>Huidige laadtijd:</strong> " + escapeHtml(currentLoadTime || "-") + "</p>" +
       "<p><strong>Geschat verlies p/m:</strong> " + escapeHtml(estimatedLoss || "-") + "</p>" +
+      "<p><strong>Mobiele Lighthouse score:</strong> " + escapeHtml(mobilePerformanceScore ? mobilePerformanceScore + "/100" : "-") + "</p>" +
+      "<p><strong>Desktop Lighthouse score:</strong> " + escapeHtml(desktopPerformanceScore ? desktopPerformanceScore + "/100" : "-") + "</p>" +
+      "<p><strong>Geschat verlies p/m op basis van live score:</strong> " + escapeHtml(scoreEstimatedLoss || "-") + "</p>" +
+      "<p><strong>Pagespeed samenvatting:</strong> " + escapeHtml(pagespeedSummary || "-") + "</p>" +
       "<p><strong>Bericht:</strong><br>" + escapeHtml(message || "-").replace(/\n/g, "<br>") + "</p>";
 
     var mailOptions = {
@@ -114,20 +130,7 @@ function getLeadSheet_() {
   var sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
 
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow([
-      "timestamp",
-      "Naam",
-      "Email",
-      "Bericht",
-      "leadType",
-      "phone",
-      "shopUrl",
-      "monthlyRevenue",
-      "currentLoadTime",
-      "estimatedLoss",
-    ]);
-  }
+  ensureLeadHeaders_(sheet);
 
   return sheet;
 }
@@ -150,6 +153,37 @@ function normalizeAndValidateShopUrl_(input) {
 function isValidEmail_(input) {
   var email = toText(input);
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function ensureLeadHeaders_(sheet) {
+  var requiredHeaders = [
+    "timestamp",
+    "Naam",
+    "Email",
+    "Bericht",
+    "leadType",
+    "phone",
+    "shopUrl",
+    "monthlyRevenue",
+    "currentLoadTime",
+    "estimatedLoss",
+    "mobilePerformanceScore",
+    "desktopPerformanceScore",
+    "scoreEstimatedLoss",
+    "pagespeedSummary",
+  ];
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(requiredHeaders);
+    return;
+  }
+
+  var currentHeaders = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), requiredHeaders.length)).getValues()[0];
+  for (var i = 0; i < requiredHeaders.length; i++) {
+    if (!toText(currentHeaders[i])) {
+      sheet.getRange(1, i + 1).setValue(requiredHeaders[i]);
+    }
+  }
 }
 
 function escapeHtml(input) {

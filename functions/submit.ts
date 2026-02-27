@@ -23,7 +23,7 @@ function corsHeaders(origin: string | null) {
 // Shared secret for Apps Script
 const CONTACT_SECRET = "OHUASDFIHUO87AIHUASDF&^^^&%kuhA123"; // set the same value in Apps Script
 const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbwrCYn2Mmz4XDeTnK8BDJiI5gFaczO7YIVekQkJAXauscW_SzjonURv1gHc4D9ZdS5PxQ/exec";
+  "https://script.google.com/macros/s/AKfycbzqhsYu7Ma2jqMicU3Hp_y1oWSMuDKTtlip1FoeRif-qbm7qnQDo7FNKnirbvOcKa3L7w/exec";
 
 function normalizeAndValidateShopUrl(input: string) {
   const raw = (input || "").trim();
@@ -42,6 +42,88 @@ function normalizeAndValidateShopUrl(input: string) {
 function isValidEmail(input: string) {
   const email = (input || "").trim();
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+type PagespeedSummary = {
+  mobilePerformanceScore: string;
+  desktopPerformanceScore: string;
+  scoreEstimatedLoss: string;
+  pagespeedSummary: string;
+};
+
+async function fetchPagespeedReport(url: string, strategy: "mobile" | "desktop") {
+  const endpoint = new URL("https://www.googleapis.com/pagespeedonline/v5/runPagespeed");
+  endpoint.searchParams.set("url", url);
+  endpoint.searchParams.set("strategy", strategy);
+  endpoint.searchParams.set("category", "PERFORMANCE");
+
+  const response = await fetch(endpoint.toString(), {
+    headers: { Accept: "application/json" },
+  });
+  if (!response.ok) throw new Error(`Pagespeed ${strategy} failed: ${response.status}`);
+  const data = await response.json<any>();
+  const lighthouse = data?.lighthouseResult;
+  const score = lighthouse?.categories?.performance?.score;
+  const audits = lighthouse?.audits || {};
+  return {
+    score: typeof score === "number" ? Math.round(score * 100) : null,
+    lcp: audits["largest-contentful-paint"]?.displayValue || "",
+    fcp: audits["first-contentful-paint"]?.displayValue || "",
+    tbt: audits["total-blocking-time"]?.displayValue || "",
+  };
+}
+
+function getLossPercentFromPerformanceScore(score: number | null) {
+  if (score == null) return 0;
+  if (score >= 90) return 0.03;
+  if (score >= 80) return 0.05;
+  if (score >= 70) return 0.08;
+  if (score >= 60) return 0.12;
+  if (score >= 50) return 0.18;
+  return 0.25;
+}
+
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("nl-NL", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(Math.max(0, value));
+}
+
+async function buildPagespeedSummary(shopUrl: string, monthlyRevenueRaw: string): Promise<PagespeedSummary> {
+  try {
+    const [mobile, desktop] = await Promise.all([
+      fetchPagespeedReport(shopUrl, "mobile"),
+      fetchPagespeedReport(shopUrl, "desktop"),
+    ]);
+    const monthlyRevenue = Number(String(monthlyRevenueRaw).replace(/[^\d.,-]/g, "").replace(/\./g, "").replace(",", "."));
+    const lossPercent = getLossPercentFromPerformanceScore(mobile.score);
+    const scoreEstimatedLoss =
+      Number.isFinite(monthlyRevenue) && monthlyRevenue > 0 ? formatCurrency(monthlyRevenue * lossPercent) : "";
+
+    const parts = [
+      mobile.score != null ? `Mobiel: ${mobile.score}/100` : "",
+      desktop.score != null ? `Desktop: ${desktop.score}/100` : "",
+      mobile.lcp ? `LCP mobiel: ${mobile.lcp}` : "",
+      mobile.fcp ? `FCP mobiel: ${mobile.fcp}` : "",
+      mobile.tbt ? `TBT mobiel: ${mobile.tbt}` : "",
+    ].filter(Boolean);
+
+    return {
+      mobilePerformanceScore: mobile.score != null ? String(mobile.score) : "",
+      desktopPerformanceScore: desktop.score != null ? String(desktop.score) : "",
+      scoreEstimatedLoss,
+      pagespeedSummary: parts.join(" | "),
+    };
+  } catch {
+    return {
+      mobilePerformanceScore: "",
+      desktopPerformanceScore: "",
+      scoreEstimatedLoss: "",
+      pagespeedSummary: "",
+    };
+  }
 }
 
 export const onRequest: PagesFunction = async (context) => {
@@ -80,6 +162,10 @@ export const onRequest: PagesFunction = async (context) => {
     const monthlyRevenue = (body?.monthlyRevenue ?? body?.["Maandelijkse Omzet"] ?? "").toString().trim();
     const currentLoadTime = (body?.currentLoadTime ?? body?.["Huidige Laadtijd"] ?? "").toString().trim();
     const estimatedLoss = (body?.estimatedLoss ?? body?.["Geschat Verlies"] ?? "").toString().trim();
+    let mobilePerformanceScore = "";
+    let desktopPerformanceScore = "";
+    let scoreEstimatedLoss = "";
+    let pagespeedSummary = "";
 
     // Honeypot
     if (honeypot) {
@@ -97,6 +183,11 @@ export const onRequest: PagesFunction = async (context) => {
           headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
         });
       }
+      const pagespeed = await buildPagespeedSummary(shopUrl, monthlyRevenue);
+      mobilePerformanceScore = pagespeed.mobilePerformanceScore;
+      desktopPerformanceScore = pagespeed.desktopPerformanceScore;
+      scoreEstimatedLoss = pagespeed.scoreEstimatedLoss;
+      pagespeedSummary = pagespeed.pagespeedSummary;
     } else if (!name || !email || !message) {
       return new Response(JSON.stringify({ message: "Validation failed" }), {
         status: 400,
@@ -116,6 +207,10 @@ export const onRequest: PagesFunction = async (context) => {
             `Maandelijkse omzet: ${monthlyRevenue || "-"}`,
             `Huidige laadtijd: ${currentLoadTime || "-"}`,
             `Geschat omzetverlies p/m: ${estimatedLoss || "-"}`,
+            `Mobiele Lighthouse score: ${mobilePerformanceScore ? `${mobilePerformanceScore}/100` : "-"}`,
+            `Desktop Lighthouse score: ${desktopPerformanceScore ? `${desktopPerformanceScore}/100` : "-"}`,
+            `Geschat omzetverlies p/m op basis van live score: ${scoreEstimatedLoss || "-"}`,
+            `Pagespeed samenvatting: ${pagespeedSummary || "-"}`,
           ].join("\n")
         : message;
 
@@ -132,6 +227,10 @@ export const onRequest: PagesFunction = async (context) => {
         monthlyRevenue,
         currentLoadTime,
         estimatedLoss,
+        mobilePerformanceScore,
+        desktopPerformanceScore,
+        scoreEstimatedLoss,
+        pagespeedSummary,
         company: honeypot,
         secret: CONTACT_SECRET,
       }),
