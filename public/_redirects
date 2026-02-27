@@ -1,2 +1,7 @@
-﻿/webshop / 301
+/webshop / 301
+/submit /submit 200
+/preview/bestfitzadel3D /preview/bestfit3d 302
+/preview/bestfitzadel3d /preview/bestfit3d 302
+/preview/bestfitzadel3D/* /preview/bestfit3d/:splat 302
+/preview/bestfitzadel3d/* /preview/bestfit3d/:splat 302
 /* /index.html 200

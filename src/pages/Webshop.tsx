@@ -229,7 +229,7 @@ const Webshop = () => {
   };
 
   const postLead = async (payload: Record<string, string>) => {
-    const res = await fetch("/submit", {
+    const res = await fetch("/functions/submit", {
       method: "POST",
       mode: "cors",
       headers: { "Content-Type": "application/json" },

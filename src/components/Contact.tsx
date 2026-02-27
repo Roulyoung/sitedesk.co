@@ -44,7 +44,7 @@ const Contact = () => {
     setErrorMessage("");
 
     try {
-      const res = await fetch("/submit", {
+      const res = await fetch("/functions/submit", {
         method: "POST",
         mode: "cors",
         headers: { "Content-Type": "application/json" },
