@@ -25,6 +25,25 @@ const CONTACT_SECRET = "OHUASDFIHUO87AIHUASDF&^^^&%kuhA123"; // set the same val
 const APPS_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbxxF9bO6eiPzC7VdikFWpFyCiYRi4ltL1B4Zz_bRhtT5r3DofVOPyitcEaY6VotLvru8A/exec";
 
+function normalizeAndValidateShopUrl(input: string) {
+  const raw = (input || "").trim();
+  if (!raw) return "";
+  const candidate = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  try {
+    const url = new URL(candidate);
+    const host = (url.hostname || "").trim();
+    if (!host || (!host.includes(".") && host !== "localhost")) return "";
+    return url.toString();
+  } catch {
+    return "";
+  }
+}
+
+function isValidEmail(input: string) {
+  const email = (input || "").trim();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 export const onRequest: PagesFunction = async (context) => {
   try {
     const { request } = context;
@@ -53,14 +72,14 @@ export const onRequest: PagesFunction = async (context) => {
 
     const leadType = (body?.leadType ?? "contact").toString().trim().toLowerCase();
     const name = (body?.name ?? "").toString().trim();
-    const email = (body?.email ?? "").toString().trim();
+    const email = (body?.email ?? body?.["E-mail"] ?? "").toString().trim();
     const message = (body?.message ?? "").toString().trim();
     const honeypot = (body?.company ?? "").toString().trim();
-    const phone = (body?.phone ?? "").toString().trim();
-    const shopUrl = (body?.shopUrl ?? "").toString().trim();
-    const monthlyRevenue = (body?.monthlyRevenue ?? "").toString().trim();
-    const currentLoadTime = (body?.currentLoadTime ?? "").toString().trim();
-    const estimatedLoss = (body?.estimatedLoss ?? "").toString().trim();
+    const phone = (body?.phone ?? body?.Telefoon ?? "").toString().trim();
+    const shopUrl = normalizeAndValidateShopUrl((body?.shopUrl ?? body?.URL ?? "").toString().trim());
+    const monthlyRevenue = (body?.monthlyRevenue ?? body?.["Maandelijkse Omzet"] ?? "").toString().trim();
+    const currentLoadTime = (body?.currentLoadTime ?? body?.["Huidige Laadtijd"] ?? "").toString().trim();
+    const estimatedLoss = (body?.estimatedLoss ?? body?.["Geschat Verlies"] ?? "").toString().trim();
 
     // Honeypot
     if (honeypot) {
@@ -72,7 +91,7 @@ export const onRequest: PagesFunction = async (context) => {
 
     const isCalculatorLead = leadType === "calculator";
     if (isCalculatorLead) {
-      if (!shopUrl || (!email && !phone)) {
+      if (!shopUrl || !isValidEmail(email)) {
         return new Response(JSON.stringify({ message: "Validation failed" }), {
           status: 400,
           headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
@@ -86,8 +105,7 @@ export const onRequest: PagesFunction = async (context) => {
     }
 
     const resolvedName = isCalculatorLead ? name || "Calculator lead" : name;
-    // Keep backward compatibility with older Apps Script versions that require email.
-    const resolvedEmail = email || (isCalculatorLead ? "no-email@sitedesk.co" : "");
+    const resolvedEmail = email;
     const resolvedMessage =
       isCalculatorLead && !message
         ? [

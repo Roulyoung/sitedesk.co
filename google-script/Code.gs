@@ -1,7 +1,7 @@
 // Google Apps Script for Sitedesk leads.
 // Handles two lead types:
 // 1) contact (name, email, message)
-// 2) calculator (shopUrl + email or phone + calculator metrics)
+// 2) calculator (shopUrl + email + calculator metrics)
 
 const SECRET = "OHUASDFIHUO87AIHUASDF&^^^&%kuhA123";
 const DEST_EMAIL = "rdo90@live.nl";
@@ -21,21 +21,21 @@ function doPost(e) {
 
     var leadType = toText(data.leadType || "contact").toLowerCase();
     var name = toText(data.name);
-    var email = toText(data.email);
+    var email = toText(data.email || data["E-mail"]);
     var message = toText(data.message);
     var company = toText(data.company);
-    var phone = toText(data.phone);
-    var shopUrl = toText(data.shopUrl);
-    var monthlyRevenue = toText(data.monthlyRevenue);
-    var currentLoadTime = toText(data.currentLoadTime);
-    var estimatedLoss = toText(data.estimatedLoss);
+    var phone = toText(data.phone || data.Telefoon);
+    var shopUrl = normalizeAndValidateShopUrl_(toText(data.shopUrl || data.URL));
+    var monthlyRevenue = toText(data.monthlyRevenue || data["Maandelijkse Omzet"]);
+    var currentLoadTime = toText(data.currentLoadTime || data["Huidige Laadtijd"]);
+    var estimatedLoss = toText(data.estimatedLoss || data["Geschat Verlies"]);
 
     if (company) {
       return jsonResponse({ ok: true, message: "Ignored honeypot" });
     }
 
     if (leadType === "calculator") {
-      if (!shopUrl || (!email && !phone)) {
+      if (!shopUrl || !isValidEmail_(email)) {
         return jsonResponse({ ok: false, error: "Validation failed" });
       }
       if (!name) name = "Calculator lead";
@@ -134,6 +134,22 @@ function getLeadSheet_() {
 
 function toText(value) {
   return value == null ? "" : String(value).trim();
+}
+
+function normalizeAndValidateShopUrl_(input) {
+  var raw = toText(input);
+  if (!raw) return "";
+  var normalized = /^https?:\/\//i.test(raw) ? raw : "https://" + raw;
+  var match = normalized.match(/^https?:\/\/([^\/?#:]+)(?::\d+)?(?:[\/?#]|$)/i);
+  if (!match || !match[1]) return "";
+  var host = String(match[1]).toLowerCase();
+  if (host !== "localhost" && host.indexOf(".") === -1) return "";
+  return normalized;
+}
+
+function isValidEmail_(input) {
+  var email = toText(input);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 function escapeHtml(input) {

@@ -146,6 +146,7 @@ const Webshop = () => {
   const [contactError, setContactError] = useState("");
   const [reportStatus, setReportStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [reportError, setReportError] = useState("");
+  const [reportSuccessDetails, setReportSuccessDetails] = useState<{ url: string; email: string } | null>(null);
 
   const currentLossPercent = useMemo(() => getConversionLossPercent(currentLoadTime), [currentLoadTime]);
   const missedMonthlyRevenue = useMemo(
@@ -271,27 +272,45 @@ const Webshop = () => {
     const form = event.currentTarget;
     const formData = new FormData(form);
     const rawUrl = String(formData.get("shopUrl") ?? "").trim();
-    const url = rawUrl && /^https?:\/\//i.test(rawUrl) ? rawUrl : rawUrl ? `https://${rawUrl}` : "";
     const email = String(formData.get("email") ?? "").trim();
     const phone = String(formData.get("phone") ?? "").trim();
+    const normalizedUrl = rawUrl && /^https?:\/\//i.test(rawUrl) ? rawUrl : rawUrl ? `https://${rawUrl}` : "";
 
-    if (!url) {
+    let parsedUrl: URL | null = null;
+    try {
+      parsedUrl = normalizedUrl ? new URL(normalizedUrl) : null;
+    } catch {
+      parsedUrl = null;
+    }
+
+    const hostname = parsedUrl?.hostname?.trim() ?? "";
+    const isValidDomain = Boolean(hostname && (hostname.includes(".") || hostname === "localhost"));
+
+    if (!isValidDomain) {
       setReportStatus("error");
-      setReportError(isEn ? "Enter your shop URL." : "Vul je shop URL in.");
+      setReportError(isEn ? "Enter a valid shop domain." : "Vul een geldige domeinnaam in.");
       return;
     }
 
-    if (!email && !phone) {
+    if (!email) {
       setReportStatus("error");
-      setReportError(isEn ? "Enter at least an email or phone number." : "Vul minimaal e-mail of telefoonnummer in.");
+      setReportError(isEn ? "Enter a valid email address." : "Vul een geldig e-mailadres in.");
       return;
     }
+
+    const url = parsedUrl?.toString() ?? normalizedUrl;
 
     const payload = {
       leadType: "calculator",
       name: "Calculator lead",
       email,
       phone,
+      URL: url,
+      "E-mail": email,
+      Telefoon: phone,
+      "Maandelijkse Omzet": String(monthlyRevenue),
+      "Huidige Laadtijd": currentLoadTime.toFixed(1),
+      "Geschat Verlies": formatCurrency(missedMonthlyRevenue),
       shopUrl: url,
       monthlyRevenue: String(monthlyRevenue),
       currentLoadTime: currentLoadTime.toFixed(1),
@@ -310,11 +329,13 @@ const Webshop = () => {
 
     setReportStatus("sending");
     setReportError("");
+    setReportSuccessDetails(null);
 
     try {
       await postLead(payload);
       trackLead();
       setReportStatus("success");
+      setReportSuccessDetails({ url, email });
       form.reset();
       setMonthlyVisitors("");
     } catch (err) {
@@ -723,15 +744,17 @@ const Webshop = () => {
                     <input id="company" name="company" type="text" />
                   </div>
                   <input
-                    type="text"
+                    type="url"
                     name="shopUrl"
                     placeholder={isEn ? "yourshop.com or https://yourshop.com" : "jouwshop.nl of https://jouwshop.nl"}
+                    required
                     className="rounded-lg border border-primary-foreground/30 bg-primary-foreground/10 px-4 py-3 text-primary-foreground placeholder:text-primary-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary-foreground/60"
                   />
                   <input
                     type="email"
                     name="email"
-                    placeholder={isEn ? "Email (optional)" : "E-mail (optioneel)"}
+                    placeholder={isEn ? "Email" : "E-mail"}
+                    required
                     className="rounded-lg border border-primary-foreground/30 bg-primary-foreground/10 px-4 py-3 text-primary-foreground placeholder:text-primary-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary-foreground/60"
                   />
                   <input
@@ -753,7 +776,11 @@ const Webshop = () => {
                 {reportError && <p className="text-sm mt-3 text-primary-foreground">{reportError}</p>}
                 {reportStatus === "success" && (
                   <p className="text-sm mt-3 text-primary-foreground">
-                    {isEn ? "Request received. We will contact you soon." : "Aanvraag ontvangen. We nemen snel contact met je op."}
+                    {reportSuccessDetails
+                      ? `Bedankt! We analyseren ${reportSuccessDetails.url} en sturen het uitgebreide rapport naar ${reportSuccessDetails.email}.`
+                      : isEn
+                        ? "Request received. We will contact you soon."
+                        : "Aanvraag ontvangen. We nemen snel contact met je op."}
                   </p>
                 )}
               </div>
