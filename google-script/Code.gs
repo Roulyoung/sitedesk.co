@@ -33,6 +33,7 @@ function doPost(e) {
     var desktopPerformanceScore = toText(data.desktopPerformanceScore || data["desktopPerformanceScore"]);
     var scoreEstimatedLoss = toText(data.scoreEstimatedLoss || data["scoreEstimatedLoss"]);
     var pagespeedSummary = toText(data.pagespeedSummary || data["pagespeedSummary"]);
+    var flowVersion = toText(data.flowVersion || data["flowVersion"]);
 
     if (company) {
       return jsonResponse({ ok: true, message: "Ignored honeypot" });
@@ -56,6 +57,7 @@ function doPost(e) {
           "Desktop Lighthouse score: " + (desktopPerformanceScore ? desktopPerformanceScore + "/100" : "-"),
           "Geschat omzetverlies p/m op basis van live score: " + (scoreEstimatedLoss || "-"),
           "Pagespeed samenvatting: " + (pagespeedSummary || "-"),
+          "Flow versie: " + (flowVersion || "-"),
         ].join("\n");
       }
     } else {
@@ -80,6 +82,7 @@ function doPost(e) {
       desktopPerformanceScore,
       scoreEstimatedLoss,
       pagespeedSummary,
+      flowVersion,
     ]);
 
     var subject =
@@ -100,6 +103,7 @@ function doPost(e) {
       "<p><strong>Desktop Lighthouse score:</strong> " + escapeHtml(desktopPerformanceScore ? desktopPerformanceScore + "/100" : "-") + "</p>" +
       "<p><strong>Geschat verlies p/m op basis van live score:</strong> " + escapeHtml(scoreEstimatedLoss || "-") + "</p>" +
       "<p><strong>Pagespeed samenvatting:</strong> " + escapeHtml(pagespeedSummary || "-") + "</p>" +
+      "<p><strong>Flow versie:</strong> " + escapeHtml(flowVersion || "-") + "</p>" +
       "<p><strong>Bericht:</strong><br>" + escapeHtml(message || "-").replace(/\n/g, "<br>") + "</p>";
 
     var mailOptions = {
@@ -171,6 +175,7 @@ function ensureLeadHeaders_(sheet) {
     "desktopPerformanceScore",
     "scoreEstimatedLoss",
     "pagespeedSummary",
+    "flowVersion",
   ];
 
   if (sheet.getLastRow() === 0) {

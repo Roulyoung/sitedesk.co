@@ -23,7 +23,8 @@ function corsHeaders(origin: string | null) {
 // Shared secret for Apps Script
 const CONTACT_SECRET = "OHUASDFIHUO87AIHUASDF&^^^&%kuhA123"; // set the same value in Apps Script
 const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbzlUQPfbNeVh9XS7oz0alKRbG3k7pJiHHEnh7O4ceWJcGVU0NhHe0R2YwoIMnwCQBNOxg/exec";
+  "https://script.google.com/macros/s/AKfycbzSf27HMHx2kCZe80cpdtDMOWN_1NYtcdIAz4yVcJzZwOcCmMn88DFUwPOpd8OCV6tS3Q/exec";
+const LEAD_FLOW_VERSION = "lead-flow-v2-pagespeed";
 
 function normalizeAndValidateShopUrl(input: string) {
   const raw = (input || "").trim();
@@ -162,6 +163,7 @@ export const onRequest: PagesFunction = async (context) => {
     const monthlyRevenue = (body?.monthlyRevenue ?? body?.["Maandelijkse Omzet"] ?? "").toString().trim();
     const currentLoadTime = (body?.currentLoadTime ?? body?.["Huidige Laadtijd"] ?? "").toString().trim();
     const estimatedLoss = (body?.estimatedLoss ?? body?.["Geschat Verlies"] ?? "").toString().trim();
+    const flowVersion = LEAD_FLOW_VERSION;
     let mobilePerformanceScore = "";
     let desktopPerformanceScore = "";
     let scoreEstimatedLoss = "";
@@ -211,6 +213,7 @@ export const onRequest: PagesFunction = async (context) => {
             `Desktop Lighthouse score: ${desktopPerformanceScore ? `${desktopPerformanceScore}/100` : "-"}`,
             `Geschat omzetverlies p/m op basis van live score: ${scoreEstimatedLoss || "-"}`,
             `Pagespeed samenvatting: ${pagespeedSummary || "-"}`,
+            `Flow versie: ${flowVersion}`,
           ].join("\n")
         : message;
 
@@ -231,6 +234,7 @@ export const onRequest: PagesFunction = async (context) => {
         desktopPerformanceScore,
         scoreEstimatedLoss,
         pagespeedSummary,
+        flowVersion,
         company: honeypot,
         secret: CONTACT_SECRET,
       }),
