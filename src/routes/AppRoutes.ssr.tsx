@@ -3,6 +3,8 @@ import Index from "@/pages/Index";
 import NotFound from "@/pages/NotFound";
 import Shop from "@/pages/Shop";
 import Migration from "@/pages/Migration";
+import ShopifyAlternative from "@/pages/ShopifyAlternative";
+import LightspeedAlternative from "@/pages/LightspeedAlternative";
 import Product from "@/pages/Product";
 import Success from "@/pages/Success";
 import Admin from "@/pages/Admin";
@@ -21,6 +23,8 @@ export const AppRoutesSSR = () => (
     <Route path="/shop" element={<Shop />} />
     <Route path="/demo" element={<Shop />} />
     <Route path="/migratie" element={<Migration />} />
+    <Route path="/shopify-alternatief" element={<ShopifyAlternative />} />
+    <Route path="/lightspeed-alternatief" element={<LightspeedAlternative />} />
     <Route path="/preview/:clientSlug" element={<PreviewOffer />} />
     <Route path="/preview/:clientSlug/shop" element={<Shop />} />
     <Route path="/preview/:clientSlug/product/:id" element={<Product />} />
@@ -39,6 +43,8 @@ export const AppRoutesSSR = () => (
         <Route path="shop" element={<Shop />} />
         <Route path="demo" element={<Shop />} />
         <Route path="migratie" element={<Migration />} />
+        <Route path="shopify-alternatief" element={<ShopifyAlternative />} />
+        <Route path="lightspeed-alternatief" element={<LightspeedAlternative />} />
         <Route path="preview/:clientSlug" element={<PreviewOffer />} />
         <Route path="preview/:clientSlug/shop" element={<Shop />} />
         <Route path="preview/:clientSlug/product/:id" element={<Product />} />

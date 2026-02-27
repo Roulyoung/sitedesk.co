@@ -1,11 +1,11 @@
 import PlatformMigrationPage from "@/components/platform/PlatformMigrationPage";
 import { getPlatformMigrationConfig } from "@/lib/platformMigrationConfigs";
 
-const config = getPlatformMigrationConfig("woocommerce");
+const config = getPlatformMigrationConfig("shopify");
 
-const Migration = () => {
+const ShopifyAlternative = () => {
   if (!config) return null;
   return <PlatformMigrationPage config={config} />;
 };
 
-export default Migration;
+export default ShopifyAlternative;

@@ -1,11 +1,11 @@
 import PlatformMigrationPage from "@/components/platform/PlatformMigrationPage";
 import { getPlatformMigrationConfig } from "@/lib/platformMigrationConfigs";
 
-const config = getPlatformMigrationConfig("woocommerce");
+const config = getPlatformMigrationConfig("lightspeed");
 
-const Migration = () => {
+const LightspeedAlternative = () => {
   if (!config) return null;
   return <PlatformMigrationPage config={config} />;
 };
 
-export default Migration;
+export default LightspeedAlternative;

@@ -8,6 +8,8 @@ type RouteComponents = {
   PreviewOffer?: React.ComponentType;
   Shop?: React.ComponentType;
   Migration?: React.ComponentType;
+  ShopifyAlternative?: React.ComponentType;
+  LightspeedAlternative?: React.ComponentType;
   Product?: React.ComponentType;
   Success?: React.ComponentType;
   Admin?: React.ComponentType;
@@ -23,6 +25,8 @@ const LazyNotFound = lazy(() => import("@/pages/NotFound"));
 const LazyPreviewOffer = lazy(() => import("@/pages/PreviewOffer"));
 const LazyShop = lazy(() => import("@/pages/Shop"));
 const LazyMigration = lazy(() => import("@/pages/Migration"));
+const LazyShopifyAlternative = lazy(() => import("@/pages/ShopifyAlternative"));
+const LazyLightspeedAlternative = lazy(() => import("@/pages/LightspeedAlternative"));
 const LazyProduct = lazy(() => import("@/pages/Product"));
 const LazySuccess = lazy(() => import("@/pages/Success"));
 const LazyAdmin = lazy(() => import("@/pages/Admin"));
@@ -54,6 +58,14 @@ export const loadInitialRouteComponents = async (pathname: string): Promise<Rout
   if (normalizedPathname === "/migratie") {
     const mod = await import("@/pages/Migration");
     return { Migration: mod.default };
+  }
+  if (normalizedPathname === "/shopify-alternatief") {
+    const mod = await import("@/pages/ShopifyAlternative");
+    return { ShopifyAlternative: mod.default };
+  }
+  if (normalizedPathname === "/lightspeed-alternatief") {
+    const mod = await import("@/pages/LightspeedAlternative");
+    return { LightspeedAlternative: mod.default };
   }
   if (normalizedPathname.startsWith("/preview/")) {
     if (normalizedPathname.includes("/product/")) {
@@ -105,6 +117,8 @@ export const AppRoutesClient = ({ initialComponents }: { initialComponents?: Rou
   const PreviewOffer = initialComponents?.PreviewOffer ?? LazyPreviewOffer;
   const Shop = initialComponents?.Shop ?? LazyShop;
   const Migration = initialComponents?.Migration ?? LazyMigration;
+  const ShopifyAlternative = initialComponents?.ShopifyAlternative ?? LazyShopifyAlternative;
+  const LightspeedAlternative = initialComponents?.LightspeedAlternative ?? LazyLightspeedAlternative;
   const Product = initialComponents?.Product ?? LazyProduct;
   const Success = initialComponents?.Success ?? LazySuccess;
   const Admin = initialComponents?.Admin ?? LazyAdmin;
@@ -122,6 +136,8 @@ export const AppRoutesClient = ({ initialComponents }: { initialComponents?: Rou
         <Route path="/shop" element={<Shop />} />
         <Route path="/demo" element={<Shop />} />
         <Route path="/migratie" element={<Migration />} />
+        <Route path="/shopify-alternatief" element={<ShopifyAlternative />} />
+        <Route path="/lightspeed-alternatief" element={<LightspeedAlternative />} />
         <Route path="/preview/:clientSlug" element={<PreviewOffer />} />
         <Route path="/preview/:clientSlug/shop" element={<Shop />} />
         <Route path="/preview/:clientSlug/product/:id" element={<Product />} />
@@ -140,6 +156,8 @@ export const AppRoutesClient = ({ initialComponents }: { initialComponents?: Rou
             <Route path="shop" element={<Shop />} />
             <Route path="demo" element={<Shop />} />
             <Route path="migratie" element={<Migration />} />
+            <Route path="shopify-alternatief" element={<ShopifyAlternative />} />
+            <Route path="lightspeed-alternatief" element={<LightspeedAlternative />} />
             <Route path="preview/:clientSlug" element={<PreviewOffer />} />
             <Route path="preview/:clientSlug/shop" element={<Shop />} />
             <Route path="preview/:clientSlug/product/:id" element={<Product />} />

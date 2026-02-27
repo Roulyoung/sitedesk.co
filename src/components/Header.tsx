@@ -5,11 +5,14 @@ import { Menu, X, MessageCircle, ChevronDown } from "lucide-react";
 import { getLandingSectionHash, getLocaleFromPath, withLocalePath } from "@/lib/i18n";
 import { t } from "@/lib/messages";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { migrationPlatforms } from "@/lib/platformMigrationConfigs";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileTechOpen, setIsMobileTechOpen] = useState(false);
+  const [isMobileMigrationOpen, setIsMobileMigrationOpen] = useState(false);
   const [isDesktopTechOpen, setIsDesktopTechOpen] = useState(false);
+  const [isDesktopMigrationOpen, setIsDesktopMigrationOpen] = useState(false);
   const location = useLocation();
   const [prevPath, setPrevPath] = useState(location.pathname);
   const locale = getLocaleFromPath(location.pathname);
@@ -46,10 +49,26 @@ const Header = () => {
   const comparisonTo = `${homeTo}${getLandingSectionHash(locale, "comparison")}`;
   const sheetsTo = `${homeTo}${getLandingSectionHash(locale, "sheets")}`;
   const calculatorTo = `${homeTo}${getLandingSectionHash(locale, "calculator")}`;
-  const migrationTo = withLocalePath("/migratie", locale);
+  const migrationRoutes = migrationPlatforms.map((platform) => ({
+    key: platform.key,
+    to: withLocalePath(platform.route, locale),
+    label:
+      locale === "en"
+        ? platform.key === "woocommerce"
+          ? "WooCommerce migration"
+          : platform.key === "shopify"
+            ? "Shopify alternative"
+            : "Lightspeed alternative"
+        : platform.key === "woocommerce"
+          ? "WooCommerce migratie"
+          : platform.key === "shopify"
+            ? "Shopify alternatief"
+            : "Lightspeed alternatief",
+  }));
   const demoTo = withLocalePath("/demo", locale);
   const blogTo = withLocalePath("/blog", locale);
   const techActive = isActive(comparisonTo, "hash") || isActive(sheetsTo, "hash");
+  const migrationActive = migrationRoutes.some((route) => isActive(route.to, "route"));
 
   const scrollToHash = (targetId: string) => {
     if (!isBrowser) return;
@@ -171,17 +190,47 @@ const Header = () => {
             {t(locale, "nav.calculator")}
           </NavLink>
 
-          <NavLink
-            to={migrationTo}
-            className={`text-sm font-medium transition-colors ${
-              isActive(migrationTo, "route")
-                ? "text-foreground border-b-2 border-accent pb-1"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-            onClick={() => setIsMenuOpen(false)}
+          <div
+            className="relative"
+            onMouseEnter={() => setIsDesktopMigrationOpen(true)}
+            onMouseLeave={() => setIsDesktopMigrationOpen(false)}
           >
-            {t(locale, "nav.migration")}
-          </NavLink>
+            <button
+              type="button"
+              className={`inline-flex items-center gap-1 text-sm font-medium transition-colors ${
+                migrationActive
+                  ? "text-foreground border-b-2 border-accent pb-1"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              aria-haspopup="menu"
+              aria-expanded={isDesktopMigrationOpen}
+              onClick={() => setIsDesktopMigrationOpen((value) => !value)}
+            >
+              {t(locale, "nav.migration")}
+              <ChevronDown className="h-4 w-4" />
+            </button>
+            <div className={`absolute left-0 top-full z-50 min-w-64 pt-2 ${isDesktopMigrationOpen ? "block" : "hidden"}`}>
+              <div className="rounded-md border border-border bg-card p-2 shadow-lg">
+                {migrationRoutes.map((route) => (
+                  <NavLink
+                    key={route.key}
+                    to={route.to}
+                    className={`block rounded px-3 py-2 text-sm transition-colors ${
+                      isActive(route.to, "route")
+                        ? "text-foreground bg-accent/15"
+                        : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                    }`}
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setIsDesktopMigrationOpen(false);
+                    }}
+                  >
+                    {route.label}
+                  </NavLink>
+                ))}
+              </div>
+            </div>
+          </div>
 
           <NavLink
             to={demoTo}
@@ -306,17 +355,38 @@ const Header = () => {
               {t(locale, "nav.calculator")}
             </NavLink>
 
-            <NavLink
-              to={migrationTo}
-              className={`text-base font-medium py-2 ${
-                isActive(migrationTo, "route")
-                  ? "text-foreground border-b-2 border-accent pb-1"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t(locale, "nav.migration")}
-            </NavLink>
+            <div>
+              <button
+                type="button"
+                className={`w-full text-left text-base font-medium py-2 inline-flex items-center justify-between ${
+                  migrationActive ? "text-foreground" : "text-muted-foreground"
+                }`}
+                onClick={() => setIsMobileMigrationOpen((value) => !value)}
+                aria-expanded={isMobileMigrationOpen}
+              >
+                {t(locale, "nav.migration")}
+                <ChevronDown className={`h-4 w-4 transition-transform ${isMobileMigrationOpen ? "rotate-180" : ""}`} />
+              </button>
+              {isMobileMigrationOpen && (
+                <div className="pl-4 border-l border-border/60 flex flex-col gap-2 mt-1">
+                  {migrationRoutes.map((route) => (
+                    <NavLink
+                      key={route.key}
+                      to={route.to}
+                      className={`text-sm py-1 ${
+                        isActive(route.to, "route") ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        setIsMobileMigrationOpen(false);
+                      }}
+                    >
+                      {route.label}
+                    </NavLink>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <NavLink
               to={demoTo}
