@@ -9,6 +9,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileTechOpen, setIsMobileTechOpen] = useState(false);
+  const [isDesktopTechOpen, setIsDesktopTechOpen] = useState(false);
   const location = useLocation();
   const [prevPath, setPrevPath] = useState(location.pathname);
   const locale = getLocaleFromPath(location.pathname);
@@ -100,21 +101,27 @@ const Header = () => {
             {t(locale, "nav.home")}
           </NavLink>
 
-          <div className="relative group">
+          <div
+            className="relative"
+            onMouseEnter={() => setIsDesktopTechOpen(true)}
+            onMouseLeave={() => setIsDesktopTechOpen(false)}
+          >
             <button
               type="button"
               className={`inline-flex items-center gap-1 text-sm font-medium transition-colors ${
                 techActive
                   ? "text-foreground border-b-2 border-accent pb-1"
-                  : "text-muted-foreground group-hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
               aria-haspopup="menu"
-              aria-expanded="false"
+              aria-expanded={isDesktopTechOpen}
+              onClick={() => setIsDesktopTechOpen((value) => !value)}
             >
               {t(locale, "nav.tech")}
               <ChevronDown className="h-4 w-4" />
             </button>
-            <div className="absolute left-0 top-full z-50 mt-2 hidden min-w-56 rounded-md border border-border bg-card p-2 shadow-lg group-hover:block group-focus-within:block">
+            <div className={`absolute left-0 top-full z-50 min-w-56 pt-2 ${isDesktopTechOpen ? "block" : "hidden"}`}>
+              <div className="rounded-md border border-border bg-card p-2 shadow-lg">
               <NavLink
                 to={comparisonTo}
                 className={`block rounded px-3 py-2 text-sm transition-colors ${
@@ -124,6 +131,7 @@ const Header = () => {
                 }`}
                 onClick={(e) => {
                   setIsMenuOpen(false);
+                  setIsDesktopTechOpen(false);
                   handleNavClick(e, comparisonTo, "hash");
                 }}
               >
@@ -138,11 +146,13 @@ const Header = () => {
                 }`}
                 onClick={(e) => {
                   setIsMenuOpen(false);
+                  setIsDesktopTechOpen(false);
                   handleNavClick(e, sheetsTo, "hash");
                 }}
               >
                 {t(locale, "nav.sheets")}
               </NavLink>
+              </div>
             </div>
           </div>
 
