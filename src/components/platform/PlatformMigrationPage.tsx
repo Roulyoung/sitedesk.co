@@ -335,14 +335,14 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
 
             <div className="rounded-2xl border border-border/70 bg-card/60 p-6 shadow-[0_24px_60px_-36px_rgba(15,23,42,0.3)]">
               <div className="relative grid grid-cols-2 gap-4">
-                <div className="rounded-xl border border-rose-300/40 bg-rose-50/80 p-5">
+                <div className="flex h-full flex-col rounded-xl border border-rose-300/40 bg-rose-50/80 p-5">
                   <div className="mb-4 flex items-center justify-between">
                     <p className="text-xs font-semibold uppercase tracking-[0.22em] text-rose-700">{heroLeftLabel}</p>
                     <span className="rounded-full border border-rose-300/50 bg-rose-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-rose-800">
                       Frictie
                     </span>
                   </div>
-                  <div className="space-y-2.5">
+                  <div className="flex flex-1 flex-col justify-between gap-2.5">
                     {heroLeftItems.map((label, index) => (
                       <div
                         key={label}
@@ -356,16 +356,16 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
                     ))}
                   </div>
                 </div>
-                <div className="rounded-xl border border-emerald-300/40 bg-emerald-50/80 p-5">
+                <div className="flex h-full flex-col rounded-xl border border-emerald-300/40 bg-emerald-50/80 p-5">
                   <div className="mb-4 flex items-center justify-between">
                     <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">{heroRightLabel}</p>
                     <span className="rounded-full border border-emerald-300/50 bg-emerald-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-900">
                       Schoon systeem
                     </span>
                   </div>
-                  <div className="flex h-full min-h-[220px] flex-col items-center justify-center gap-5 rounded-xl border border-emerald-200/70 bg-white/80 p-4 text-center">
-                    <div className="relative flex h-28 w-28 items-center justify-center">
-                      <div className="absolute inset-0 rotate-45 rounded-[1.75rem] bg-gradient-to-br from-emerald-300 via-teal-300 to-cyan-300 shadow-xl" />
+                  <div className="flex flex-1 flex-col items-center justify-center gap-4 rounded-xl border border-emerald-200/70 bg-white/80 p-4 text-center">
+                    <div className="relative flex h-14 w-14 items-center justify-center">
+                      <div className="absolute inset-0 rotate-45 rounded-[1rem] bg-gradient-to-br from-emerald-300 via-teal-300 to-cyan-300 shadow-xl" />
                       <div className="relative z-10 text-xs font-black uppercase tracking-[0.28em] text-emerald-950">
                         Fast
                       </div>
@@ -386,8 +386,8 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
         </section>
 
         <section className="container mx-auto py-20">
-          <div className="mx-auto mb-16 max-w-4xl space-y-4 text-center">
-            <h2 className="bg-gradient-to-b from-foreground to-muted-foreground bg-clip-text text-4xl font-extrabold tracking-tighter text-transparent md:text-6xl">
+          <div className="mx-auto mb-16 max-w-4xl text-center">
+            <h2 className="mb-4 text-3xl md:text-4xl font-bold text-foreground">
               {matrixTitle}
             </h2>
             <p className="text-lg text-muted-foreground">
@@ -617,17 +617,24 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
         </section>
 
         <section className="container mx-auto py-12 md:py-16">
-          <div className="rounded-2xl border border-border/70 bg-card/60 p-8">
-            <h2 className="mb-4 text-3xl md:text-4xl font-bold text-foreground">{keywordTitle}</h2>
-            <p className="text-lg text-muted-foreground">{keywordIntro}</p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              {keywordPhrases.map((phrase) => (
-                <span
+          <div className="overflow-hidden rounded-[2rem] border border-border/70 bg-card/60 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.32)]">
+            <div className="border-b border-border/60 bg-[linear-gradient(135deg,rgba(15,23,42,0.03),rgba(15,118,110,0.06))] px-8 py-8">
+              <h2 className="mb-3 text-3xl font-bold text-foreground md:text-4xl">{keywordTitle}</h2>
+              <p className="max-w-3xl text-lg text-muted-foreground">{keywordIntro}</p>
+            </div>
+            <div className="grid gap-px bg-border/50 md:grid-cols-2 lg:grid-cols-3">
+              {keywordPhrases.map((phrase, index) => (
+                <div
                   key={phrase}
-                  className="rounded-full border border-accent/30 bg-accent/10 px-4 py-2 text-sm font-medium text-foreground"
+                  className="group flex items-start gap-4 bg-background px-6 py-5 transition-colors hover:bg-accent/5"
                 >
-                  {phrase}
-                </span>
+                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">
+                    {index + 1}
+                  </span>
+                  <p className="text-sm font-medium leading-relaxed text-foreground transition-colors group-hover:text-accent">
+                    {phrase}
+                  </p>
+                </div>
               ))}
             </div>
           </div>
@@ -692,7 +699,7 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
         </section>
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-sky-400/40 bg-sky-700 shadow-[0_-24px_48px_-28px_rgba(15,23,42,0.45)]">
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-primary/30 bg-primary shadow-[0_-24px_48px_-28px_rgba(15,23,42,0.45)]">
         <form
           className="container mx-auto flex flex-col gap-3 py-3 md:flex-row md:items-center md:gap-4"
           onSubmit={(event) => {
