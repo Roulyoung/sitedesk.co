@@ -26,6 +26,193 @@ export type Post = {
 
 export const posts: Post[] = [
   {
+    id: "hoe-woocommerce-je-op-10-manieren-geld-kost",
+    title: "Hoe WooCommerce je op 10 manieren geld kost",
+    excerpt:
+      "WooCommerce lijkt goedkoop, maar kost vaak structureel geld via trage performance, plugin-conflicten, developer-uren, hogere advertentiekosten en gemiste conversie.",
+    date: "2026-02-27",
+    tags: ["WooCommerce", "Performance", "CRO", "Technical Debt"],
+    readingTime: "10 min",
+    content: [
+      {
+        type: "text",
+        value:
+          "Veel ondernemers kijken naar WooCommerce en zien vooral lage instapkosten. De plugin zelf is gratis, hosting lijkt betaalbaar en voor elk probleem bestaat wel een plugin. Daardoor voelt WooCommerce in het begin als een rationele keuze. Het probleem is alleen dat de echte rekening bijna nooit op dag 1 komt. Die komt later, in kleine bedragen, losse incidenten, terugkerende fixes en omzet die je ongemerkt niet binnenhaalt.",
+      },
+      {
+        type: "text",
+        value:
+          "En juist dat maakt WooCommerce gevaarlijk voor groeiende shops. De schade zit niet op een nette factuur onder elkaar. Hij zit verspreid over developers, advertenties, conversie, SEO, beheer, support en frustratie in je team. Hieronder zetten we de tien meest voorkomende manieren uiteen waarop WooCommerce geld uit je bedrijf trekt.",
+      },
+      { type: "h2", value: "1. Trage laadtijd kost direct conversie" },
+      {
+        type: "text",
+        value:
+          "WooCommerce draait op WordPress, PHP, databasequeries, plugin-hooks en vaak een zwaar thema. Elke extra laag maakt je storefront trager. Op desktop kom je daar soms nog mee weg, maar op mobiel niet. En mobiel is voor veel shops inmiddels het grootste deel van het verkeer.",
+      },
+      {
+        type: "text",
+        value:
+          "Een bezoeker denkt niet: deze site heeft technische schuld. Die denkt: laat maar. Dat betekent dat performance niet alleen een technisch issue is, maar een directe omzetvariabele. Als je productpagina 2 tot 4 seconden te laat reageert, daalt je doorklikratio, je add-to-cart rate en uiteindelijk je checkout-conversie.",
+      },
+      { type: "h2", value: "2. Plugin-stapeling zorgt voor structurele frictie" },
+      {
+        type: "text",
+        value:
+          "Vrijwel geen serieuze WooCommerce-shop draait alleen op WooCommerce. Je hebt plugins voor SEO, caching, reviews, e-mail, betaalmethoden, verzending, bundels, meertaligheid, filtering, upsells en analytics. Elke plugin voegt code toe. Elke plugin voegt risico toe. En elke plugin vergroot de kans dat een update of conflict precies de flow raakt waar je omzet vandaan komt.",
+      },
+      {
+        type: "text",
+        value:
+          "Veel ondernemers onderschatten dat plugins niet alleen geld kosten als licentie. Ze kosten ook performance, onderhoud, testwerk en debugging. De werkelijke vraag is dus niet hoeveel een plugin kost, maar hoeveel omzet die plugin-combinatie uiteindelijk weglekt.",
+      },
+      { type: "h2", value: "3. Updates zijn geen routine, maar risicomomenten" },
+      {
+        type: "text",
+        value:
+          "Bij een standaard WooCommerce-stack is er altijd iets dat kan breken: een plugin-update, een WordPress-release, een theme-aanpassing of een PHP-versie. Daardoor wordt zelfs regulier onderhoud een spanningsmoment. Veel shops stellen updates uit uit angst voor schade. Dat lijkt veilig, maar creëert juist nieuwe problemen: security-risico's, compatibiliteitsproblemen en oplopende technische schuld.",
+      },
+      {
+        type: "text",
+        value:
+          "Het financiële effect daarvan zie je op twee manieren terug. Ofwel je betaalt preventief steeds voor controle en onderhoud, ofwel je betaalt achteraf wanneer iets crasht op een slecht moment. Beide routes kosten geld.",
+      },
+      { type: "h2", value: "4. Developer-uren stapelen zich veel harder op dan je denkt" },
+      {
+        type: "text",
+        value:
+          "Een WooCommerce-shop heeft zelden een duidelijk eindpunt. Er is altijd weer iets dat net niet goed werkt: een checkout-aanpassing, een pluginconflict, een mobiele bug, een trackingissue of een vertaling die niet netjes meekomt. Daardoor koop je niet een systeem, maar een doorlopende stroom kleine developer-taken.",
+      },
+      {
+        type: "text",
+        value:
+          "Dat lijkt onschuldig als het gaat om een paar uur hier en daar. Maar tel twaalf maanden op en je ziet pas hoeveel budget weglekt naar onderhoud in plaats van verbetering. Het probleem is niet alleen het tarief per uur, maar vooral dat je telkens betaalt om het bestaande systeem stabiel te houden in plaats van iets te bouwen dat structureel beter verkoopt.",
+      },
+      { type: "h2", value: "5. Hoger advertentiebudget, lagere opbrengst" },
+      {
+        type: "text",
+        value:
+          "Trage sites renderen niet alleen slechter voor gebruikers, maar ook slechter voor advertentieprestaties. Als landingspagina's traag of instabiel zijn, dalen kwaliteitsscores en stijgt vaak je cost per click. Je koopt dus verkeer in tegen slechtere voorwaarden, om het vervolgens naar een trager systeem te sturen dat minder goed converteert.",
+      },
+      {
+        type: "text",
+        value:
+          "Dat is een dubbele belasting op je marketingbudget. Eerst betaal je meer voor de klik. Daarna haal je minder omzet uit die klik. Daardoor lijkt het alsof je advertenties het probleem zijn, terwijl de echte lekkage in de techniek zit.",
+      },
+      { type: "h2", value: "6. SEO verzwakt door techniek, niet alleen door content" },
+      {
+        type: "text",
+        value:
+          "Veel shops investeren keurig in content, categoriepagina's en productteksten, maar vergeten dat Google ook gewoon kijkt naar snelheid, stabiliteit en gebruikerservaring. Een trage WooCommerce-shop kan prima content hebben en toch posities verliezen aan een technisch sterkere concurrent.",
+      },
+      {
+        type: "text",
+        value:
+          "SEO-verlies is extra verraderlijk omdat het langzaam gaat. Je zakt niet altijd in een dag van plek 2 naar plek 12. Vaker verlies je maand na maand een klein beetje zichtbaarheid. En juist die langzame erosie kost op jaarbasis enorm veel geld.",
+      },
+      { type: "h2", value: "7. Security is een kostenpost, ook als er niets gebeurt" },
+      {
+        type: "text",
+        value:
+          "WooCommerce op WordPress is een populair doelwit. Niet omdat jouw shop persoonlijk interessant is, maar omdat de stack voorspelbaar is. Bots zoeken continu naar oude pluginversies, bekende kwetsbaarheden en slecht onderhouden installaties. Dat betekent dat security nooit echt op nul staat. Je betaalt ervoor in monitoring, patches, onderhoud en voorzichtigheid.",
+      },
+      {
+        type: "text",
+        value:
+          "En als er wel iets misgaat, zijn de kosten ineens veel groter: downtime, reputatieschade, verlies van klantvertrouwen, opgeslokte developer-tijd en soms zelfs advertentiebudget dat blijft doorlopen terwijl de site slecht of niet werkt.",
+      },
+      { type: "h2", value: "8. Het team werkt trager door een traag systeem" },
+      {
+        type: "text",
+        value:
+          "WooCommerce kost niet alleen aan de voorkant omzet, maar ook aan de achterkant tijd. Trage adminschermen, onlogische plugin-instellingen, dubbele invoer, workarounds en handmatig correctiewerk maken dat je team minder efficiënt werkt. Dat zie je niet als een losse factuur terug, maar wel in operationele kosten.",
+      },
+      {
+        type: "text",
+        value:
+          "Als marketing, support of operations elke week tijd verliest aan een systeem dat net niet lekker loopt, loopt die verspilling structureel op. Dat is verborgen payroll-lekage.",
+      },
+      { type: "h2", value: "9. Elke nieuwe groeiwens wordt duurder dan nodig" },
+      {
+        type: "text",
+        value:
+          "In theorie is WooCommerce flexibel. In de praktijk betekent flexibiliteit vaak: eerst zoeken welke plugin erbij past, dan testen of die plugin samenwerkt met de rest, dan aanpassen, dan opnieuw testen. Hoe meer je shop groeit, hoe duurder elke volgende stap wordt. Niet omdat de businesswens zo complex is, maar omdat het bestaande fundament steeds rommeliger wordt.",
+      },
+      {
+        type: "text",
+        value:
+          "Nieuwe landingspagina's, B2B-logica, specifieke staffelkortingen, meertaligheid of custom productflows horen commerciële verbeteringen te zijn. Op WooCommerce veranderen ze vaak in technische trajecten.",
+      },
+      { type: "h2", value: "10. Het grootste verlies zit in uitgestelde beslissingen" },
+      {
+        type: "text",
+        value:
+          "Misschien wel de duurste post van allemaal: ondernemers blijven te lang op WooCommerce hangen omdat het nog net werkt. Daardoor worden betere beslissingen uitgesteld. Een snellere storefront, een schoner datamodel, minder afhankelijkheid van plugins, hogere mobiele conversie en minder supportlast komen later dan nodig. Elke maand uitstel kost dan opnieuw geld.",
+      },
+      {
+        type: "text",
+        value:
+          "Dat is precies waarom WooCommerce zo'n verraderlijk platform is. Het is zelden een acute ramp. Het is vaker een langzaam lek dat elke maand iets meer marge wegneemt.",
+      },
+      { type: "h2", value: "De rekensom: hoe groot kan dat lek worden?" },
+      {
+        type: "calc_box",
+        data: {
+          leftTitle: "Voorbeeldshop op WooCommerce",
+          leftItems: [
+            "Maandomzet: EUR 50.000",
+            "Developer-onderhoud: EUR 500 p/m",
+            "Extra plugin- en toolkosten: EUR 250 p/m",
+            "Conversieverlies door traagheid: 5% tot 12%",
+          ],
+          rightTitle: "Wat dat financieel betekent",
+          rightItems: [
+            "Directe tech-kosten: EUR 750 p/m",
+            "Gemiste omzet bij 5% verlies: EUR 2.500 p/m",
+            "Gemiste omzet bij 12% verlies: EUR 6.000 p/m",
+            "Totale schade: EUR 3.250 tot EUR 6.750 p/m",
+          ],
+          summary:
+            "Zelfs in een conservatief scenario praat je dan over EUR 39.000 tot EUR 81.000 per jaar aan directe kosten en gederfde omzet.",
+        },
+      },
+      { type: "h2", value: "Waarom dit ondernemers zo laat opvalt" },
+      {
+        type: "text",
+        value:
+          "Omdat WooCommerce zelden in een keer faalt. Het probleem is dat de schade verspreid zit over meerdere budgetten: development, marketing, support, operations en omzet. Daardoor lijkt elk onderdeel afzonderlijk nog wel te overzien, terwijl het totaal allang niet meer rationeel is.",
+      },
+      {
+        type: "text",
+        value:
+          "Wie alleen naar hosting of plugin-licenties kijkt, mist het echte bedrag. De echte vraag is hoeveel extra marge je had kunnen overhouden als je shop niet voortdurend werd afgeremd door het systeem eronder.",
+      },
+      { type: "h2", value: "Conclusie: WooCommerce is vaak niet te goedkoop, maar te duur" },
+      {
+        type: "text",
+        value:
+          "WooCommerce wint vaak de eerste beslissing omdat de instap goedkoop lijkt. Maar voor serieuze shops is de relevante vraag niet wat het kost om te beginnen. De relevante vraag is wat het kost om goed te blijven draaien, snel te blijven laden en zonder stress door te groeien.",
+      },
+      {
+        type: "text",
+        value:
+          "En precies daar verliest WooCommerce het vaak. Niet in de aanschaf, maar in de maanden en jaren daarna. Daarom is overstappen voor veel ondernemers geen luxeproject, maar een marge-beslissing.",
+      },
+      {
+        type: "cta_box",
+        data: {
+          title: "Benieuwd hoeveel WooCommerce jou nu kost?",
+          body: "Laat ons je shop technisch en commercieel doorlichten. Geen vaag advies, maar een concrete inschatting van onderhoud, performance-lek en gemiste omzet.",
+        },
+      },
+      {
+        type: "text",
+        value:
+          "Gepubliceerd door Sitedesk Performance Lab - Wij bouwen snelle storefronts voor ondernemers die klaar zijn met plugin-stress, trage pagina's en verborgen technische kosten.",
+      },
+    ],
+  },
+  {
     id: "waarom-0ms-geen-luxe-is",
     title: "Waarom een laadtijd van 0ms voor je webshop geen luxe is, maar pure noodzaak",
     excerpt: "Elke seconde vertraging kost directe omzet. Ontdek waarom de Edge-architectuur dit definitief oplost.",
@@ -310,9 +497,296 @@ export const posts: Post[] = [
       },
     ],
   },
+  {
+    id: "onzichtbare-lek-omzetverlies-techniek-webshop",
+    title: "Het Onzichtbare Lek: Hoeveel Omzet Verliest Jouw Webshop aan Techniek?",
+    excerpt:
+      "Je webshop kan goed voelen, maar klantdata laat vaak iets anders zien. Ontdek hoe technische vertraging ongemerkt EUR 100.000 tot EUR 250.000 per jaar kan kosten.",
+    date: "2026-02-24",
+    tags: ["Performance", "CRO", "SEO", "Mobile"],
+    readingTime: "8 min",
+    content: [
+      {
+        type: "text",
+        value:
+          "Veel succesvolle webshopeigenaren kijken naar hun dashboard en zien groene cijfers. Een miljoen omzet, stabiele bezoekers en een platform dat voor hun gevoel gewoon werkt. Maar onder de motorkap van veel shops zit een onzichtbaar lek.",
+      },
+      {
+        type: "text",
+        value:
+          "Recent analyseerden wij een reele casus van een Nederlandse webshop. De eigenaar ervaarde de site als snel, maar de data van Google liet een ander beeld zien.",
+      },
+      { type: "h2", value: "De confrontatie: jouw ervaring vs. de data van de klant" },
+      {
+        type: "text",
+        value:
+          "Wanneer je als eigenaar je shop test, doe je dat vaak op een modern toestel via snelle wifi of glasvezel. Google Lighthouse simuleert juist de gemiddelde bezoeker: in de trein, op matig 4G, of met een ouder toestel.",
+      },
+      {
+        type: "text",
+        value:
+          "In onze casus zagen we een Largest Contentful Paint (LCP) van 8,7 seconden. Terwijl het voor de eigenaar vloeiend voelde, keek een groot deel van de mobiele bezoekers in de praktijk onnodig lang naar een wit scherm.",
+      },
+      { type: "h2", value: "Realistische berekening: wat kost dit onderaan de streep?" },
+      {
+        type: "text",
+        value:
+          "Neem een webshop met EUR 1.000.000 jaaromzet. Niet elke business is mobile-first; bij technische B2B of niche-onderdelen ligt mobiel verkeer vaak lager. Juist daarom rekenen we met een conservatieve en realistische bandbreedte.",
+      },
+      {
+        type: "calc_box",
+        data: {
+          title: "Jaarlijks omzetlek bij trage mobile score (49/100)",
+          leftTitle: "Scenario: Conservatief (lage impact)",
+          leftItems: [
+            "Mobiel conversieverlies: -5%",
+            "Hogere advertentiekosten: +2%",
+            "SEO ranking verlies: -3%",
+            "Totaal jaarlijks verlies: EUR 100.000",
+          ],
+          rightTitle: "Scenario: Realistisch (gemiddelde impact)",
+          rightItems: [
+            "Mobiel conversieverlies: -12%",
+            "Hogere advertentiekosten: +5%",
+            "SEO ranking verlies: -8%",
+            "Totaal jaarlijks verlies: EUR 250.000",
+          ],
+          summary:
+            "Zelfs in het voorzichtige scenario laat een webshop met EUR 1 miljoen omzet al snel EUR 100.000 per jaar liggen.",
+        },
+      },
+      {
+        type: "text",
+        value:
+          "Dat is geld dat je al hebt uitgegeven aan inkoop, personeel en marketing, maar dat niet wordt verzilverd door een technische drempel in de user journey.",
+      },
+      { type: "h2", value: "Waarom standaard platformen vaak vastlopen" },
+      {
+        type: "text",
+        value:
+          "Platformen zoals Lightspeed of Shopify zijn sterk om mee te starten. Maar naarmate je groeit, stapelen scripts, trackers en apps zich op. De zichtbare licentiekosten zijn laag, de verborgen performance-kosten zijn vaak veel hoger.",
+      },
+      {
+        type: "text",
+        value:
+          "Je shop is als een auto met steeds meer extra koffers op het dak: hij blijft rijden, maar verbruikt meer brandstof en accelereert trager wanneer het erop aankomt.",
+      },
+      { type: "h2", value: "Is een custom webshop de oplossing?" },
+      {
+        type: "text",
+        value:
+          "Een custom webshop is geen experiment, maar een precisie-instrument. In plaats van bouwen om een zwaar template heen, schrijf je alleen code die nodig is voor snelheid en conversie.",
+      },
+      {
+        type: "text",
+        value:
+          "Geen ballast: alleen noodzakelijke code. Toekomstbestendig: 90+ mobile scores als standaard. Lagere CPA: snellere sites krijgen vaak betere kwaliteitssignalen in ads.",
+      },
+      { type: "h2", value: "Conclusie: durf jij in de spiegel te kijken?" },
+      {
+        type: "text",
+        value:
+          "Het gaat niet om of je shop werkt. Het gaat erom of je shop optimaal rendeert. Bij EUR 1 miljoen omzet is een verbetering van 5% al genoeg om een custom build in ongeveer een jaar terug te verdienen. Alles daarna is extra marge.",
+      },
+      {
+        type: "cta_box",
+        data: {
+          title: "Benieuwd naar de field data van jouw shop?",
+          body: "Laat ons een eerlijke scan maken van hoe je klanten je site echt ervaren. Geen verkooppraat, maar harde data over waar je omzetlek zit.",
+        },
+      },
+    ],
+  },
 ];
 
 export const postsEn: Post[] = [
+  {
+    id: "hoe-woocommerce-je-op-10-manieren-geld-kost",
+    title: "10 ways WooCommerce is quietly costing you money",
+    excerpt:
+      "WooCommerce looks cheap, but often becomes expensive through slow performance, plugin conflicts, developer hours, higher ad costs and lost conversion.",
+    date: "2026-02-27",
+    tags: ["WooCommerce", "Performance", "CRO", "Technical Debt"],
+    readingTime: "10 min",
+    content: [
+      {
+        type: "text",
+        value:
+          "Many founders look at WooCommerce and mainly see low entry cost. The plugin is free, hosting feels affordable and there is a plugin for nearly every problem. That makes WooCommerce feel like a rational starting point. The issue is that the real bill rarely arrives on day one. It shows up later, in small incidents, recurring fixes and revenue that quietly never gets captured.",
+      },
+      {
+        type: "text",
+        value:
+          "That is exactly what makes WooCommerce dangerous for growing stores. The damage does not appear as one clean invoice. It is spread across developers, ads, conversion, SEO, support, internal time and decision delay. Below are ten common ways WooCommerce drains money out of a business.",
+      },
+      { type: "h2", value: "1. Slow load time cuts conversion immediately" },
+      {
+        type: "text",
+        value:
+          "WooCommerce sits on top of WordPress, PHP, database queries, plugin hooks and often a heavy theme. Every layer adds friction. On desktop you can sometimes get away with that. On mobile you usually cannot.",
+      },
+      {
+        type: "text",
+        value:
+          "Visitors do not think in technical terms. They simply leave. That means performance is not just a technical issue; it is a direct revenue variable. If product pages are two to four seconds too slow, click-through, add-to-cart rate and checkout conversion all drop.",
+      },
+      { type: "h2", value: "2. Plugin stacking creates constant friction" },
+      {
+        type: "text",
+        value:
+          "Very few serious WooCommerce stores run on WooCommerce alone. There are plugins for SEO, caching, reviews, email, payments, shipping, bundles, translations, filtering, upsells and analytics. Every plugin adds code. Every plugin adds risk. And every plugin increases the chance that an update or conflict will hit the exact revenue flow your store depends on.",
+      },
+      {
+        type: "text",
+        value:
+          "Most founders underestimate that plugins do not only cost money as licenses. They also cost performance, maintenance, testing and debugging. The real question is not what a plugin costs, but what the plugin stack leaks.",
+      },
+      { type: "h2", value: "3. Updates are not routine, but recurring risk moments" },
+      {
+        type: "text",
+        value:
+          "In a standard WooCommerce stack, something can always break: a plugin update, a WordPress release, a theme change or a PHP version shift. That turns routine maintenance into a point of tension. Many stores delay updates to avoid damage. That feels safe, but it creates fresh problems: security risk, compatibility drift and technical debt.",
+      },
+      {
+        type: "text",
+        value:
+          "Financially, that shows up in two ways. Either you keep paying preventive maintenance, or you pay the bigger bill after something breaks at the wrong time. Both cost money.",
+      },
+      { type: "h2", value: "4. Developer hours add up much faster than expected" },
+      {
+        type: "text",
+        value:
+          "A WooCommerce store rarely reaches a stable end state. There is always something slightly off: checkout adjustments, plugin conflicts, mobile bugs, tracking issues or translation gaps. That means you are not buying a finished system. You are buying a flow of recurring technical tasks.",
+      },
+      {
+        type: "text",
+        value:
+          "It may look harmless as a few hours here and there. Across twelve months, it becomes a serious budget line. The core problem is not just the hourly rate, but the fact that you keep paying to stabilize the existing stack instead of building something that sells better structurally.",
+      },
+      { type: "h2", value: "5. Higher ad spend, lower return" },
+      {
+        type: "text",
+        value:
+          "Slow sites do not just hurt users, they also hurt campaign efficiency. Weak landing page performance often lowers quality signals and pushes cost per click up. So you buy traffic at worse conditions, then send that traffic to a slower store that converts less well.",
+      },
+      {
+        type: "text",
+        value:
+          "That is a double tax on your marketing budget. First, you pay more for the click. Then, you get less revenue from the click. It makes ads look like the problem while the real leak sits in the stack underneath.",
+      },
+      { type: "h2", value: "6. SEO weakens because of technical drag, not just content" },
+      {
+        type: "text",
+        value:
+          "Many stores invest in content, category pages and product copy while forgetting that Google also evaluates speed, stability and user experience. A slow WooCommerce setup can have decent content and still lose positions to a technically stronger competitor.",
+      },
+      {
+        type: "text",
+        value:
+          "SEO decline is especially deceptive because it is gradual. You do not always fall from position 2 to position 12 overnight. More often, visibility erodes a little every month. On a yearly basis, that gets expensive.",
+      },
+      { type: "h2", value: "7. Security is a cost center even when nothing happens" },
+      {
+        type: "text",
+        value:
+          "WooCommerce on WordPress is a common target. Not because your store is uniquely interesting, but because the stack is predictable. Bots constantly scan for outdated plugins, known vulnerabilities and poorly maintained installs. That means security is never really at zero cost. You pay in monitoring, patching, maintenance and caution.",
+      },
+      {
+        type: "text",
+        value:
+          "And if something does go wrong, the cost jumps: downtime, trust damage, wasted developer time and ad spend that may keep running while the site is unstable or unavailable.",
+      },
+      { type: "h2", value: "8. Your team works slower because the system works slower" },
+      {
+        type: "text",
+        value:
+          "WooCommerce does not only cost money on the customer side. It also costs time internally. Slow admin screens, awkward plugin settings, duplicate work, workarounds and manual corrections make your team less efficient. You do not always see that as a line item, but it absolutely shows up in operating cost.",
+      },
+      {
+        type: "text",
+        value:
+          "If marketing, support or operations lose time every week because the system never feels clean, that becomes structural payroll leakage.",
+      },
+      { type: "h2", value: "9. Every growth request becomes more expensive than it should be" },
+      {
+        type: "text",
+        value:
+          "In theory WooCommerce is flexible. In practice, flexibility often means searching for another plugin, testing if it plays nicely with the rest, adjusting things and testing again. The more the store grows, the more expensive every next improvement becomes. Not because the business request is so complex, but because the foundation underneath keeps getting messier.",
+      },
+      {
+        type: "text",
+        value:
+          "New landing pages, B2B logic, volume pricing, multilingual flows or custom product journeys should be commercial improvements. In WooCommerce they often become technical projects.",
+      },
+      { type: "h2", value: "10. The biggest loss is the decision you postpone" },
+      {
+        type: "text",
+        value:
+          "Maybe the most expensive line of all: businesses stay on WooCommerce too long because it still kind of works. That delays better decisions. A faster storefront, cleaner data model, lower plugin dependency, higher mobile conversion and less support overhead all arrive later than they should. Every month of delay costs more money.",
+      },
+      {
+        type: "text",
+        value:
+          "That is what makes WooCommerce so deceptive. It is rarely one acute disaster. It is usually a slow leak that removes a little more margin every month.",
+      },
+      { type: "h2", value: "The math: how large can that leak become?" },
+      {
+        type: "calc_box",
+        data: {
+          leftTitle: "Example WooCommerce store",
+          leftItems: [
+            "Monthly revenue: EUR 50,000",
+            "Developer maintenance: EUR 500 p/m",
+            "Extra plugin and tool costs: EUR 250 p/m",
+            "Conversion loss from slowness: 5% to 12%",
+          ],
+          rightTitle: "What that means financially",
+          rightItems: [
+            "Direct tech cost: EUR 750 p/m",
+            "Lost revenue at 5%: EUR 2,500 p/m",
+            "Lost revenue at 12%: EUR 6,000 p/m",
+            "Total damage: EUR 3,250 to EUR 6,750 p/m",
+          ],
+          summary:
+            "Even in a conservative scenario, that means roughly EUR 39,000 to EUR 81,000 per year in direct cost and missed revenue.",
+        },
+      },
+      { type: "h2", value: "Why founders notice this too late" },
+      {
+        type: "text",
+        value:
+          "Because WooCommerce rarely fails all at once. The damage is spread across multiple budgets: development, marketing, support, operations and revenue. Each line can still look manageable by itself while the total has already become irrational.",
+      },
+      {
+        type: "text",
+        value:
+          "Anyone only looking at hosting or plugin licenses misses the real number. The real question is how much extra margin you would keep if the store were not being held back by the system underneath.",
+      },
+      { type: "h2", value: "Conclusion: WooCommerce is often not cheap, but expensive" },
+      {
+        type: "text",
+        value:
+          "WooCommerce often wins the first decision because the entry looks cheap. For serious stores, that is the wrong metric. The relevant question is what it costs to keep performing, stay fast and keep growing without constant stress.",
+      },
+      {
+        type: "text",
+        value:
+          "That is where WooCommerce often loses. Not in setup cost, but in the months and years after launch. For many founders, switching is not a luxury project. It is a margin decision.",
+      },
+      {
+        type: "cta_box",
+        data: {
+          title: "Want to know what WooCommerce is costing you right now?",
+          body: "Let us audit your store from both a technical and commercial angle. No vague advice, just a concrete estimate of maintenance burden, performance leakage and missed revenue.",
+        },
+      },
+      {
+        type: "text",
+        value:
+          "Published by Sitedesk Performance Lab - We build fast storefronts for founders who are done with plugin stress, slow pages and hidden technical cost.",
+      },
+    ],
+  },
   {
     id: "waarom-0ms-geen-luxe-is",
     title: "Why a 0ms load time for your webshop is not a luxury, but a hard requirement",
@@ -602,6 +1076,106 @@ export const postsEn: Post[] = [
         data: {
           title: "Pilot Deal: build for growth, not debt",
           body: "EUR 1,000 one-time, EUR 150 p/m. Includes hosting, maintenance and continuous development — the base for a future-proof, AI-ready webshop.",
+        },
+      },
+    ],
+  },
+  {
+    id: "onzichtbare-lek-omzetverlies-techniek-webshop",
+    title: "The Invisible Leak: How Much Revenue Is Your Webshop Losing to Technology?",
+    excerpt:
+      "Your storefront can feel fast while customer data says otherwise. Learn how technical drag can quietly cost EUR 100,000 to EUR 250,000 per year.",
+    date: "2026-02-24",
+    tags: ["Performance", "CRO", "SEO", "Mobile"],
+    readingTime: "8 min",
+    content: [
+      {
+        type: "text",
+        value:
+          "Many successful webshop owners look at their dashboard and see healthy numbers. Revenue is strong, traffic is stable, and the platform appears to work fine. But under the hood, many stores have an invisible leak.",
+      },
+      {
+        type: "text",
+        value:
+          "We recently analyzed a real Dutch webshop case. The owner experienced the site as fast, but Google data told a different story.",
+      },
+      { type: "h2", value: "Your experience vs. customer reality" },
+      {
+        type: "text",
+        value:
+          "As an owner, you usually test on a modern phone and fast office internet. Lighthouse simulates average customer conditions: weaker mobile signal, transit use, and older devices.",
+      },
+      {
+        type: "text",
+        value:
+          "In this case, Largest Contentful Paint (LCP) was 8.7 seconds. While the owner perceived smooth performance, a significant share of mobile visitors was waiting far too long for meaningful content.",
+      },
+      { type: "h2", value: "Realistic math: what does this cost?" },
+      {
+        type: "text",
+        value:
+          "Assume a webshop with EUR 1,000,000 annual revenue. Not every business is mobile-first, so we model both conservative and realistic impact ranges.",
+      },
+      {
+        type: "calc_box",
+        data: {
+          title: "Annual revenue leak at weak mobile performance (49/100)",
+          leftTitle: "Conservative scenario",
+          leftItems: [
+            "Mobile conversion loss: -5%",
+            "Higher ad costs: +2%",
+            "SEO ranking drag: -3%",
+            "Total annual loss: EUR 100,000",
+          ],
+          rightTitle: "Realistic scenario",
+          rightItems: [
+            "Mobile conversion loss: -12%",
+            "Higher ad costs: +5%",
+            "SEO ranking drag: -8%",
+            "Total annual loss: EUR 250,000",
+          ],
+          summary:
+            "Even in the conservative case, a EUR 1M webshop can leak around EUR 100,000 per year due to technical friction.",
+        },
+      },
+      {
+        type: "text",
+        value:
+          "That is revenue already funded by inventory, payroll and marketing, but not captured because the buying journey is slowed down by technical overhead.",
+      },
+      { type: "h2", value: "Why standard platforms often plateau" },
+      {
+        type: "text",
+        value:
+          "Platforms such as Lightspeed and Shopify are excellent to start with. But as stores grow, scripts, trackers and app layers accumulate. Visible license costs stay low while hidden performance costs rise.",
+      },
+      {
+        type: "text",
+        value:
+          "Think of it as a car carrying more and more luggage: it still runs, but acceleration gets worse and efficiency drops.",
+      },
+      { type: "h2", value: "Is custom architecture the answer?" },
+      {
+        type: "text",
+        value:
+          "A custom webshop is not an experiment. It is a precision system. Instead of extending heavy generic templates, you run only the code needed for speed and conversion.",
+      },
+      {
+        type: "text",
+        value:
+          "No ballast, better maintainability, and mobile 90+ scores as a target baseline. Faster experience also supports stronger ad efficiency and lower CPA.",
+      },
+      { type: "h2", value: "Conclusion: are you ready to look at the real data?" },
+      {
+        type: "text",
+        value:
+          "The key question is not whether your shop works, but whether it performs at its revenue potential. At EUR 1M turnover, a 5% lift can already justify a full custom build within one year.",
+      },
+      {
+        type: "cta_box",
+        data: {
+          title: "Want the real field data for your webshop?",
+          body: "We run an honest performance scan based on customer reality. No sales fluff, only hard data on where revenue is leaking.",
         },
       },
     ],

@@ -52,6 +52,14 @@ const getUiCopy = (locale: SupportedLocale) => {
       sendFailed: "Sending failed. Try again.",
       successPrefix: "We review",
       successMiddle: "and send your migration check to",
+      guaranteeLabel: "Migration guarantee",
+      guaranteeHeadline: "No big difference? The migration is free.",
+      guaranteePoints: [
+        "No clear speed gain",
+        "No clear stability gain",
+        "No clear improvement in day-to-day management",
+      ],
+      guaranteeFooter: "Then there should be no migration invoice.",
       loading3d: "Loading 3D model...",
       analyze: "Analyze",
       guaranteed: "100/100 Guaranteed",
@@ -94,6 +102,14 @@ const getUiCopy = (locale: SupportedLocale) => {
     sendFailed: "Versturen mislukt. Probeer opnieuw.",
     successPrefix: "We bekijken",
     successMiddle: "en sturen je migratie-check naar",
+    guaranteeLabel: "Migratiegarantie",
+    guaranteeHeadline: "Geen groot verschil? Dan is de migratie gratis.",
+    guaranteePoints: [
+      "Geen duidelijke snelheidswinst",
+      "Geen duidelijke winst in stabiliteit",
+      "Geen duidelijke verbetering in beheer en doorontwikkeling",
+    ],
+    guaranteeFooter: "Dan hoort daar geen migratiefactuur bij.",
     loading3d: "3D model laden...",
     analyze: "Analyseer",
     guaranteed: "100/100 Guaranteed",
@@ -317,22 +333,52 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border/70 bg-card/60 p-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-xl border border-rose-300/40 bg-rose-50/70 p-4">
-                  <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-rose-700">{heroLeftLabel}</p>
-                  <div className="space-y-2">
-                    {heroLeftItems.map((label) => (
-                      <div key={label} className="rounded-md bg-rose-100 px-3 py-2 text-xs text-rose-900">
+            <div className="relative overflow-hidden rounded-[2rem] border border-border/70 bg-card/80 p-6 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.45)]">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(244,63,94,0.12),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.16),transparent_36%)]" />
+              <div className="relative grid grid-cols-2 gap-4">
+                <div className="rounded-[1.5rem] border border-rose-300/40 bg-gradient-to-br from-rose-50 via-rose-100/80 to-white p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+                  <div className="mb-4 flex items-center justify-between">
+                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-rose-700">{heroLeftLabel}</p>
+                    <span className="rounded-full border border-rose-300/40 bg-white/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-rose-700">
+                      Frictie
+                    </span>
+                  </div>
+                  <div className="space-y-2.5">
+                    {heroLeftItems.map((label, index) => (
+                      <div
+                        key={label}
+                        className="rounded-xl border border-rose-200/70 bg-white/75 px-3.5 py-3 text-sm font-medium text-rose-950 shadow-sm"
+                      >
+                        <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-rose-200 text-[11px] font-bold text-rose-800">
+                          {index + 1}
+                        </span>
                         {label}
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className="rounded-xl border border-emerald-300/40 bg-emerald-50/70 p-4">
-                  <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-emerald-700">{heroRightLabel}</p>
-                  <div className="flex h-full items-center justify-center">
-                    <div className="h-24 w-24 rotate-45 rounded-2xl bg-gradient-to-br from-emerald-300 via-teal-300 to-cyan-300 shadow-xl" />
+                <div className="rounded-[1.5rem] border border-emerald-300/40 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
+                  <div className="mb-4 flex items-center justify-between">
+                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">{heroRightLabel}</p>
+                    <span className="rounded-full border border-emerald-300/40 bg-white/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-800">
+                      Schoon systeem
+                    </span>
+                  </div>
+                  <div className="flex h-full min-h-[220px] flex-col items-center justify-center gap-5 rounded-[1.25rem] border border-emerald-200/60 bg-white/55 p-4 text-center shadow-sm">
+                    <div className="relative flex h-28 w-28 items-center justify-center">
+                      <div className="absolute inset-0 rotate-45 rounded-[1.75rem] bg-gradient-to-br from-emerald-300 via-teal-300 to-cyan-300 shadow-2xl" />
+                      <div className="relative z-10 text-xs font-black uppercase tracking-[0.28em] text-emerald-950">
+                        Fast
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-emerald-950">Minder ballast. Meer controle. Hogere snelheid.</p>
+                      <div className="flex flex-wrap justify-center gap-2">
+                        <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-900">Custom logic</span>
+                        <span className="rounded-full bg-cyan-100 px-3 py-1 text-xs font-semibold text-cyan-900">Edge delivery</span>
+                        <span className="rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold text-teal-900">No plugin chaos</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -342,26 +388,40 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
 
         <section className="container mx-auto py-12 md:py-16">
           <h2 className="mb-6 text-3xl md:text-4xl font-bold text-foreground">{matrixTitle}</h2>
-          <div className="overflow-x-auto rounded-xl border border-border/70 bg-card/50">
+          <div className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-card/80 shadow-[0_24px_60px_-40px_rgba(0,0,0,0.35)]">
             <table className="w-full min-w-[740px] text-left">
-              <thead className="bg-muted/40">
+              <thead className="bg-gradient-to-r from-slate-100 via-white to-emerald-50">
                 <tr>
-                  <th className="px-4 py-3 text-sm font-semibold text-foreground">{ui.problem}</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-foreground">{ui.oldWorld}</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-foreground">{ui.solution}</th>
+                  <th className="px-5 py-4 text-xs font-bold uppercase tracking-[0.22em] text-slate-700">{ui.problem}</th>
+                  <th className="px-5 py-4 text-xs font-bold uppercase tracking-[0.22em] text-rose-700">{ui.oldWorld}</th>
+                  <th className="px-5 py-4 text-xs font-bold uppercase tracking-[0.22em] text-emerald-700">{ui.solution}</th>
                 </tr>
               </thead>
               <tbody>
-                {config.matrixRows.map((row) => (
-                  <tr key={String(getLocalizedMigrationText(row.problem, locale))} className="border-t border-border/60">
-                    <td className="px-4 py-3 text-sm font-medium text-foreground">
-                      {String(getLocalizedMigrationText(row.problem, locale))}
+                {config.matrixRows.map((row, index) => (
+                  <tr
+                    key={String(getLocalizedMigrationText(row.problem, locale))}
+                    className={`border-t border-border/60 ${index % 2 === 0 ? "bg-white/80" : "bg-slate-50/70"}`}
+                  >
+                    <td className="px-5 py-5 align-top">
+                      <div className="inline-flex items-start gap-3">
+                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white">
+                          {index + 1}
+                        </span>
+                        <span className="pt-1 text-sm font-semibold text-foreground">
+                          {String(getLocalizedMigrationText(row.problem, locale))}
+                        </span>
+                      </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-muted-foreground">
-                      {String(getLocalizedMigrationText(row.nightmare, locale))}
+                    <td className="px-5 py-5 align-top">
+                      <div className="rounded-2xl border border-rose-200/70 bg-rose-50/80 p-4 text-sm leading-relaxed text-rose-950 shadow-sm">
+                        {String(getLocalizedMigrationText(row.nightmare, locale))}
+                      </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-foreground">
-                      {String(getLocalizedMigrationText(row.solution, locale))}
+                    <td className="px-5 py-5 align-top">
+                      <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/80 p-4 text-sm font-medium leading-relaxed text-emerald-950 shadow-sm">
+                        {String(getLocalizedMigrationText(row.solution, locale))}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -539,9 +599,26 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
         </section>
 
         <section className="container mx-auto py-12 md:py-16">
-          <div className="rounded-2xl border border-accent/40 bg-accent/10 p-8">
-            <h2 className="mb-4 text-3xl md:text-4xl font-bold text-foreground">{riskTitle}</h2>
-            <p className="text-lg text-foreground/90">{riskCopy}</p>
+          <div className="grid gap-6 rounded-[2rem] border border-accent/35 bg-gradient-to-br from-accent/10 via-white to-emerald-50 p-8 md:grid-cols-[1.2fr_0.8fr] md:items-start">
+            <div>
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-accent">{ui.guaranteeLabel}</p>
+              <h2 className="mb-4 text-3xl md:text-4xl font-bold text-foreground">{riskTitle}</h2>
+              <p className="text-lg text-foreground/90">{riskCopy}</p>
+            </div>
+            <div className="rounded-[1.5rem] border border-emerald-300/50 bg-white/85 p-5 shadow-sm">
+              <p className="text-lg font-bold text-emerald-950">{ui.guaranteeHeadline}</p>
+              <ul className="mt-4 space-y-2.5 text-sm font-medium text-emerald-950">
+                {ui.guaranteePoints.map((point) => (
+                  <li key={point} className="flex items-start gap-3">
+                    <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-200 text-[11px] font-bold text-emerald-900">
+                      +
+                    </span>
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 text-sm font-semibold text-emerald-900">{ui.guaranteeFooter}</p>
+            </div>
           </div>
         </section>
 
