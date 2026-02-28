@@ -21,6 +21,19 @@ import Webshop from "./pages/Webshop";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import PreviewOffer from "./pages/PreviewOffer";
+import { getPlatformMigrationConfig, getPlatformRoute } from "@/lib/platformMigrationConfigs";
+
+const migrationConfig = getPlatformMigrationConfig("woocommerce");
+const shopifyConfig = getPlatformMigrationConfig("shopify");
+const lightspeedConfig = getPlatformMigrationConfig("lightspeed");
+const magentoConfig = getPlatformMigrationConfig("magento");
+const prestashopConfig = getPlatformMigrationConfig("prestashop");
+
+const migrationRouteNl = migrationConfig ? getPlatformRoute(migrationConfig, "nl") : "/migratie";
+const shopifyRouteNl = shopifyConfig ? getPlatformRoute(shopifyConfig, "nl") : "/shopify-alternatief";
+const lightspeedRouteNl = lightspeedConfig ? getPlatformRoute(lightspeedConfig, "nl") : "/lightspeed-alternatief";
+const magentoRouteNl = magentoConfig ? getPlatformRoute(magentoConfig, "nl") : "/magento-alternatief";
+const prestashopRouteNl = prestashopConfig ? getPlatformRoute(prestashopConfig, "nl") : "/prestashop-alternatief";
 
 export const createQueryClient = () => new QueryClient();
 
@@ -42,11 +55,11 @@ export const AppRoutes = () => (
     <Route path="/zakelijke-websites" element={<Index />} />
     <Route path="/shop" element={<Shop />} />
     <Route path="/demo" element={<Shop />} />
-    <Route path="/migratie" element={<Migration />} />
-    <Route path="/shopify-alternatief" element={<ShopifyAlternative />} />
-    <Route path="/lightspeed-alternatief" element={<LightspeedAlternative />} />
-    <Route path="/magento-alternatief" element={<MagentoAlternative />} />
-    <Route path="/prestashop-alternatief" element={<PrestashopAlternative />} />
+    <Route path={migrationRouteNl} element={<Migration />} />
+    <Route path={shopifyRouteNl} element={<ShopifyAlternative />} />
+    <Route path={lightspeedRouteNl} element={<LightspeedAlternative />} />
+    <Route path={magentoRouteNl} element={<MagentoAlternative />} />
+    <Route path={prestashopRouteNl} element={<PrestashopAlternative />} />
     <Route path="/preview/:clientSlug" element={<PreviewOffer />} />
     <Route path="/preview/:clientSlug/shop" element={<Shop />} />
     <Route path="/preview/:clientSlug/product/:id" element={<Product />} />

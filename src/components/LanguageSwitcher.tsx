@@ -14,7 +14,6 @@ const LanguageSwitcher = () => {
   const location = useLocation();
   const currentLocale = getLocaleFromPath(location.pathname);
   const basePath = stripLocaleFromPath(location.pathname);
-  const isProductDetail = basePath.startsWith("/product/");
 
   const getAlternatePath = (targetLocale: SupportedLocale) => {
     if (typeof document === "undefined") return "";
@@ -31,10 +30,8 @@ const LanguageSwitcher = () => {
   };
 
   const toLocaleUrl = (targetLocale: SupportedLocale) => {
-    if (isProductDetail) {
-      const alternatePath = getAlternatePath(targetLocale);
-      if (alternatePath) return alternatePath;
-    }
+    const alternatePath = getAlternatePath(targetLocale);
+    if (alternatePath) return alternatePath;
 
     const localizedPath = withLocalePath(basePath, targetLocale);
     const search = location.search || "";

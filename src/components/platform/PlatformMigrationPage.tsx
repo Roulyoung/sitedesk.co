@@ -6,7 +6,8 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import {
-  getAlternateHrefLangs,
+  ACTIVE_LOCALES,
+  DEFAULT_LOCALE,
   getLocaleFromPath,
   stripLocaleFromPath,
   withLocalePath,
@@ -14,6 +15,7 @@ import {
 } from "@/lib/i18n";
 import {
   getLocalizedMigrationText,
+  getPlatformRoute,
   migrationPlatforms,
   type PlatformMigrationConfig,
 } from "@/lib/platformMigrationConfigs";
@@ -62,8 +64,17 @@ const getUiCopy = (locale: SupportedLocale) => {
       ],
       guaranteeFooter: "Then there should be no migration invoice.",
       loading3d: "Loading 3D model...",
+      cleanSystem: "Clean system",
+      fastBadge: "Fast",
+      rightHeroCopy: "Less ballast. More control. Higher speed.",
+      customLogic: "Custom logic",
+      edgeDelivery: "Edge delivery",
+      noPluginChaos: "No plugin chaos",
       view3d: "View 3D demo",
       view3dHint: "Load the live 3D model only when you want to inspect it.",
+      viewerBadge: "3D Demo",
+      onDemand: "On demand",
+      initialLoadImpact: "Zero impact on initial load",
       analyze: "Analyze",
       guaranteed: "100/100 Guaranteed",
       migrationRequestNameSuffix: "migration check",
@@ -114,8 +125,17 @@ const getUiCopy = (locale: SupportedLocale) => {
     ],
     guaranteeFooter: "Dan hoort daar geen migratiefactuur bij.",
     loading3d: "3D model laden...",
+    cleanSystem: "Schoon systeem",
+    fastBadge: "Fast",
+    rightHeroCopy: "Minder ballast. Meer controle. Hogere snelheid.",
+    customLogic: "Custom logic",
+    edgeDelivery: "Edge delivery",
+    noPluginChaos: "No plugin chaos",
     view3d: "Bekijk 3D demo",
     view3dHint: "Laad het live 3D-model alleen wanneer je het echt wilt bekijken.",
+    viewerBadge: "3D Demo",
+    onDemand: "On demand",
+    initialLoadImpact: "Geen impact op eerste load",
     analyze: "Analyseer",
     guaranteed: "100/100 Guaranteed",
     migrationRequestNameSuffix: "migratie-check",
@@ -135,8 +155,18 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
   const locale = getLocaleFromPath(location.pathname);
   const ui = getUiCopy(locale);
   const pathWithoutLocale = stripLocaleFromPath(location.pathname);
-  const alternateLinks = getAlternateHrefLangs(pathWithoutLocale);
-  const canonical = `https://sitedesk.co${location.pathname}`;
+  const canonicalPath = withLocalePath(getPlatformRoute(config, locale), locale);
+  const canonical = `https://sitedesk.co${canonicalPath}`;
+  const alternateLinks = [
+    ...ACTIVE_LOCALES.map((alternateLocale) => ({
+      locale: alternateLocale,
+      href: `https://sitedesk.co${withLocalePath(getPlatformRoute(config, alternateLocale), alternateLocale)}`,
+    })),
+    {
+      locale: "x-default",
+      href: `https://sitedesk.co${getPlatformRoute(config, DEFAULT_LOCALE)}`,
+    },
+  ];
   const [urlToAnalyze, setUrlToAnalyze] = useState("");
   const [loadMs, setLoadMs] = useState(0);
   const [showThreeDViewer, setShowThreeDViewer] = useState(false);
@@ -318,7 +348,7 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
               {migrationPlatforms.map((platform) => (
                 <NavLink
                   key={platform.key}
-                  to={withLocalePath(platform.route, locale)}
+                  to={withLocalePath(getPlatformRoute(platform, locale), locale)}
                   className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
                     config.key === platform.key
                       ? "border-accent bg-accent text-accent-foreground"
@@ -370,22 +400,22 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
                   <div className="mb-4 flex items-center justify-between">
                     <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">{heroRightLabel}</p>
                     <span className="rounded-full border border-emerald-300/50 bg-emerald-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-900">
-                      Schoon systeem
+                      {ui.cleanSystem}
                     </span>
                   </div>
                   <div className="flex flex-1 flex-col items-center justify-center gap-4 rounded-xl border border-emerald-200/70 bg-white/80 p-4 text-center">
                     <div className="relative flex h-14 w-14 items-center justify-center">
                       <div className="absolute inset-0 rotate-45 rounded-[1rem] bg-gradient-to-br from-emerald-300 via-teal-300 to-cyan-300 shadow-xl" />
                       <div className="relative z-10 text-xs font-black uppercase tracking-[0.28em] text-emerald-950">
-                        Fast
+                        {ui.fastBadge}
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-sm font-semibold text-emerald-950">Minder ballast. Meer controle. Hogere snelheid.</p>
+                      <p className="text-sm font-semibold text-emerald-950">{ui.rightHeroCopy}</p>
                       <div className="flex flex-wrap justify-center gap-2">
-                        <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-900">Custom logic</span>
-                        <span className="rounded-full bg-cyan-100 px-3 py-1 text-xs font-semibold text-cyan-900">Edge delivery</span>
-                        <span className="rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold text-teal-900">No plugin chaos</span>
+                        <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-900">{ui.customLogic}</span>
+                        <span className="rounded-full bg-cyan-100 px-3 py-1 text-xs font-semibold text-cyan-900">{ui.edgeDelivery}</span>
+                        <span className="rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold text-teal-900">{ui.noPluginChaos}</span>
                       </div>
                     </div>
                   </div>
@@ -623,10 +653,10 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
                   >
                     <div className="flex items-start justify-between gap-4">
                       <span className="rounded-full border border-emerald-300/60 bg-white/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-900">
-                        3D Demo
+                        {ui.viewerBadge}
                       </span>
                       <span className="rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">
-                        On demand
+                        {ui.onDemand}
                       </span>
                     </div>
                     <div className="space-y-4">
@@ -642,7 +672,7 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
                       </div>
                     </div>
                     <div className="flex items-center justify-between rounded-2xl border border-white/80 bg-white/85 px-4 py-3 shadow-[0_16px_30px_-24px_rgba(15,23,42,0.5)]">
-                      <span className="text-sm font-medium text-slate-700">{locale === "en" ? "Zero impact on initial load" : "Geen impact op eerste load"}</span>
+                      <span className="text-sm font-medium text-slate-700">{ui.initialLoadImpact}</span>
                       <span className="inline-flex h-10 items-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground">
                         {ui.view3d}
                       </span>

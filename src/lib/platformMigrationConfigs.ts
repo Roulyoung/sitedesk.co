@@ -21,7 +21,7 @@ type ExtraMileCard = {
 
 export type PlatformMigrationConfig = {
   key: string;
-  route: string;
+  route: LocalizedText;
   title: LocalizedText;
   description: LocalizedText;
   navLabel: LocalizedText;
@@ -105,6 +105,15 @@ export const getMigrationMenuLabel = (
   }
 };
 
+export const getPlatformRoute = (
+  platform: Pick<PlatformMigrationConfig, "route">,
+  locale: SupportedLocale,
+) => {
+  const value = platform.route[locale] ?? platform.route.en ?? platform.route.nl ?? "/";
+  const normalized = String(value).startsWith("/") ? String(value) : `/${String(value)}`;
+  return normalized === "/" ? "/" : normalized.replace(/\/+$/, "");
+};
+
 const sharedTimeline: TimelineStep[] = [
   {
     day: t("Dag 1", "Day 1"),
@@ -163,7 +172,7 @@ const sharedExtraMileCards: ExtraMileCard[] = [
 export const migrationPlatforms: PlatformMigrationConfig[] = [
   {
     key: "woocommerce",
-    route: "/migratie",
+    route: t("/migratie", "/woocommerce-migration"),
     title: t(
       "WooCommerce Migratie in 1 Week | Sitedesk",
       "WooCommerce Migration in 1 Week | Sitedesk",
@@ -353,7 +362,7 @@ export const migrationPlatforms: PlatformMigrationConfig[] = [
   },
   {
     key: "shopify",
-    route: "/shopify-alternatief",
+    route: t("/shopify-alternatief", "/shopify-alternative"),
     title: t(
       "Shopify Alternatief voor Snellere Groei | Sitedesk",
       "Shopify Alternative for Faster Growth | Sitedesk",
@@ -546,7 +555,7 @@ export const migrationPlatforms: PlatformMigrationConfig[] = [
   },
   {
     key: "lightspeed",
-    route: "/lightspeed-alternatief",
+    route: t("/lightspeed-alternatief", "/lightspeed-alternative"),
     title: t(
       "Lightspeed Alternatief zonder Traagheid | Sitedesk",
       "Lightspeed Alternative Without the Slowness | Sitedesk",
@@ -739,7 +748,7 @@ export const migrationPlatforms: PlatformMigrationConfig[] = [
   },
   {
     key: "magento",
-    route: "/magento-alternatief",
+    route: t("/magento-alternatief", "/magento-alternative"),
     title: t(
       "Magento Alternatief voor Minder Complexiteit | Sitedesk",
       "Magento Alternative with Less Complexity | Sitedesk",
@@ -932,7 +941,7 @@ export const migrationPlatforms: PlatformMigrationConfig[] = [
   },
   {
     key: "prestashop",
-    route: "/prestashop-alternatief",
+    route: t("/prestashop-alternatief", "/prestashop-alternative"),
     title: t(
       "PrestaShop Alternatief voor Meer Snelheid | Sitedesk",
       "PrestaShop Alternative for More Speed | Sitedesk",

@@ -23,11 +23,6 @@ const staticBaseRoutes = [
   "/shop",
   "/demo",
   "/webshop",
-  "/migratie",
-  "/shopify-alternatief",
-  "/lightspeed-alternatief",
-  "/magento-alternatief",
-  "/prestashop-alternatief",
   "/blog",
   "/over-ons",
 ];
@@ -114,8 +109,25 @@ const previewProductRoutes = productRowsForPrerender
   })
   .filter(Boolean);
 
+const migrationLocalizedRoutes = [
+  "/migratie",
+  "/en/woocommerce-migration",
+  "/shopify-alternatief",
+  "/en/shopify-alternative",
+  "/lightspeed-alternatief",
+  "/en/lightspeed-alternative",
+  "/magento-alternatief",
+  "/en/magento-alternative",
+  "/prestashop-alternatief",
+  "/en/prestashop-alternative",
+];
 const baseRoutes = [...new Set([...staticBaseRoutes, ...blogBaseRoutes])];
-const localizedStaticRoutes = baseRoutes.flatMap((route) => locales.map((locale) => withLocalePath(route, locale)));
+const localizedStaticRoutes = [
+  ...new Set([
+    ...baseRoutes.flatMap((route) => locales.map((locale) => withLocalePath(route, locale))),
+    ...migrationLocalizedRoutes,
+  ]),
+];
 
 const routes = [...new Set([...localizedStaticRoutes, ...productRoutes, ...previewShopRoutes, ...previewProductRoutes])].slice(
   0,

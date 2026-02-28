@@ -1,6 +1,7 @@
 import { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 import { getNonDefaultLocales, stripLocaleFromPath } from "@/lib/i18n";
+import { getPlatformMigrationConfig, getPlatformRoute } from "@/lib/platformMigrationConfigs";
 
 type RouteComponents = {
   Index?: React.ComponentType;
@@ -40,6 +41,23 @@ const LazyWebshop = lazy(() => import("@/pages/Webshop"));
 const LazyBlog = lazy(() => import("@/pages/Blog"));
 const LazyBlogPost = lazy(() => import("@/pages/BlogPost"));
 
+const migrationConfig = getPlatformMigrationConfig("woocommerce");
+const shopifyConfig = getPlatformMigrationConfig("shopify");
+const lightspeedConfig = getPlatformMigrationConfig("lightspeed");
+const magentoConfig = getPlatformMigrationConfig("magento");
+const prestashopConfig = getPlatformMigrationConfig("prestashop");
+
+const migrationRouteNl = migrationConfig ? getPlatformRoute(migrationConfig, "nl") : "/migratie";
+const migrationRouteEn = migrationConfig ? getPlatformRoute(migrationConfig, "en") : "/woocommerce-migration";
+const shopifyRouteNl = shopifyConfig ? getPlatformRoute(shopifyConfig, "nl") : "/shopify-alternatief";
+const shopifyRouteEn = shopifyConfig ? getPlatformRoute(shopifyConfig, "en") : "/shopify-alternative";
+const lightspeedRouteNl = lightspeedConfig ? getPlatformRoute(lightspeedConfig, "nl") : "/lightspeed-alternatief";
+const lightspeedRouteEn = lightspeedConfig ? getPlatformRoute(lightspeedConfig, "en") : "/lightspeed-alternative";
+const magentoRouteNl = magentoConfig ? getPlatformRoute(magentoConfig, "nl") : "/magento-alternatief";
+const magentoRouteEn = magentoConfig ? getPlatformRoute(magentoConfig, "en") : "/magento-alternative";
+const prestashopRouteNl = prestashopConfig ? getPlatformRoute(prestashopConfig, "nl") : "/prestashop-alternatief";
+const prestashopRouteEn = prestashopConfig ? getPlatformRoute(prestashopConfig, "en") : "/prestashop-alternative";
+
 export const loadInitialRouteComponents = async (pathname: string): Promise<RouteComponents> => {
   const normalizedPathname = stripLocaleFromPath(pathname);
 
@@ -59,23 +77,23 @@ export const loadInitialRouteComponents = async (pathname: string): Promise<Rout
     const mod = await import("@/pages/Shop");
     return { Shop: mod.default };
   }
-  if (normalizedPathname === "/migratie") {
+  if (normalizedPathname === migrationRouteNl || normalizedPathname === migrationRouteEn) {
     const mod = await import("@/pages/Migration");
     return { Migration: mod.default };
   }
-  if (normalizedPathname === "/shopify-alternatief") {
+  if (normalizedPathname === shopifyRouteNl || normalizedPathname === shopifyRouteEn) {
     const mod = await import("@/pages/ShopifyAlternative");
     return { ShopifyAlternative: mod.default };
   }
-  if (normalizedPathname === "/lightspeed-alternatief") {
+  if (normalizedPathname === lightspeedRouteNl || normalizedPathname === lightspeedRouteEn) {
     const mod = await import("@/pages/LightspeedAlternative");
     return { LightspeedAlternative: mod.default };
   }
-  if (normalizedPathname === "/magento-alternatief") {
+  if (normalizedPathname === magentoRouteNl || normalizedPathname === magentoRouteEn) {
     const mod = await import("@/pages/MagentoAlternative");
     return { MagentoAlternative: mod.default };
   }
-  if (normalizedPathname === "/prestashop-alternatief") {
+  if (normalizedPathname === prestashopRouteNl || normalizedPathname === prestashopRouteEn) {
     const mod = await import("@/pages/PrestashopAlternative");
     return { PrestashopAlternative: mod.default };
   }
@@ -149,11 +167,11 @@ export const AppRoutesClient = ({ initialComponents }: { initialComponents?: Rou
         <Route path="/zakelijke-websites" element={<Index />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/demo" element={<Shop />} />
-        <Route path="/migratie" element={<Migration />} />
-        <Route path="/shopify-alternatief" element={<ShopifyAlternative />} />
-        <Route path="/lightspeed-alternatief" element={<LightspeedAlternative />} />
-        <Route path="/magento-alternatief" element={<MagentoAlternative />} />
-        <Route path="/prestashop-alternatief" element={<PrestashopAlternative />} />
+        <Route path={migrationRouteNl} element={<Migration />} />
+        <Route path={shopifyRouteNl} element={<ShopifyAlternative />} />
+        <Route path={lightspeedRouteNl} element={<LightspeedAlternative />} />
+        <Route path={magentoRouteNl} element={<MagentoAlternative />} />
+        <Route path={prestashopRouteNl} element={<PrestashopAlternative />} />
         <Route path="/preview/:clientSlug" element={<PreviewOffer />} />
         <Route path="/preview/:clientSlug/shop" element={<Shop />} />
         <Route path="/preview/:clientSlug/product/:id" element={<Product />} />
@@ -171,10 +189,15 @@ export const AppRoutesClient = ({ initialComponents }: { initialComponents?: Rou
             <Route path="zakelijke-websites" element={<Index />} />
             <Route path="shop" element={<Shop />} />
             <Route path="demo" element={<Shop />} />
+            <Route path={migrationRouteEn.replace(/^\//, "")} element={<Migration />} />
             <Route path="migratie" element={<Migration />} />
+            <Route path={shopifyRouteEn.replace(/^\//, "")} element={<ShopifyAlternative />} />
             <Route path="shopify-alternatief" element={<ShopifyAlternative />} />
+            <Route path={lightspeedRouteEn.replace(/^\//, "")} element={<LightspeedAlternative />} />
             <Route path="lightspeed-alternatief" element={<LightspeedAlternative />} />
+            <Route path={magentoRouteEn.replace(/^\//, "")} element={<MagentoAlternative />} />
             <Route path="magento-alternatief" element={<MagentoAlternative />} />
+            <Route path={prestashopRouteEn.replace(/^\//, "")} element={<PrestashopAlternative />} />
             <Route path="prestashop-alternatief" element={<PrestashopAlternative />} />
             <Route path="preview/:clientSlug" element={<PreviewOffer />} />
             <Route path="preview/:clientSlug/shop" element={<Shop />} />

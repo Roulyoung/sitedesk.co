@@ -5,7 +5,7 @@ import { Menu, X, MessageCircle, ChevronDown } from "lucide-react";
 import { getLandingSectionHash, getLocaleFromPath, withLocalePath } from "@/lib/i18n";
 import { t } from "@/lib/messages";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { getMigrationMenuLabel, migrationPlatforms } from "@/lib/platformMigrationConfigs";
+import { getMigrationMenuLabel, getPlatformRoute, migrationPlatforms } from "@/lib/platformMigrationConfigs";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -51,7 +51,7 @@ const Header = () => {
   const calculatorTo = `${homeTo}${getLandingSectionHash(locale, "calculator")}`;
   const migrationRoutes = migrationPlatforms.map((platform) => ({
     key: platform.key,
-    to: withLocalePath(platform.route, locale),
+    to: withLocalePath(getPlatformRoute(platform, locale), locale),
     label: getMigrationMenuLabel(platform, locale),
   }));
   const demoTo = withLocalePath("/demo", locale);
