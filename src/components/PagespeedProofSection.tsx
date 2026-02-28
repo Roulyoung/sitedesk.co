@@ -82,7 +82,7 @@ const PagespeedProofSection = ({ className = "" }: Props) => {
                     {isEn ? "See the live 99-100/100 product score" : "Bekijk de live 99-100/100 productscore"}
                   </h4>
                 </div>
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">99-100</span>
+                <span className="whitespace-nowrap rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">99-100</span>
               </div>
               <Button variant="outline" size="sm" className="mt-5 w-full justify-between border-primary/30 text-primary hover:bg-primary hover:text-white">
                 {isEn ? "Test product performance" : "Test product performance"}
