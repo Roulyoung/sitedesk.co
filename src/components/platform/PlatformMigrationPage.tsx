@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { Fragment, lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { NavLink, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
@@ -333,13 +333,12 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-[linear-gradient(145deg,#fff7f5_0%,#fffaf6_38%,#f0fdf9_100%)] p-6 shadow-[0_35px_90px_-42px_rgba(15,23,42,0.34)]">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(244,63,94,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.22),transparent_34%)]" />
+            <div className="rounded-2xl border border-border/70 bg-card/60 p-6 shadow-[0_24px_60px_-36px_rgba(15,23,42,0.3)]">
               <div className="relative grid grid-cols-2 gap-4">
-                <div className="rounded-[1.5rem] border border-rose-300/60 bg-[linear-gradient(160deg,#fff1f2_0%,#ffe4e6_52%,#fff7f7_100%)] p-5 shadow-[0_18px_35px_-24px_rgba(190,24,93,0.35)]">
+                <div className="rounded-xl border border-rose-300/40 bg-rose-50/80 p-5">
                   <div className="mb-4 flex items-center justify-between">
                     <p className="text-xs font-semibold uppercase tracking-[0.22em] text-rose-700">{heroLeftLabel}</p>
-                    <span className="rounded-full border border-rose-300/70 bg-rose-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-rose-800">
+                    <span className="rounded-full border border-rose-300/50 bg-rose-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-rose-800">
                       Frictie
                     </span>
                   </div>
@@ -347,7 +346,7 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
                     {heroLeftItems.map((label, index) => (
                       <div
                         key={label}
-                        className="rounded-xl border border-rose-200 bg-white px-3.5 py-3 text-sm font-medium text-rose-950 shadow-[0_14px_24px_-24px_rgba(136,19,55,0.8)]"
+                        className="rounded-lg border border-rose-200/70 bg-rose-100/90 px-3.5 py-3 text-sm font-medium text-rose-950"
                       >
                         <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-rose-200 text-[11px] font-bold text-rose-900">
                           {index + 1}
@@ -357,16 +356,16 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
                     ))}
                   </div>
                 </div>
-                <div className="rounded-[1.5rem] border border-emerald-300/60 bg-[linear-gradient(160deg,#ecfdf5_0%,#d1fae5_48%,#ecfeff_100%)] p-5 shadow-[0_18px_35px_-24px_rgba(5,150,105,0.34)]">
+                <div className="rounded-xl border border-emerald-300/40 bg-emerald-50/80 p-5">
                   <div className="mb-4 flex items-center justify-between">
                     <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">{heroRightLabel}</p>
-                    <span className="rounded-full border border-emerald-300/70 bg-emerald-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-900">
+                    <span className="rounded-full border border-emerald-300/50 bg-emerald-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-900">
                       Schoon systeem
                     </span>
                   </div>
-                  <div className="flex h-full min-h-[220px] flex-col items-center justify-center gap-5 rounded-[1.25rem] border border-emerald-200 bg-[linear-gradient(180deg,#ffffff_0%,#f0fdfa_100%)] p-4 text-center shadow-[0_20px_32px_-28px_rgba(6,95,70,0.9)]">
+                  <div className="flex h-full min-h-[220px] flex-col items-center justify-center gap-5 rounded-xl border border-emerald-200/70 bg-white/80 p-4 text-center">
                     <div className="relative flex h-28 w-28 items-center justify-center">
-                      <div className="absolute inset-0 rotate-45 rounded-[1.75rem] bg-gradient-to-br from-emerald-400 via-teal-300 to-cyan-300 shadow-[0_30px_45px_-24px_rgba(13,148,136,0.55)]" />
+                      <div className="absolute inset-0 rotate-45 rounded-[1.75rem] bg-gradient-to-br from-emerald-300 via-teal-300 to-cyan-300 shadow-xl" />
                       <div className="relative z-10 text-xs font-black uppercase tracking-[0.28em] text-emerald-950">
                         Fast
                       </div>
@@ -386,47 +385,83 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
           </div>
         </section>
 
-        <section className="container mx-auto py-12 md:py-16">
-          <h2 className="mb-6 text-3xl md:text-4xl font-bold text-foreground">{matrixTitle}</h2>
-          <div className="overflow-hidden rounded-[1.9rem] border border-slate-200 bg-[linear-gradient(180deg,#fffdf8_0%,#fff7f5_22%,#f8fafc_100%)] shadow-[0_30px_70px_-42px_rgba(15,23,42,0.34)]">
-            <table className="w-full min-w-[740px] text-left">
-              <thead className="bg-[linear-gradient(90deg,#18181b_0%,#3f3f46_18%,#0f766e_100%)]">
-                <tr>
-                  <th className="px-5 py-4 text-xs font-bold uppercase tracking-[0.22em] text-slate-100">{ui.problem}</th>
-                  <th className="px-5 py-4 text-xs font-bold uppercase tracking-[0.22em] text-rose-100">{ui.oldWorld}</th>
-                  <th className="px-5 py-4 text-xs font-bold uppercase tracking-[0.22em] text-emerald-100">{ui.solution}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {config.matrixRows.map((row, index) => (
-                  <tr
-                    key={String(getLocalizedMigrationText(row.problem, locale))}
-                    className={`border-t border-slate-200/80 ${index % 2 === 0 ? "bg-[#fffaf8]" : "bg-[#f8fbfb]"}`}
+        <section className="container mx-auto py-20">
+          <div className="mx-auto mb-16 max-w-4xl space-y-4 text-center">
+            <h2 className="bg-gradient-to-b from-foreground to-muted-foreground bg-clip-text text-4xl font-extrabold tracking-tighter text-transparent md:text-6xl">
+              {matrixTitle}
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              {locale === "en"
+                ? "Why moving to Sitedesk is the only logical next step."
+                : "Waarom de overstap naar Sitedesk de enige logische keuze is."}
+            </p>
+          </div>
+
+          <div className="overflow-hidden rounded-[2.5rem] border border-border/50 bg-card/30 shadow-[0_35px_80px_-45px_rgba(15,23,42,0.45)] backdrop-blur-sm">
+            <div className="grid grid-cols-1 md:grid-cols-3">
+              <div className="hidden border-b border-r border-border/50 bg-muted/20 p-8 md:flex md:flex-col">
+                <span className="text-xs font-black uppercase tracking-[0.28em] text-muted-foreground/70">
+                  {locale === "en" ? "Focus point" : "Focus punt"}
+                </span>
+              </div>
+              <div className="hidden border-b border-r border-border/50 bg-rose-500/[0.06] p-8 md:flex md:flex-col">
+                <span className="text-xs font-black uppercase tracking-[0.28em] text-rose-600">{ui.oldWorld}</span>
+              </div>
+              <div className="hidden border-b border-border/50 bg-emerald-500/[0.07] p-8 md:flex md:flex-col">
+                <span className="text-xs font-black uppercase tracking-[0.28em] text-emerald-600">{ui.solution}</span>
+              </div>
+
+              {config.matrixRows.map((row, index) => (
+                <Fragment key={String(getLocalizedMigrationText(row.problem, locale))}>
+                  <div
+                    className="flex flex-col justify-center border-b border-border/40 bg-muted/10 p-8 md:border-r"
                   >
-                    <td className="px-5 py-5 align-top">
-                      <div className="inline-flex items-start gap-3 rounded-2xl bg-white/80 px-3 py-3 shadow-[0_14px_24px_-24px_rgba(15,23,42,0.85)]">
-                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white">
-                          {index + 1}
-                        </span>
-                        <span className="pt-1 text-sm font-semibold text-foreground">
+                    <div className="flex items-start gap-4">
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white shadow-[0_12px_24px_-18px_rgba(15,23,42,0.9)]">
+                        {index + 1}
+                      </span>
+                      <div>
+                        <h3 className="text-lg font-bold text-foreground">
                           {String(getLocalizedMigrationText(row.problem, locale))}
-                        </span>
+                        </h3>
+                        <p className="mt-1 text-xs uppercase tracking-[0.22em] text-muted-foreground md:hidden">
+                          {locale === "en" ? "The challenge" : "De uitdaging"}
+                        </p>
                       </div>
-                    </td>
-                    <td className="px-5 py-5 align-top">
-                      <div className="rounded-2xl border border-rose-200 bg-[linear-gradient(180deg,#fff1f2_0%,#ffe4e6_100%)] p-4 text-sm leading-relaxed text-rose-950 shadow-[0_18px_30px_-26px_rgba(159,18,57,0.75)]">
+                    </div>
+                  </div>
+
+                  <div
+                    className="group border-b border-border/40 bg-rose-500/[0.03] p-8 transition-colors hover:bg-rose-500/[0.07] md:border-r"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-rose-100">
+                        <span className="text-xs font-bold text-rose-600">x</span>
+                      </div>
+                      <p className="text-sm leading-relaxed text-muted-foreground transition-colors group-hover:text-foreground">
                         {String(getLocalizedMigrationText(row.nightmare, locale))}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div
+                    className="group relative border-b border-border/40 bg-emerald-500/[0.04] p-8 transition-colors hover:bg-emerald-500/[0.09]"
+                  >
+                    {index === 0 && (
+                      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-70" />
+                    )}
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500 shadow-[0_0_18px_rgba(16,185,129,0.45)]">
+                        <span className="text-xs font-bold text-white">✓</span>
                       </div>
-                    </td>
-                    <td className="px-5 py-5 align-top">
-                      <div className="rounded-2xl border border-emerald-200 bg-[linear-gradient(180deg,#ecfdf5_0%,#d1fae5_100%)] p-4 text-sm font-medium leading-relaxed text-emerald-950 shadow-[0_18px_30px_-26px_rgba(5,150,105,0.75)]">
+                      <p className="text-sm font-semibold leading-relaxed text-emerald-950">
                         {String(getLocalizedMigrationText(row.solution, locale))}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      </p>
+                    </div>
+                  </div>
+                </Fragment>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -657,7 +692,7 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
         </section>
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200 bg-[#fffaf2] shadow-[0_-24px_48px_-28px_rgba(15,23,42,0.35)]">
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-sky-400/40 bg-sky-700 shadow-[0_-24px_48px_-28px_rgba(15,23,42,0.45)]">
         <form
           className="container mx-auto flex flex-col gap-3 py-3 md:flex-row md:items-center md:gap-4"
           onSubmit={(event) => {
@@ -665,18 +700,18 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
             startMigrationCheck();
           }}
         >
-          <p className="text-sm font-medium text-foreground">{stickyPrompt}</p>
+          <p className="text-sm font-medium text-white">{stickyPrompt}</p>
           <input
             type="text"
             value={urlToAnalyze}
             onChange={(event) => setUrlToAnalyze(event.target.value)}
             placeholder={ui.shopPlaceholder}
-            className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-950 shadow-sm md:max-w-md"
+            className="h-10 w-full rounded-md border border-sky-200 bg-white px-3 text-sm text-slate-950 shadow-sm md:max-w-md"
           />
           <Button type="submit" variant="hero">
             {ui.analyze}
           </Button>
-          <span className="inline-flex items-center rounded-full border border-emerald-400/50 bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-900">
+          <span className="inline-flex items-center rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold text-white">
             {ui.guaranteed}
           </span>
         </form>
