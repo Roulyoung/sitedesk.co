@@ -18,7 +18,8 @@ import {
   type PlatformMigrationConfig,
 } from "@/lib/platformMigrationConfigs";
 
-const ProductThreeDViewer = lazy(() => import("@/components/product/ProductThreeDViewer"));
+const loadProductThreeDViewer = () => import("@/components/product/ProductThreeDViewer");
+const ProductThreeDViewer = lazy(loadProductThreeDViewer);
 const LEAD_SUBMIT_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/submit";
 const MIGRATION_MODEL_URL =
   "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb";
@@ -61,6 +62,8 @@ const getUiCopy = (locale: SupportedLocale) => {
       ],
       guaranteeFooter: "Then there should be no migration invoice.",
       loading3d: "Loading 3D model...",
+      view3d: "View 3D demo",
+      view3dHint: "Load the live 3D model only when you want to inspect it.",
       analyze: "Analyze",
       guaranteed: "100/100 Guaranteed",
       migrationRequestNameSuffix: "migration check",
@@ -111,6 +114,8 @@ const getUiCopy = (locale: SupportedLocale) => {
     ],
     guaranteeFooter: "Dan hoort daar geen migratiefactuur bij.",
     loading3d: "3D model laden...",
+    view3d: "Bekijk 3D demo",
+    view3dHint: "Laad het live 3D-model alleen wanneer je het echt wilt bekijken.",
     analyze: "Analyseer",
     guaranteed: "100/100 Guaranteed",
     migrationRequestNameSuffix: "migratie-check",
@@ -134,6 +139,7 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
   const canonical = `https://sitedesk.co${location.pathname}`;
   const [urlToAnalyze, setUrlToAnalyze] = useState("");
   const [loadMs, setLoadMs] = useState(0);
+  const [showThreeDViewer, setShowThreeDViewer] = useState(false);
   const [checkStatus, setCheckStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [checkError, setCheckError] = useState("");
   const [checkSuccess, setCheckSuccess] = useState<{ url: string; email: string } | null>(null);
@@ -201,6 +207,10 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
       if (emailInput) emailInput.focus();
       else if (urlInput) urlInput.focus();
     }, 300);
+  };
+
+  const handleOpenThreeDViewer = () => {
+    setShowThreeDViewer(true);
   };
 
   const handleMigrationCheckSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -599,9 +609,46 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
             </div>
             <div className="rounded-xl border border-border/70 bg-card/60 p-4">
               <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
-                <Suspense fallback={<div className="flex h-full items-center justify-center text-sm text-muted-foreground">{ui.loading3d}</div>}>
-                  <ProductThreeDViewer url={MIGRATION_MODEL_URL} scale={9} />
-                </Suspense>
+                {showThreeDViewer ? (
+                  <Suspense fallback={<div className="flex h-full items-center justify-center text-sm text-muted-foreground">{ui.loading3d}</div>}>
+                    <ProductThreeDViewer url={MIGRATION_MODEL_URL} scale={9} />
+                  </Suspense>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleOpenThreeDViewer}
+                    onMouseEnter={loadProductThreeDViewer}
+                    onFocus={loadProductThreeDViewer}
+                    className="group flex h-full w-full flex-col justify-between bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.18),_transparent_42%),linear-gradient(160deg,#f8fafc_0%,#eef2ff_45%,#ecfeff_100%)] p-6 text-left transition hover:bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.24),_transparent_46%),linear-gradient(160deg,#f8fafc_0%,#e0f2fe_45%,#ecfeff_100%)]"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <span className="rounded-full border border-emerald-300/60 bg-white/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-900">
+                        3D Demo
+                      </span>
+                      <span className="rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">
+                        On demand
+                      </span>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="relative mx-auto flex h-28 w-28 items-center justify-center">
+                        <div className="absolute inset-0 rotate-45 rounded-[1.75rem] bg-gradient-to-br from-emerald-300 via-cyan-300 to-sky-300 shadow-[0_24px_50px_-20px_rgba(14,165,233,0.45)] transition duration-300 group-hover:scale-105" />
+                        <div className="relative z-10 text-sm font-black uppercase tracking-[0.28em] text-slate-950">
+                          3D
+                        </div>
+                      </div>
+                      <div className="space-y-2 text-center">
+                        <p className="text-base font-semibold text-slate-950">{ui.view3d}</p>
+                        <p className="text-sm leading-relaxed text-slate-600">{ui.view3dHint}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between rounded-2xl border border-white/80 bg-white/85 px-4 py-3 shadow-[0_16px_30px_-24px_rgba(15,23,42,0.5)]">
+                      <span className="text-sm font-medium text-slate-700">{locale === "en" ? "Zero impact on initial load" : "Geen impact op eerste load"}</span>
+                      <span className="inline-flex h-10 items-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground">
+                        {ui.view3d}
+                      </span>
+                    </div>
+                  </button>
+                )}
               </div>
               <p className="mt-3 text-sm text-muted-foreground">{threeDFootnote}</p>
             </div>
