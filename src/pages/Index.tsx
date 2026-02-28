@@ -9,6 +9,7 @@ import CTA from "@/components/CTA";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
+import PagespeedProofSection from "@/components/PagespeedProofSection";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import { getAlternateHrefLangs, getLocaleFromPath, stripLocaleFromPath } from "@/lib/i18n";
@@ -42,10 +43,12 @@ const Index = () => {
       <Header />
       <main>
         <Hero />
+        <PagespeedProofSection className="py-8 md:py-12" />
         <HowItWorks />
         <Features />
         <PainPoints />
         <Comparison />
+        <PagespeedProofSection className="py-4 md:py-8" />
         <FAQ />
         <Contact />
         <CTA />

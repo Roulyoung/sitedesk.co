@@ -4,6 +4,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
+import PagespeedProofSection from "@/components/PagespeedProofSection";
 import { Button } from "@/components/ui/button";
 import {
   ACTIVE_LOCALES,
@@ -424,6 +425,8 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
             </div>
           </div>
         </section>
+
+        <PagespeedProofSection className="py-2 md:py-4" />
 
         <section className="container mx-auto py-20">
           <div className="mx-auto mb-16 max-w-4xl text-center">

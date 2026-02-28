@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import WebshopIntentSections from "@/components/WebshopIntentSections";
+import PagespeedProofSection from "@/components/PagespeedProofSection";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -29,6 +30,21 @@ declare global {
 }
 
 const benchmarkLoadTimes = [0, 2, 4, 6] as const;
+const LEAD_SUBMIT_ENDPOINT = "https://stripe-webhook.rdo90.workers.dev/submit";
+
+type LeadResponse = {
+  message?: string;
+  analysis?: {
+    mobilePerformanceScore?: string;
+    desktopPerformanceScore?: string;
+    estimatedLoss?: string;
+    scoreEstimatedLoss?: string;
+    estimatedLossFormatted?: string;
+    scoreEstimatedLossFormatted?: string;
+    pagespeedSummary?: string;
+    usedFallback?: boolean;
+  } | null;
+};
 
 const getConversionLossPercent = (seconds: number) => {
   if (seconds <= 0) return 0;
@@ -42,6 +58,12 @@ const formatCurrency = (value: number) =>
     currency: "EUR",
     maximumFractionDigits: 0,
   }).format(Math.max(0, value));
+
+const extractNumericValue = (value: string | number | undefined | null) => {
+  if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+  const parsed = Number(String(value ?? "").replace(/[^\d.,-]/g, "").replace(/\./g, "").replace(",", "."));
+  return Number.isFinite(parsed) ? parsed : 0;
+};
 
 const benefitCards = [
   {
@@ -147,6 +169,7 @@ const Webshop = () => {
   const [reportStatus, setReportStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [reportError, setReportError] = useState("");
   const [reportSuccessDetails, setReportSuccessDetails] = useState<{ url: string; email: string } | null>(null);
+  const [reportAnalysis, setReportAnalysis] = useState<LeadResponse["analysis"]>(null);
 
   const currentLossPercent = useMemo(() => getConversionLossPercent(currentLoadTime), [currentLoadTime]);
   const missedMonthlyRevenue = useMemo(
@@ -165,6 +188,39 @@ const Webshop = () => {
     if (!monthlyVisitorsValue) return 0;
     return Math.round(monthlyVisitorsValue * (currentLossPercent / 100));
   }, [monthlyVisitorsValue, currentLossPercent]);
+
+  const reportAnalysisHeadline = useMemo(() => {
+    const mobileScore = Number(reportAnalysis?.mobilePerformanceScore || 0);
+    if (!mobileScore) return "Zo scoort je shop nu ongeveer technisch";
+    if (mobileScore < 40) return "Je shop laat hier serieus omzet liggen";
+    if (mobileScore < 60) return "Er zit duidelijk conversiewinst in je snelheid";
+    if (mobileScore < 80) return "De basis is er, maar technisch laat je nog marge liggen";
+    return "Je shop presteert redelijk, maar er is nog winst te pakken";
+  }, [reportAnalysis]);
+
+  const reportAnalysisSubcopy = useMemo(() => {
+    const mobileScore = Number(reportAnalysis?.mobilePerformanceScore || 0);
+    if (!mobileScore) return "";
+    if (mobileScore < 40) return "Dit is het soort score waarbij bezoekers afhaken, advertenties duurder worden en SEO-kansen blijven liggen.";
+    if (mobileScore < 60) return "Niet rampzalig, maar wel langzaam genoeg om conversie en advertentierendement merkbaar te drukken.";
+    if (mobileScore < 80) return "Voor veel shops voelt dit 'prima', maar in de praktijk kost het nog steeds orders en marge.";
+    return "Voor de meeste bezoekers is dit acceptabel, maar sneller laden vertaalt nog steeds naar extra conversie.";
+  }, [reportAnalysis]);
+
+  const reportLossRange = useMemo(() => {
+    const baseLoss =
+      extractNumericValue(reportAnalysis?.scoreEstimatedLoss) ||
+      extractNumericValue(reportAnalysis?.estimatedLoss) ||
+      missedMonthlyRevenue;
+    if (!baseLoss) return null;
+    const min = Math.round(baseLoss * 0.85);
+    const max = Math.round(baseLoss * 1.15);
+    return {
+      min,
+      max,
+      label: `${formatCurrency(min)} tot ${formatCurrency(max)}`,
+    };
+  }, [reportAnalysis, missedMonthlyRevenue]);
 
   const benchmarkRows = useMemo(
     () =>
@@ -229,17 +285,18 @@ const Webshop = () => {
   };
 
   const postLead = async (payload: Record<string, string>) => {
-    const res = await fetch("/functions/submit", {
+    const res = await fetch(LEAD_SUBMIT_ENDPOINT, {
       method: "POST",
       mode: "cors",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
       throw new Error(data?.message || (isEn ? "Sending failed. Please try again." : "Versturen mislukt. Probeer opnieuw."));
     }
+    return data as LeadResponse;
   };
 
   const handleContactSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -330,12 +387,14 @@ const Webshop = () => {
     setReportStatus("sending");
     setReportError("");
     setReportSuccessDetails(null);
+    setReportAnalysis(null);
 
     try {
-      await postLead(payload);
+      const response = await postLead(payload);
       trackLead();
       setReportStatus("success");
       setReportSuccessDetails({ url, email });
+      setReportAnalysis(response?.analysis ?? null);
       form.reset();
       setMonthlyVisitors("");
     } catch (err) {
@@ -466,6 +525,8 @@ const Webshop = () => {
             </div>
           </div>
         </section>
+
+        <PagespeedProofSection className="-mt-10 md:-mt-14" />
 
         {/* Techniek */}
         <section id={sectionIds.tech} className="container mx-auto scroll-mt-28">
@@ -744,7 +805,7 @@ const Webshop = () => {
                     <input id="company" name="company" type="text" />
                   </div>
                   <input
-                    type="url"
+                    type="text"
                     name="shopUrl"
                     placeholder={isEn ? "yourshop.com or https://yourshop.com" : "jouwshop.nl of https://jouwshop.nl"}
                     required
@@ -775,18 +836,57 @@ const Webshop = () => {
                 </form>
                 {reportError && <p className="text-sm mt-3 text-primary-foreground">{reportError}</p>}
                 {reportStatus === "success" && (
-                  <p className="text-sm mt-3 text-primary-foreground">
-                    {reportSuccessDetails
-                      ? `Bedankt! We analyseren ${reportSuccessDetails.url} en sturen het uitgebreide rapport naar ${reportSuccessDetails.email}.`
-                      : isEn
-                        ? "Request received. We will contact you soon."
-                        : "Aanvraag ontvangen. We nemen snel contact met je op."}
-                  </p>
+                  <div className="mt-3 space-y-3">
+                    <p className="text-sm text-primary-foreground">
+                      {reportSuccessDetails
+                        ? `Bedankt! We analyseren ${reportSuccessDetails.url} en sturen het uitgebreide rapport naar ${reportSuccessDetails.email}.`
+                        : isEn
+                          ? "Request received. We will contact you soon."
+                          : "Aanvraag ontvangen. We nemen snel contact met je op."}
+                    </p>
+                    {reportAnalysis && (
+                      <div className="rounded-2xl border border-primary-foreground/25 bg-primary-foreground/10 p-4 md:p-5 text-sm text-primary-foreground space-y-4">
+                        <div className="space-y-1">
+                          <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/70">Snelle indicatie</p>
+                          <h4 className="text-lg font-semibold text-primary-foreground">{reportAnalysisHeadline}</h4>
+                          {reportAnalysisSubcopy && (
+                            <p className="text-primary-foreground/80 leading-relaxed">{reportAnalysisSubcopy}</p>
+                          )}
+                        </div>
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          <div className="rounded-xl bg-primary-foreground/10 px-4 py-3">
+                            <p className="text-xs uppercase tracking-[0.18em] text-primary-foreground/70">Mobile score</p>
+                            <p className="text-2xl font-bold">{reportAnalysis.mobilePerformanceScore || "-"}</p>
+                          </div>
+                          <div className="rounded-xl bg-primary-foreground/10 px-4 py-3">
+                            <p className="text-xs uppercase tracking-[0.18em] text-primary-foreground/70">Desktop score</p>
+                            <p className="text-2xl font-bold">{reportAnalysis.desktopPerformanceScore || "-"}</p>
+                          </div>
+                        </div>
+                        <p>
+                          Op basis van een maandelijkse omzet van{" "}
+                          <span className="font-semibold">{formatCurrency(monthlyRevenue)}</span> laat je shop realistisch tussen{" "}
+                          <span className="font-semibold">{reportLossRange?.label || formatCurrency(missedMonthlyRevenue)}</span>{" "}
+                          per maand liggen door technische vertraging. Dat is omzet die je al hebt ingekocht, geadverteerd en binnengehaald, maar niet volledig verzilvert.
+                        </p>
+                        {reportAnalysis.pagespeedSummary && (
+                          <p className="text-primary-foreground/80 leading-relaxed">
+                            {reportAnalysis.usedFallback
+                              ? "Deze indicatie is berekend op basis van je ingevulde laadtijd, omdat de live Google PageSpeed API tijdelijk geen quota gaf."
+                              : "Deze indicatie komt uit een live PageSpeed-analyse van je shop."}{" "}
+                            {reportAnalysis.pagespeedSummary}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
           </div>
         </section>
+
+        <PagespeedProofSection />
 
         {/* Concurrentievergelijking */}
         <section id={sectionIds.comparison} className="container mx-auto scroll-mt-28">
@@ -839,6 +939,8 @@ const Webshop = () => {
             </table>
           </div>
         </section>
+
+        <PagespeedProofSection />
 
         {/* Benefits grid */}
         <section id="voordelen" className="container mx-auto">
