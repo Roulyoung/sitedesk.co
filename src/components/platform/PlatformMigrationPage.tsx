@@ -333,13 +333,13 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-[2rem] border border-border/70 bg-card/80 p-6 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.45)]">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(244,63,94,0.12),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.16),transparent_36%)]" />
+            <div className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-[linear-gradient(145deg,#fff7f5_0%,#fffaf6_38%,#f0fdf9_100%)] p-6 shadow-[0_35px_90px_-42px_rgba(15,23,42,0.34)]">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(244,63,94,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.22),transparent_34%)]" />
               <div className="relative grid grid-cols-2 gap-4">
-                <div className="rounded-[1.5rem] border border-rose-300/40 bg-gradient-to-br from-rose-50 via-rose-100/80 to-white p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+                <div className="rounded-[1.5rem] border border-rose-300/60 bg-[linear-gradient(160deg,#fff1f2_0%,#ffe4e6_52%,#fff7f7_100%)] p-5 shadow-[0_18px_35px_-24px_rgba(190,24,93,0.35)]">
                   <div className="mb-4 flex items-center justify-between">
                     <p className="text-xs font-semibold uppercase tracking-[0.22em] text-rose-700">{heroLeftLabel}</p>
-                    <span className="rounded-full border border-rose-300/40 bg-white/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-rose-700">
+                    <span className="rounded-full border border-rose-300/70 bg-rose-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-rose-800">
                       Frictie
                     </span>
                   </div>
@@ -347,9 +347,9 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
                     {heroLeftItems.map((label, index) => (
                       <div
                         key={label}
-                        className="rounded-xl border border-rose-200/70 bg-white/75 px-3.5 py-3 text-sm font-medium text-rose-950 shadow-sm"
+                        className="rounded-xl border border-rose-200 bg-white px-3.5 py-3 text-sm font-medium text-rose-950 shadow-[0_14px_24px_-24px_rgba(136,19,55,0.8)]"
                       >
-                        <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-rose-200 text-[11px] font-bold text-rose-800">
+                        <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-rose-200 text-[11px] font-bold text-rose-900">
                           {index + 1}
                         </span>
                         {label}
@@ -357,16 +357,16 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
                     ))}
                   </div>
                 </div>
-                <div className="rounded-[1.5rem] border border-emerald-300/40 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
+                <div className="rounded-[1.5rem] border border-emerald-300/60 bg-[linear-gradient(160deg,#ecfdf5_0%,#d1fae5_48%,#ecfeff_100%)] p-5 shadow-[0_18px_35px_-24px_rgba(5,150,105,0.34)]">
                   <div className="mb-4 flex items-center justify-between">
                     <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">{heroRightLabel}</p>
-                    <span className="rounded-full border border-emerald-300/40 bg-white/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-800">
+                    <span className="rounded-full border border-emerald-300/70 bg-emerald-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-900">
                       Schoon systeem
                     </span>
                   </div>
-                  <div className="flex h-full min-h-[220px] flex-col items-center justify-center gap-5 rounded-[1.25rem] border border-emerald-200/60 bg-white/55 p-4 text-center shadow-sm">
+                  <div className="flex h-full min-h-[220px] flex-col items-center justify-center gap-5 rounded-[1.25rem] border border-emerald-200 bg-[linear-gradient(180deg,#ffffff_0%,#f0fdfa_100%)] p-4 text-center shadow-[0_20px_32px_-28px_rgba(6,95,70,0.9)]">
                     <div className="relative flex h-28 w-28 items-center justify-center">
-                      <div className="absolute inset-0 rotate-45 rounded-[1.75rem] bg-gradient-to-br from-emerald-300 via-teal-300 to-cyan-300 shadow-2xl" />
+                      <div className="absolute inset-0 rotate-45 rounded-[1.75rem] bg-gradient-to-br from-emerald-400 via-teal-300 to-cyan-300 shadow-[0_30px_45px_-24px_rgba(13,148,136,0.55)]" />
                       <div className="relative z-10 text-xs font-black uppercase tracking-[0.28em] text-emerald-950">
                         Fast
                       </div>
@@ -388,23 +388,23 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
 
         <section className="container mx-auto py-12 md:py-16">
           <h2 className="mb-6 text-3xl md:text-4xl font-bold text-foreground">{matrixTitle}</h2>
-          <div className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-card/80 shadow-[0_24px_60px_-40px_rgba(0,0,0,0.35)]">
+          <div className="overflow-hidden rounded-[1.9rem] border border-slate-200 bg-[linear-gradient(180deg,#fffdf8_0%,#fff7f5_22%,#f8fafc_100%)] shadow-[0_30px_70px_-42px_rgba(15,23,42,0.34)]">
             <table className="w-full min-w-[740px] text-left">
-              <thead className="bg-gradient-to-r from-slate-100 via-white to-emerald-50">
+              <thead className="bg-[linear-gradient(90deg,#18181b_0%,#3f3f46_18%,#0f766e_100%)]">
                 <tr>
-                  <th className="px-5 py-4 text-xs font-bold uppercase tracking-[0.22em] text-slate-700">{ui.problem}</th>
-                  <th className="px-5 py-4 text-xs font-bold uppercase tracking-[0.22em] text-rose-700">{ui.oldWorld}</th>
-                  <th className="px-5 py-4 text-xs font-bold uppercase tracking-[0.22em] text-emerald-700">{ui.solution}</th>
+                  <th className="px-5 py-4 text-xs font-bold uppercase tracking-[0.22em] text-slate-100">{ui.problem}</th>
+                  <th className="px-5 py-4 text-xs font-bold uppercase tracking-[0.22em] text-rose-100">{ui.oldWorld}</th>
+                  <th className="px-5 py-4 text-xs font-bold uppercase tracking-[0.22em] text-emerald-100">{ui.solution}</th>
                 </tr>
               </thead>
               <tbody>
                 {config.matrixRows.map((row, index) => (
                   <tr
                     key={String(getLocalizedMigrationText(row.problem, locale))}
-                    className={`border-t border-border/60 ${index % 2 === 0 ? "bg-white/80" : "bg-slate-50/70"}`}
+                    className={`border-t border-slate-200/80 ${index % 2 === 0 ? "bg-[#fffaf8]" : "bg-[#f8fbfb]"}`}
                   >
                     <td className="px-5 py-5 align-top">
-                      <div className="inline-flex items-start gap-3">
+                      <div className="inline-flex items-start gap-3 rounded-2xl bg-white/80 px-3 py-3 shadow-[0_14px_24px_-24px_rgba(15,23,42,0.85)]">
                         <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white">
                           {index + 1}
                         </span>
@@ -414,12 +414,12 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
                       </div>
                     </td>
                     <td className="px-5 py-5 align-top">
-                      <div className="rounded-2xl border border-rose-200/70 bg-rose-50/80 p-4 text-sm leading-relaxed text-rose-950 shadow-sm">
+                      <div className="rounded-2xl border border-rose-200 bg-[linear-gradient(180deg,#fff1f2_0%,#ffe4e6_100%)] p-4 text-sm leading-relaxed text-rose-950 shadow-[0_18px_30px_-26px_rgba(159,18,57,0.75)]">
                         {String(getLocalizedMigrationText(row.nightmare, locale))}
                       </div>
                     </td>
                     <td className="px-5 py-5 align-top">
-                      <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/80 p-4 text-sm font-medium leading-relaxed text-emerald-950 shadow-sm">
+                      <div className="rounded-2xl border border-emerald-200 bg-[linear-gradient(180deg,#ecfdf5_0%,#d1fae5_100%)] p-4 text-sm font-medium leading-relaxed text-emerald-950 shadow-[0_18px_30px_-26px_rgba(5,150,105,0.75)]">
                         {String(getLocalizedMigrationText(row.solution, locale))}
                       </div>
                     </td>
@@ -599,13 +599,13 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
         </section>
 
         <section className="container mx-auto py-12 md:py-16">
-          <div className="grid gap-6 rounded-[2rem] border border-accent/35 bg-gradient-to-br from-accent/10 via-white to-emerald-50 p-8 md:grid-cols-[1.2fr_0.8fr] md:items-start">
+          <div className="grid gap-6 rounded-[2rem] border border-accent/35 bg-[linear-gradient(135deg,#fef3c7_0%,#fff8eb_34%,#ecfdf5_100%)] p-8 md:grid-cols-[1.2fr_0.8fr] md:items-start shadow-[0_28px_60px_-38px_rgba(15,23,42,0.35)]">
             <div>
               <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-accent">{ui.guaranteeLabel}</p>
               <h2 className="mb-4 text-3xl md:text-4xl font-bold text-foreground">{riskTitle}</h2>
               <p className="text-lg text-foreground/90">{riskCopy}</p>
             </div>
-            <div className="rounded-[1.5rem] border border-emerald-300/50 bg-white/85 p-5 shadow-sm">
+            <div className="rounded-[1.5rem] border border-emerald-300/60 bg-white p-5 shadow-[0_18px_28px_-26px_rgba(6,95,70,0.9)]">
               <p className="text-lg font-bold text-emerald-950">{ui.guaranteeHeadline}</p>
               <ul className="mt-4 space-y-2.5 text-sm font-medium text-emerald-950">
                 {ui.guaranteePoints.map((point) => (
@@ -657,7 +657,7 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
         </section>
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/70 bg-card/95 backdrop-blur">
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200 bg-[#fffaf2] shadow-[0_-24px_48px_-28px_rgba(15,23,42,0.35)]">
         <form
           className="container mx-auto flex flex-col gap-3 py-3 md:flex-row md:items-center md:gap-4"
           onSubmit={(event) => {
@@ -671,7 +671,7 @@ export default function PlatformMigrationPage({ config }: { config: PlatformMigr
             value={urlToAnalyze}
             onChange={(event) => setUrlToAnalyze(event.target.value)}
             placeholder={ui.shopPlaceholder}
-            className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm md:max-w-md"
+            className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-950 shadow-sm md:max-w-md"
           />
           <Button type="submit" variant="hero">
             {ui.analyze}
