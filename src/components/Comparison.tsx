@@ -3,32 +3,32 @@ import { Check, X } from "lucide-react";
 const comparisonData = [
   {
     feature: "Opstartkosten",
-    traditional: "€1.500 - €3.000",
-    sitedesk: "€0",
+    traditional: "EUR 1.500 - EUR 3.000",
+    sitedesk: "EUR 0",
     sitedeskBetter: true,
   },
   {
     feature: "Maandelijkse kosten",
-    traditional: "€50 - €100",
-    sitedesk: "€30 (€1/dag)",
+    traditional: "EUR 50 - EUR 100",
+    sitedesk: "EUR 30 (EUR 1/dag)",
     sitedeskBetter: true,
   },
   {
     feature: "Onderhoud & Updates",
-    traditional: "€75 per uur",
+    traditional: "EUR 75 per uur",
     sitedesk: "Inclusief",
     sitedeskBetter: true,
   },
   {
     feature: "Cookiebanners",
     traditional: "Verplicht & irritant",
-    sitedesk: "Niet nodig",
+    sitedesk: "Geen irritante cookiebanners nodig",
     sitedeskBetter: true,
   },
   {
     feature: "Support",
     traditional: "\"Stuur een ticket\"",
-    sitedesk: "Persoonlijke 'Desk' service",
+    sitedesk: "1 vast aanspreekpunt dat snel schakelt",
     sitedeskBetter: true,
   },
   {
@@ -55,26 +55,23 @@ const Comparison = () => {
   return (
     <section id="vergelijking" className="py-20 md:py-32 gradient-subtle">
       <div className="container mx-auto">
-        {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
           <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider mb-4">
             Vergelijk
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            Waarom ondernemers voor de Desk kiezen
+            Waarom ondernemers minder gedoe en meer grip kiezen
           </h2>
           <p className="text-lg text-muted-foreground">
-            Zie het verschil met traditionele bouwers en trage WooCommerce-stacks.
+            Zie het verschil tussen een website die tijd en geld kost, en een website die gewoon geregeld is.
           </p>
         </div>
 
-        {/* Comparison table */}
         <div className="max-w-4xl mx-auto">
           <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-lg">
-            {/* Header row */}
             <div className="grid grid-cols-3 bg-secondary/50">
               <div className="p-4 md:p-6 font-semibold text-foreground">
-                Feature
+                Wat telt voor ondernemers
               </div>
               <div className="p-4 md:p-6 text-center font-semibold text-muted-foreground border-x border-border">
                 Traditionele Bouwer
@@ -84,7 +81,6 @@ const Comparison = () => {
               </div>
             </div>
 
-            {/* Data rows */}
             {comparisonData.map((row, index) => (
               <div
                 key={index}

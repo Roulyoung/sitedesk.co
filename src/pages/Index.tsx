@@ -10,6 +10,7 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import PagespeedProofSection from "@/components/PagespeedProofSection";
+import WebshopHighlight from "@/components/WebshopHighlight";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import { getAlternateHrefLangs, getLocaleFromPath, stripLocaleFromPath } from "@/lib/i18n";
@@ -46,6 +47,7 @@ const Index = () => {
         <PagespeedProofSection className="py-8 md:py-12" />
         <HowItWorks />
         <Features />
+        <WebshopHighlight />
         <PainPoints />
         <Comparison />
         <PagespeedProofSection className="py-4 md:py-8" />

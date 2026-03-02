@@ -11,23 +11,23 @@ const PainPoints = () => {
   const painPoints = [
     {
       problem: isEn ? "No time for updates?" : "Geen tijd voor updates?",
-      solution: isEn ? "We handle it for you" : "Wij doen het voor je",
+      solution: isEn ? "Your site stays current without stealing your time" : "Je site blijft actueel zonder jouw tijd te vragen",
     },
     {
       problem: isEn ? "SEO too complex?" : "SEO te ingewikkeld?",
-      solution: isEn ? "Automatically optimized" : "Automatisch geoptimaliseerd",
+      solution: isEn ? "A stronger foundation to get found by new customers" : "Een sterkere basis om beter gevonden te worden",
     },
     {
       problem: isEn ? "High web design costs?" : "Hoge kosten voor webdesigners?",
-      solution: isEn ? "EUR 1/day, all included" : "EUR 1/dag, alles inclusief",
+      solution: isEn ? "One fixed price instead of surprise invoices" : "Een vaste prijs in plaats van losse verrassingsfacturen",
     },
     {
       problem: isEn ? "Afraid of downtime?" : "Angst voor downtime?",
-      solution: isEn ? "99.9% uptime guaranteed" : "99.9% uptime gegarandeerd",
+      solution: isEn ? "Stay reachable when customers want to buy or contact you" : "Blijf bereikbaar wanneer klanten willen kopen of contact zoeken",
     },
     {
       problem: isEn ? "Technical issues?" : "Technische problemen?",
-      solution: isEn ? "24/7 monitoring" : "24/7 monitoring",
+      solution: isEn ? "Problems get spotted before they cost you customers" : "Problemen worden gezien voordat ze klanten kosten",
     },
   ];
 
@@ -39,11 +39,13 @@ const PainPoints = () => {
             <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider mb-4">
               {isEn ? "Sound familiar?" : "Herkenbaar?"}
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">{isEn ? "Stop this hassle" : "Stop met dit gedoe"}</h2>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+              {isEn ? "Stop running your website as a side job" : "Stop met je website runnen als bijbaan"}
+            </h2>
             <p className="text-lg text-primary-foreground/80 mb-8">
               {isEn
-                ? "You are a business owner, not a webmaster. Let us handle the website work so you can focus on growth."
-                : "Je bent ondernemer, geen webmaster. Laat het website-gedoe aan ons over en focus op wat je goed kunt."}
+                ? "You are a business owner, not a webmaster. Let us take the website work off your plate so you can focus on clients, delivery, and growth."
+                : "Je bent ondernemer, geen webmaster. Laat het websitewerk van je bord verdwijnen zodat jij kunt focussen op klanten, levering en groei."}
             </p>
 
             <Button asChild variant="hero" size="lg" className="group">

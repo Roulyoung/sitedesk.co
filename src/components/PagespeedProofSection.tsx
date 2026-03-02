@@ -28,12 +28,12 @@ const PagespeedProofSection = ({ className = "" }: Props) => {
             </div>
             <div className="space-y-3">
               <h3 className="text-2xl font-bold text-foreground md:text-3xl">
-                {isEn ? "Our own architecture is the case." : "Onze eigen architectuur is de case."}
+                {isEn ? "Speed you can verify, not just trust" : "Snelheid die je kunt bewijzen, niet alleen beloven"}
               </h3>
               <p className="max-w-3xl text-base leading-relaxed text-muted-foreground md:text-lg">
                 {isEn
-                  ? "We do not ask you to trust a vague promise. This website runs on the same edge stack we build for clients. Test the live Google PageSpeed score of both the shop and a real product page."
-                  : "We vragen je niet om een vage belofte te geloven. Deze website draait op exact dezelfde edge-stack die we voor klanten bouwen. Test zelf de live Google PageSpeed-score van zowel de shop als een echte productpagina."}
+                  ? "We use the same architecture for clients as we use here ourselves. The result: pages that open fast, keep visitors engaged, and waste fewer paid clicks. Test the live Google PageSpeed scores yourself."
+                  : "We gebruiken voor klanten dezelfde architectuur als op deze site. Het resultaat: pagina's die snel openen, bezoekers beter vasthouden en minder advertentiekliks verspillen. Test de live Google PageSpeed-scores zelf."}
               </p>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -56,13 +56,13 @@ const PagespeedProofSection = ({ className = "" }: Props) => {
                     {isEn ? "Shop page" : "Shop pagina"}
                   </p>
                   <h4 className="mt-2 text-lg font-bold text-foreground">
-                    {isEn ? "View the live 100/100 shop score" : "Bekijk de live 100/100 shopscore"}
+                    {isEn ? "See how fast a real shop can feel" : "Zie hoe snel een echte shop kan aanvoelen"}
                   </h4>
                 </div>
                 <span className="rounded-full bg-success/10 px-3 py-1 text-sm font-bold text-success">100/100</span>
               </div>
               <Button variant="outline" size="sm" className="mt-5 w-full justify-between border-success/30 text-success hover:bg-success hover:text-white">
-                {isEn ? "Test shop performance" : "Test shop performance"}
+                {isEn ? "Open live shop test" : "Open live shoptest"}
                 <ExternalLink className="h-4 w-4" />
               </Button>
             </a>
@@ -79,13 +79,13 @@ const PagespeedProofSection = ({ className = "" }: Props) => {
                     {isEn ? "Product page" : "Productpagina"}
                   </p>
                   <h4 className="mt-2 text-lg font-bold text-foreground">
-                    {isEn ? "See the live 99-100/100 product score" : "Bekijk de live 99-100/100 productscore"}
+                    {isEn ? "See product pages that load before visitors leave" : "Zie productpagina's die laden voordat bezoekers afhaken"}
                   </h4>
                 </div>
                 <span className="whitespace-nowrap rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">99-100</span>
               </div>
               <Button variant="outline" size="sm" className="mt-5 w-full justify-between border-primary/30 text-primary hover:bg-primary hover:text-white">
-                {isEn ? "Test product performance" : "Test product performance"}
+                {isEn ? "Open live product test" : "Open live producttest"}
                 <ExternalLink className="h-4 w-4" />
               </Button>
             </a>

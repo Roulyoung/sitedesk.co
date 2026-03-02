@@ -19,31 +19,32 @@ const Hero = () => {
           <div className="text-center lg:text-left">
             <div className="inline-flex items-center gap-2 bg-success/10 text-success px-4 py-2 rounded-full text-sm font-medium mb-6 animate-fade-up">
               <Check size={16} />
-              <span>{isEn ? "30-day money-back guarantee" : "30 dagen niet-goed-geld-terug garantie"}</span>
+              <span>{isEn ? "Start without risk for 30 days" : "Start 30 dagen zonder risico"}</span>
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6 animate-fade-up stagger-1">
-              {isEn ? "Your website, " : "Jouw website, "}
-              <span className="text-gradient">{isEn ? "perfectly managed." : "perfect beheerd."}</span>
+              {isEn ? "No more website stress." : "Geen website-zorgen meer."}
               <br />
-              <span className="text-primary">{isEn ? "EUR 1/day." : "EUR 1/dag."}</span>
+              <span className="text-gradient">{isEn ? "Just steady online growth." : "Wel elke maand online zichtbaar."}</span>
+              <br />
+              <span className="text-primary">{isEn ? "For EUR 1/day." : "Voor EUR 1/dag."}</span>
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-up stagger-2">
               {isEn
-                ? "Stop the stress, start growing online. We build, host, and maintain everything. You focus on your business."
-                : "Stop met stress, start met online succes. Wij bouwen, hosten en onderhouden alles. Jij focust op je business."}
+                ? "Stop losing time on updates, hosting, and website fixes. We keep everything running so you can focus on sales, clients, and growth."
+                : "Stop met tijd verliezen aan updates, hosting en websiteproblemen. Wij houden alles draaiend zodat jij kunt focussen op klanten, omzet en groei."}
             </p>
             <p className="text-sm md:text-base text-muted-foreground/90 mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-up stagger-2">
               {isEn
-                ? "Need an ecommerce store built? We develop custom stores and managed websites."
-                : "Webshop laten ontwikkelen? Wij bouwen maatwerk webshops en managed websites."}
+                ? "Need a website or store built from scratch? We create conversion-focused websites and custom ecommerce setups without the usual technical hassle."
+                : "Website of webshop laten bouwen? Wij maken conversiegerichte websites en maatwerk webshops, zonder het gebruikelijke technische gedoe."}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-up stagger-3">
               <Button asChild variant="hero" size="xl" className="group">
                 <a href={`${withLocalePath("/", locale)}${getLandingSectionHash(locale, "contact")}`}>
-                  {isEn ? "Start Today - EUR 1/day" : "Start Vandaag - EUR 1/dag"}
+                  {isEn ? "Start without website stress" : "Start zonder website-stress"}
                   <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </a>
               </Button>
@@ -61,8 +62,8 @@ const Hero = () => {
                 ))}
               </div>
               <div className="text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">{isEn ? "Many business owners" : "Vele ondernemers"}</span>{" "}
-                {isEn ? "already fully supported" : "al ontzorgd"}
+                <span className="font-semibold text-foreground">{isEn ? "Business owners" : "Ondernemers"}</span>{" "}
+                {isEn ? "already saving time and hassle" : "die al tijd en gedoe besparen"}
               </div>
             </div>
           </div>
@@ -108,8 +109,8 @@ const Hero = () => {
                   <Check className="text-success" size={20} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-foreground">{isEn ? "SSL Active" : "SSL Actief"}</p>
-                  <p className="text-xs text-muted-foreground">{isEn ? "100% Secure" : "100% Veilig"}</p>
+                  <p className="text-sm font-medium text-foreground">{isEn ? "Trust from the first click" : "Vertrouwen vanaf de eerste klik"}</p>
+                  <p className="text-xs text-muted-foreground">{isEn ? "Secure and professional" : "Veilig en professioneel"}</p>
                 </div>
               </div>
             </div>
@@ -123,8 +124,8 @@ const Hero = () => {
                   <span className="text-accent font-bold">EUR</span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-foreground">{isEn ? "Ultra fast" : "Razendsnel"}</p>
-                  <p className="text-xs text-muted-foreground">{isEn ? "0.8s load time" : "0.8s laadtijd"}</p>
+                  <p className="text-sm font-medium text-foreground">{isEn ? "Visitors stay engaged" : "Bezoekers haken minder snel af"}</p>
+                  <p className="text-xs text-muted-foreground">{isEn ? "Fast pages, less drop-off" : "Snelle pagina's, minder afhakers"}</p>
                 </div>
               </div>
             </div>

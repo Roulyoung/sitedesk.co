@@ -9,27 +9,29 @@ const CTA = () => {
   const isEn = locale === "en";
 
   const benefits = [
-    isEn ? "EUR 0 setup" : "EUR 0 opstartkosten",
-    isEn ? "30-day money-back guarantee" : "30 dagen geld-terug garantie",
-    isEn ? "Cancel monthly" : "Maandelijks opzegbaar",
+    isEn ? "No setup fee" : "Geen opstartkosten",
+    isEn ? "Start risk-free for 30 days" : "Start 30 dagen zonder risico",
+    isEn ? "Stay only if it works for you" : "Blijf alleen als het voor je werkt",
   ];
 
   return (
     <section id="start-webshop" className="py-20 md:py-32 gradient-hero text-primary-foreground">
       <div className="container mx-auto">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">{isEn ? "Ready to go live?" : "Klaar om online te gaan?"}</h2>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+            {isEn ? "Ready for a website that stops costing you time?" : "Klaar voor een website die je geen tijd meer kost?"}
+          </h2>
           <p className="text-lg md:text-xl text-primary-foreground/80 mb-8">
             {isEn
-              ? "Start today with your professional website. We handle the rest."
-              : "Start vandaag nog met jouw professionele website. Wij regelen de rest."}
+              ? "Start today and get a professional website that stays fast, updated, and taken care of without extra hassle on your side."
+              : "Start vandaag en krijg een professionele website die snel, up-to-date en geregeld blijft, zonder extra gedoe aan jouw kant."}
           </p>
 
           <div className="inline-flex items-center gap-4 bg-primary-foreground/10 backdrop-blur-sm rounded-2xl px-8 py-6 mb-8">
             <div className="text-5xl md:text-6xl font-bold">EUR 1</div>
             <div className="text-left">
               <div className="text-primary-foreground/80">{isEn ? "per day" : "per dag"}</div>
-              <div className="text-sm text-primary-foreground/60">{isEn ? "All included" : "Alles inclusief"}</div>
+              <div className="text-sm text-primary-foreground/60">{isEn ? "One fixed price, everything handled" : "Een vaste prijs, alles geregeld"}</div>
             </div>
           </div>
 
@@ -44,12 +46,12 @@ const CTA = () => {
 
           <Button asChild variant="hero" size="xl" className="group">
             <a href={`${withLocalePath("/", locale)}${getLandingSectionHash(locale, "contact")}`}>
-              {isEn ? "Start now - pay EUR 1/day" : "Start nu - betaal EUR 1/dag"}
+              {isEn ? "Start without website hassle" : "Start zonder website-gedoe"}
               <ArrowRight className="group-hover:translate-x-1 transition-transform" />
             </a>
           </Button>
 
-          <p className="mt-6 text-sm text-primary-foreground/60">{isEn ? "No credit card needed · Start right away" : "Geen creditcard nodig · Direct aan de slag"}</p>
+          <p className="mt-6 text-sm text-primary-foreground/60">{isEn ? "No credit card needed - Start right away" : "Geen creditcard nodig - Direct aan de slag"}</p>
         </div>
       </div>
     </section>
