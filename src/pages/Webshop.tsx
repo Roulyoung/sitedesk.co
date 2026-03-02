@@ -67,26 +67,26 @@ const extractNumericValue = (value: string | number | undefined | null) => {
 
 const benefitCards = [
   {
-    title: "Managed Service",
+    title: "No tech team to manage",
     copy: {
-      nl: "Wij zijn je tech-team. Geen gedoe met updates of instellingen.",
-      en: "We are your tech team. No hassle with updates or settings.",
+      nl: "Wij houden je shop draaiend en bouwen door, zonder tickets, losse developers of technisch gedoe.",
+      en: "We keep your store running and improving, without tickets, extra developers or technical hassle.",
     },
     icon: ShieldCheck,
   },
   {
-    title: "Google Sheets CMS",
+    title: "Your team updates faster",
     copy: {
-      nl: "Update prijzen en voorraad in een spreadsheet die je al kent.",
-      en: "Update prices and stock in a spreadsheet you already know.",
+      nl: "Pas prijzen, voorraad en content aan in een omgeving die je team al kent, zonder developer-wachtrij.",
+      en: "Update prices, stock and content in a tool your team already knows, without waiting on a developer.",
     },
     icon: Sparkles,
   },
   {
-    title: "Stripe Lean Checkout",
+    title: "Less checkout friction",
     copy: {
-      nl: "Razendsnelle betaalervaring die de conversie op mobiel verdubbelt.",
-      en: "Ultra-fast checkout experience that doubles mobile conversion.",
+      nl: "Een lichte checkout die sneller voelt op mobiel en minder klanten laat afhaken voor de betaling.",
+      en: "A lean checkout that feels faster on mobile and lets fewer customers drop off before payment.",
     },
     icon: Zap,
   },
@@ -152,13 +152,17 @@ const Webshop = () => {
     }),
     [locale],
   );
-  const pageTitle = isEn
-    ? "Ultra-Fast Edge Webshop | EUR 1,000 setup + EUR 150 p/m | Sitedesk"
+  let pageTitle = isEn
+    ? "Webshop that sells faster | Sitedesk"
     : "Supersnelle Webshop op Edge | €1.000 setup + €150 p/m | Sitedesk";
-  const pageDescription =
+  let pageDescription =
     isEn
-      ? "Sitedesk builds, hosts and maintains ultra-fast edge webshops. Includes Google Sheets CMS, Stripe checkout and support. Early Adopter: EUR 1,000 setup + EUR 150 p/m lifetime."
-      : "Sitedesk bouwt, host en onderhoudt supersnelle webshops op Edge. Inclusief Google Sheets CMS, Stripe checkout en support. Early Adopter: €1.000 setup + €150 p/m lifetime.";
+      ? "Sitedesk builds and manages custom webshops that load faster, convert better and cost less time to run."
+      : "Sitedesk bouwt en beheert maatwerk webshops die sneller laden, beter converteren en minder tijd kosten om te runnen.";
+  pageTitle = isEn ? "Webshop that sells faster | Sitedesk" : "Webshop die sneller verkoopt | Sitedesk";
+  pageDescription = isEn
+    ? "Sitedesk builds and manages custom webshops that load faster, convert better and cost less time to run."
+    : "Sitedesk bouwt en beheert maatwerk webshops die sneller laden, beter converteren en minder tijd kosten om te runnen.";
   const canonicalUrl = `https://sitedesk.co${location.pathname}`;
   const imageUrl = "https://sitedesk.co/icon-sitedesk.png";
   const [monthlyRevenue, setMonthlyRevenue] = useState(10000);
@@ -438,15 +442,15 @@ const Webshop = () => {
               <div className="space-y-6">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-success/10 text-success text-sm font-semibold">
                   <Zap size={16} />
-                  <span>Headless Edge E-commerce</span>
+                  <span>{isEn ? "Built to stop conversion loss" : "Gebouwd om conversieverlies te stoppen"}</span>
                 </div>
                 <h1 className="text-4xl md:text-5xl font-bold leading-tight text-foreground">
-                  {isEn ? "The fastest e-commerce engine for ambitious brands." : "De snelste e-commerce engine voor ambitieuze merken."}
+                  {isEn ? "Stop losing revenue to a slow webshop." : "Stop met omzet verliezen aan een trage webshop."}
                 </h1>
                 <p className="text-lg text-muted-foreground max-w-2xl">
                   {isEn
-                    ? "Stop losing revenue to slow systems. We are your fully managed tech department and build high-performance edge webshops that are as easy to manage as a spreadsheet."
-                    : "Stop met het verliezen van omzet door trage systemen. Wij zijn je volledig beheerde tech-afdeling en bouwen high-performance webshops op Edge-technologie die net zo makkelijk te beheren zijn als een spreadsheet."}
+                    ? "We build and manage custom webshops that load faster, convert better and are easier to run without developer bottlenecks."
+                    : "Wij bouwen en beheren maatwerk webshops die sneller laden, beter converteren en makkelijker te runnen zijn zonder developer-knelpunten."}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button asChild variant="hero" size="lg" className="group">
@@ -469,16 +473,16 @@ const Webshop = () => {
                 </div>
                 <div className="grid sm:grid-cols-3 gap-3 text-sm text-muted-foreground">
                   <div className="p-3 rounded-xl bg-card border border-border shadow-sm">
-                    <div className="text-foreground font-semibold">{isEn ? "Fully managed" : "Volledig ontzorgd"}</div>
-                    <p>{isEn ? "We are your fixed tech team, daily updates included." : "Wij zijn je vaste tech-team, dagelijkse wijzigingen inbegrepen."}</p>
+                    <div className="text-foreground font-semibold">{isEn ? "More control, less hassle" : "Meer grip, minder gedoe"}</div>
+                    <p>{isEn ? "One fixed team that keeps your shop running and improving." : "Een vast team dat je shop draaiend houdt en blijft verbeteren."}</p>
                   </div>
                   <div className="p-3 rounded-xl bg-card border border-border shadow-sm">
-                    <div className="text-foreground font-semibold">{isEn ? "No developer needed" : "Geen developer nodig"}</div>
-                    <p>{isEn ? "Send requests via WhatsApp or phone, we handle it." : "Stuur wensen via WhatsApp of telefoon, wij regelen het."}</p>
+                    <div className="text-foreground font-semibold">{isEn ? "No dev bottlenecks" : "Geen dev bottlenecks"}</div>
+                    <p>{isEn ? "Your team can update products fast and send bigger changes straight to us." : "Je team past producten snel aan en legt grotere wijzigingen direct bij ons neer."}</p>
                   </div>
                   <div className="p-3 rounded-xl bg-card border border-border shadow-sm">
-                    <div className="text-foreground font-semibold">{isEn ? "Fast results" : "Snel resultaat"}</div>
-                    <p>{isEn ? "Changes and CRO tests without queue time." : "Aanpassingen en CRO-tests zonder wachtrij."}</p>
+                    <div className="text-foreground font-semibold">{isEn ? "Faster growth loops" : "Snellere groeicyclus"}</div>
+                    <p>{isEn ? "Launch changes and CRO tests without long queue times." : "Voer wijzigingen en CRO-tests door zonder lange wachttijd."}</p>
                   </div>
                 </div>
               </div>
@@ -494,7 +498,7 @@ const Webshop = () => {
                       <div className="h-full w-[90%] bg-destructive/80 animate-[pulse_2s_ease-in-out_infinite]" />
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">
-                      {isEn ? "Apps, themes and servers slow you down." : "Apps, thema's en servers houden je tegen."}
+                      {isEn ? "More waiting means more drop-off before visitors even see your offer." : "Meer wachttijd betekent meer afhakers voordat bezoekers je aanbod zien."}
                     </p>
                   </div>
                   <div className="border-t border-border pt-4">
@@ -507,8 +511,8 @@ const Webshop = () => {
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">
                       {isEn
-                        ? "Headless storefront, real-time Sheets CMS and ultra-lean checkout."
-                        : "Headless storefront, realtime Sheets CMS en ultra-lean checkout."}
+                        ? "Pages open fast, your team works faster and checkout creates less friction."
+                        : "Pagina's openen sneller, je team werkt sneller en de checkout geeft minder frictie."}
                     </p>
                   </div>
                   <div className="flex items-center gap-3 bg-secondary/60 border border-border rounded-xl p-3">
@@ -516,7 +520,7 @@ const Webshop = () => {
                     <div>
                       <p className="text-sm font-semibold text-foreground">100/100 PageSpeed</p>
                       <p className="text-xs text-muted-foreground">
-                        {isEn ? "Mobile and desktop, right after launch." : "Mobiel en desktop, direct na livegang."}
+                        {isEn ? "A speed score that helps more visitors stay and buy." : "Een snelheidsscore die helpt om meer bezoekers vast te houden en te laten kopen."}
                       </p>
                     </div>
                   </div>
@@ -533,25 +537,25 @@ const Webshop = () => {
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div className="space-y-4">
               <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider">
-                {isEn ? "The technology" : "De techniek"}
+                {isEn ? "Why it converts faster" : "Waarom dit sneller converteert"}
               </span>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-                {isEn ? "Headless Edge on Cloudflare: 0ms load time, hacker-proof." : "Headless Edge op Cloudflare: 0ms laadtijd, hacker-proof."}
+                {isEn ? "Faster shops, fewer drop-offs, less technical risk." : "Snellere shops, minder afhakers, minder technisch risico."}
               </h2>
               <p className="text-muted-foreground text-lg">
                 {isEn
-                  ? "Content and data are served directly from the edge, no slow central database or overloaded app layer. Geocache and serverless functions deliver your shop in milliseconds, with automatic DDoS protection and zero trust security."
+                  ? "Your shop is built to feel direct from the first click, without the usual plugin weight, slow app layers or fragile maintenance."
                   : "Content en data worden direct vanaf de Edge geserveerd—geen trage centrale database of overvolle app layer. Geocache + serverless functions leveren je shop in milliseconden, met automatische DDoS-bescherming en zero trust security."}
               </p>
               <ul className="space-y-2 text-muted-foreground">
                 <li className="flex gap-2">
-                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "No origin wait time: assets are already close to the visitor." : "Geen origin-wachttijd: assets staan al bij de bezoeker in de buurt."}
+                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "Visitors see your shop faster, so fewer drop off before browsing." : "Bezoekers zien je shop sneller, waardoor minder mensen afhaken voordat ze browsen."}
                 </li>
                 <li className="flex gap-2">
-                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "Edge security: no exposed database ports or vulnerable plugins." : "Edge security: geen openstaande database-poorten of kwetsbare plugins."}
+                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "Less plugin and hosting risk means fewer technical fires and fewer lost sales." : "Minder plugin- en hostingrisico betekent minder technische brandjes en minder gemiste omzet."}
                 </li>
                 <li className="flex gap-2">
-                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "Realtime invalidation: prices and stock refreshed within seconds." : "Realtime invalidation: prijzen en voorraad binnen seconden vernieuwd."}
+                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "Price and stock updates go live fast, without waiting on deploys." : "Prijs- en voorraadwijzigingen staan snel live, zonder te wachten op deploys."}
                 </li>
               </ul>
             </div>
@@ -589,19 +593,19 @@ const Webshop = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-4">
               <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider">
-                Live experience
+                {isEn ? "Feel the difference" : "Voel het verschil"}
               </span>
-              <h3 className="text-3xl md:text-4xl font-bold text-foreground">{isEn ? "Enough about tech. Experience it yourself." : "Genoeg over techniek. Ervaar het zelf."}</h3>
+              <h3 className="text-3xl md:text-4xl font-bold text-foreground">{isEn ? "Feel what less friction looks like." : "Voel hoe minder frictie eruitziet."}</h3>
               <p className="text-muted-foreground text-lg">
                 {isEn
-                  ? "We can tell you everything about our architecture, but speed must be felt. Our demo shop runs on the exact same engine we use for your store. No caching tricks, no compromises."
-                  : "We kunnen je alles vertellen over onze architectuur, maar snelheid moet je voelen. Onze demo-shop draait op exact dezelfde engine die we voor jou inzetten. Geen caching-trucs, geen concessies. Alleen de snelste e-commerce ervaring van 2026."}
+                  ? "A webshop should feel instant. The demo runs on the same setup we use for clients, so you can judge the speed and smoothness for yourself."
+                  : "Een webshop moet direct aanvoelen. De demo draait op dezelfde setup die we voor klanten gebruiken, zodat je zelf de snelheid en soepelheid kunt ervaren."}
               </p>
               <div className="grid sm:grid-cols-3 gap-4">
                 {[
-                  { value: "100/100", label: "Google PageSpeed" },
-                    { value: "Instant", label: isEn ? "Page transitions" : "Pagina overgangen" },
-                  { value: "0ms", label: "Database latency" },
+                  { value: "100/100", label: isEn ? "Helps reduce drop-off" : "Helpt afhakers verlagen" },
+                  { value: "Instant", label: isEn ? "Feels immediate" : "Voelt direct" },
+                  { value: "0ms", label: isEn ? "No database wait" : "Geen database-wachttijd" },
                 ].map((metric) => (
                   <div key={metric.label} className="p-4 rounded-xl bg-card border border-border shadow-md">
                     <div className="text-2xl font-bold text-foreground">{metric.value}</div>
@@ -677,7 +681,7 @@ const Webshop = () => {
               {isEn ? "Conversion loss calculator" : "Conversie verlies calculator"}
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              {isEn ? "How much revenue are you losing to faster competitors?" : "Hoeveel omzet verlies jij aan de concurrent door een trage webshop?"}
+              {isEn ? "How much revenue is your webshop leaking every month?" : "Hoeveel omzet lekt je webshop elke maand weg?"}
             </h2>
             <p className="text-lg text-muted-foreground">
               {isEn
@@ -892,13 +896,13 @@ const Webshop = () => {
         <section id={sectionIds.comparison} className="container mx-auto scroll-mt-28">
           <div className="text-center max-w-4xl mx-auto mb-10">
             <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider mb-3">
-              {isEn ? "Platform comparison" : "Concurrentievergelijking"}
+              {isEn ? "Platform comparison" : "Platformvergelijking"}
             </span>
             <h3 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              {isEn ? "Sitedesk vs Shopify, WooCommerce, Magento and PrestaShop" : "Sitedesk vs Shopify, WooCommerce, Magento en PrestaShop"}
+              {isEn ? "Why growth-focused shops outgrow standard platforms" : "Waarom groeigerichte shops standaard platforms ontgroeien"}
             </h3>
             <p className="text-lg text-muted-foreground">
-              {isEn ? "A quick overview of performance, management and operational complexity." : "Een snel overzicht van performance, beheer en operationele complexiteit."}
+              {isEn ? "A quick look at speed, day-to-day management and how much technical drag each platform adds." : "Een snel overzicht van snelheid, dagelijks beheer en hoeveel technische ballast elk platform toevoegt."}
             </p>
           </div>
 
@@ -947,12 +951,12 @@ const Webshop = () => {
           <div className="grid md:grid-cols-4 gap-10 items-start">
             <div className="md:col-span-1 space-y-4">
               <h3 className="text-2xl md:text-3xl font-bold text-foreground">
-                {isEn ? "More speed. Less hassle." : "Meer snelheid. Minder gedoe."}
+                {isEn ? "More conversion. Less technical drag." : "Meer conversie. Minder technische ballast."}
               </h3>
               <p className="text-muted-foreground">
                 {isEn
-                  ? "Edge rendering, Sheets CMS and a checkout without bloat. Every feature is focused on conversion and less overhead."
-                  : "Edge rendering, Sheets CMS en een checkout zonder ballast. Elke feature is gericht op conversie en minder overhead."}
+                  ? "Every part of the stack is built to help you sell faster, manage easier and waste less time on platform overhead."
+                  : "Elk onderdeel van de stack is gebouwd om sneller te verkopen, makkelijker te beheren en minder tijd te verspillen aan platform-overhead."}
               </p>
             </div>
             <div className="md:col-span-3 grid md:grid-cols-3 gap-6">
@@ -979,23 +983,29 @@ const Webshop = () => {
               <div className="space-y-5">
                 <div className="inline-flex items-center gap-2 bg-primary-foreground/10 text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold">
                   <Sparkles size={16} />
-                  {isEn ? "Exclusive Early Adopter Deal" : "Exclusieve Early Adopter Deal"}
+                  {isEn ? "Early adopter offer" : "Early adopter aanbod"}
                 </div>
                 <div className="bg-card text-foreground rounded-2xl p-6 shadow-lg border border-border">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm font-semibold text-accent">{isEn ? "Pilot offer" : "Pilot Aanbod"}</span>
+                    <span className="text-sm font-semibold text-accent">{isEn ? "Offer" : "Aanbod"}</span>
                     <span className="text-xs bg-accent/20 text-foreground px-3 py-1 rounded-full">{isEn ? "7 spots left" : "Nog 7 plekken"}</span>
                   </div>
-                  <div className="space-y-2">
+                  <div className="hidden space-y-2">
                     <p className="text-muted-foreground line-through">€2.500 setup</p>
                     <p className="text-3xl font-bold text-foreground">{isEn ? "€1,000 one-time" : "€1.000 eenmalig"}</p>
                     <p className="text-muted-foreground line-through">€245 p/m</p>
                     <p className="text-2xl font-semibold text-foreground">€150 p/m (lifetime)</p>
                   </div>
+                  <div className="space-y-2">
+                    <p className="text-muted-foreground line-through">EUR 2.500 setup</p>
+                    <p className="text-3xl font-bold text-foreground">{isEn ? "EUR 1,000 one-time" : "EUR 1.000 eenmalig"}</p>
+                    <p className="text-muted-foreground line-through">EUR 245 p/m</p>
+                    <p className="text-2xl font-semibold text-foreground">EUR 150 p/m (lifetime)</p>
+                  </div>
                   <p className="text-sm text-muted-foreground mt-4">
                     {isEn
-                      ? "Includes hosting, unlimited support and continuous development of your shop: features, CRO tests and integrations."
-                      : "Inclusief hosting, onbeperkt support en doorontwikkeling van je shop: features, CRO-tests en koppelingen. Niet alleen hosting."}
+                      ? "Includes hosting, support and continuous improvements, so your shop keeps moving without extra retainers."
+                      : "Inclusief hosting, support en doorontwikkeling, zodat je shop door blijft groeien zonder extra retainers."}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3 mt-6">
                     <Button asChild variant="hero" size="lg" className="bg-primary text-primary-foreground">
@@ -1013,30 +1023,41 @@ const Webshop = () => {
                     </Button>
                   </div>
                 </div>
-                <p className="text-primary-foreground/80 text-sm leading-relaxed">
+                <p className="hidden text-primary-foreground/80 text-sm leading-relaxed">
                   {isEn
                     ? "We are looking for 10 ambitious webshops that want to prove speed is the #1 growth factor. Now €1,000 setup and €150 p/m (lifetime) instead of €2,500 + €245 p/m."
                     : "We zoeken 10 ambitieuze webshops die willen bewijzen dat snelheid de nummer 1 groeifactor is. Nu eenmalig €1.000 setup en €150 p/m (lifetime) in plaats van €2.500 + €245 p/m."}
+                </p>
+                <p className="text-primary-foreground/80 text-sm leading-relaxed">
+                  {isEn
+                    ? "For the first 10 brands, we keep the entry low so you can switch to a faster webshop without a heavy upfront cost."
+                    : "Voor de eerste 10 merken houden we de instap laag, zodat je kunt overstappen naar een snellere webshop zonder zware opstartkosten."}
                 </p>
               </div>
               <div className="bg-primary-foreground/10 border border-primary-foreground/20 rounded-2xl p-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm uppercase tracking-wide text-primary-foreground/80">
-                    {isEn ? "What you get" : "Wat je krijgt"}
+                    {isEn ? "What this gives you" : "Wat dit je oplevert"}
                   </span>
                   <ShieldCheck size={18} />
                 </div>
-                <ul className="space-y-3 text-primary-foreground/80">
+                <ul className="hidden space-y-3 text-primary-foreground/80">
                   <li>✓ Edge hosting + 100/100 PageSpeed</li>
-                  <li>✓ Google Sheets CMS & realtime updates</li>
+                  <li>{isEn ? "Product and stock updates without developer delay" : "Product- en voorraadupdates zonder developer-vertraging"}</li>
                   <li>✓ Stripe Lean checkout, mobile-first</li>
                   <li>{isEn ? "✓ Unlimited support and custom plugins" : "✓ Onbeperkt support en maatwerk plugins"}</li>
                 </ul>
+                <ul className="space-y-3 text-primary-foreground/80">
+                  <li>{isEn ? "Fast storefront that keeps more visitors on-site" : "Snelle storefront die meer bezoekers vasthoudt"}</li>
+                  <li>{isEn ? "Product and stock updates without developer delay" : "Product- en voorraadupdates zonder developer-vertraging"}</li>
+                  <li>{isEn ? "Checkout with less mobile friction" : "Checkout met minder mobiele frictie"}</li>
+                  <li>{isEn ? "Ongoing support and custom improvements included" : "Doorlopende support en maatwerk verbeteringen inbegrepen"}</li>
+                </ul>
                 <div className="grid sm:grid-cols-3 gap-3">
                   {[
-                    { label: "Go live", value: isEn ? "10 business days" : "10 werkdagen" },
-                    { label: "PageSpeed", value: "100/100" },
-                    { label: "Checkout", value: "Stripe Lean" },
+                    { label: isEn ? "Go live" : "Livegang", value: isEn ? "10 business days" : "10 werkdagen" },
+                    { label: isEn ? "Speed" : "Snelheid", value: "100/100" },
+                    { label: isEn ? "Focus" : "Focus", value: isEn ? "Conversion" : "Conversie" },
                   ].map((item) => (
                     <div key={item.label} className="p-3 rounded-xl bg-primary-foreground/10">
                       <div className="text-xs uppercase tracking-wide text-primary-foreground/70">{item.label}</div>
@@ -1054,23 +1075,23 @@ const Webshop = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-4">
               <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider">
-                {isEn ? "Google Sheets management" : "Google Sheets beheer"}
+                {isEn ? "Fast product management" : "Snel productbeheer"}
               </span>
-              <h3 className="text-3xl md:text-4xl font-bold text-foreground">{isEn ? "CMS in Sheets, live in 1 second." : "CMS in Sheets, live in 1 seconde."}</h3>
+              <h3 className="text-3xl md:text-4xl font-bold text-foreground">{isEn ? "Update your shop without a slow admin or developer queue." : "Werk je shop bij zonder traag dashboard of developer-wachtrij."}</h3>
               <p className="text-muted-foreground text-lg">
                 {isEn
-                  ? "Update prices, stock and product copy in a spreadsheet you already know. Changes go live within one second, no slow admin dashboards or plugin chaos."
+                  ? "Update prices, stock and product copy in a spreadsheet your team already knows. Changes go live fast, without slow dashboards or plugin clutter."
                   : "Pas prijzen, voorraad en productteksten aan in een spreadsheet die je al kent. Veranderingen worden binnen één seconde live doorgezet—geen trage admin dashboards of plugin-chaos."}
               </p>
               <ul className="space-y-2 text-muted-foreground">
                 <li className="flex gap-2">
-                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "No login stress: just work in Sheets." : "Geen inlogstress: gewoon in Sheets werken."}
+                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "Your team works in a familiar tool instead of a clunky admin." : "Je team werkt in een vertrouwde tool in plaats van een log admin."}
                 </li>
                 <li className="flex gap-2">
-                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "Realtime sync to edge cache, without deploys." : "Realtime sync naar Edge-cache, zonder deploys."}
+                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "Updates go live fast, without waiting on deployments." : "Updates staan snel live, zonder te wachten op deployments."}
                 </li>
                 <li className="flex gap-2">
-                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "Your team can manage pricing and stock without a developer." : "Team kan prijzen en voorraad beheren zonder developer."}
+                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "Pricing and stock changes no longer depend on a developer." : "Prijs- en voorraadwijzigingen hangen niet meer af van een developer."}
                 </li>
               </ul>
             </div>
@@ -1123,21 +1144,21 @@ const Webshop = () => {
         <section className="container mx-auto pb-20 md:pb-28">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-4">
-              <h3 className="text-3xl font-bold text-foreground">{isEn ? 'The "We Got You" promise' : 'De "We Got You" belofte'}</h3>
+              <h3 className="text-3xl font-bold text-foreground">{isEn ? "Your webshop without the usual technical drag" : "Je webshop zonder de gebruikelijke technische ballast"}</h3>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 {isEn
-                  ? "Stop searching for freelancers or buying expensive plugins. We are your tech team. Send changes via WhatsApp or phone and we execute them."
-                  : "Stop met het zoeken naar freelancers of het kopen van dure plugins. Wij zijn je tech-team. Stuur wijzigingen via WhatsApp of telefoon en wij voeren ze uit. Geen extra developers nodig en geen losse facturen."}
+                  ? "Stop juggling freelancers, plugins and technical issues. We act as your fixed ecommerce team and keep improving the shop with you."
+                  : "Stop met schakelen tussen freelancers, plugins en technische issues. Wij zijn je vaste ecommerce-team en verbeteren de shop met je mee."}
               </p>
               <ul className="space-y-2 text-muted-foreground">
                 <li className="flex gap-2">
-                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "WhatsApp or call: we plan and execute directly." : "WhatsApp of bel: wij plannen en passen direct aan."}
+                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "Send changes directly and we turn them into action." : "Stuur wijzigingen direct door en wij zetten ze om in actie."}
                 </li>
                 <li className="flex gap-2">
-                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "New features, CRO tests and integrations are included in your monthly fee." : "Nieuwe features, CRO-tests en koppelingen vallen binnen je maandbedrag."}
+                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "New features, CRO tests and integrations stay inside one monthly fee." : "Nieuwe features, CRO-tests en koppelingen blijven binnen een vast maandbedrag."}
                 </li>
                 <li className="flex gap-2">
-                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "No hiring developers or managing tickets: we do the work." : "Geen developers aannemen of tickets beheren: wij doen het werk."}
+                  <CheckCircle2 className="text-success" size={18} /> {isEn ? "No developer hiring, ticket management or platform firefighting." : "Geen developers aannemen, tickets beheren of platform-brandjes blussen."}
                 </li>
               </ul>
               <div className="p-4 rounded-2xl bg-card border border-border shadow-md">
@@ -1201,15 +1222,15 @@ const Webshop = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-start bg-card border border-border rounded-3xl p-8 md:p-12 shadow-lg">
             <div className="space-y-4">
               <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider">
-                {isEn ? "Direct contact and demo" : "Direct contact & demo"}
+                {isEn ? "Free speed review" : "Gratis speed review"}
               </span>
               <h3 className="text-3xl md:text-4xl font-bold text-foreground">
-                {isEn ? "Questions about switching? We review your current speed for free." : "Vragen over de overstap? Wij kijken gratis mee naar je huidige laadtijd."}
+                {isEn ? "Want to know where your webshop is losing money?" : "Wil je weten waar je webshop geld laat liggen?"}
               </h3>
               <p className="text-muted-foreground text-lg">
                 {isEn
-                  ? "We Got You: we build what you need, without extra costs. Book a demo or send a direct message."
-                  : "We Got You: wij bouwen wat je nodig hebt, zonder extra kosten. Plan een demo of stuur direct een bericht."}
+                  ? "We review your current speed, show where friction hurts conversion and explain what a faster setup would change."
+                  : "We bekijken je huidige snelheid, laten zien waar frictie conversie kost en leggen uit wat een snellere setup verandert."}
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button

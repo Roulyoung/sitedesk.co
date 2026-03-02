@@ -12,15 +12,15 @@ const WebshopIntentSections = () => {
       <div className="container mx-auto space-y-8">
         <section id="webshop-laten-ontwikkelen" className="rounded-2xl border border-border bg-background p-8 md:p-10">
           <p className="text-sm font-semibold uppercase tracking-wide text-accent mb-3">
-            {isEn ? "Custom build" : "Maatwerk build"}
+            {isEn ? "Built for growth" : "Gebouwd voor groei"}
           </p>
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-            {isEn ? "Need an ecommerce store built by specialists?" : "Webshop laten ontwikkelen door specialisten?"}
+            {isEn ? "Need a webshop that sells faster than your current stack?" : "Een webshop nodig die sneller verkoopt dan je huidige stack?"}
           </h2>
           <p className="text-muted-foreground mb-6">
             {isEn
-              ? "We build and manage custom ecommerce setups focused on speed, conversion, and maintainability."
-              : "Wij ontwikkelen en beheren maatwerk webshops gericht op snelheid, conversie en beheersbaarheid."}
+              ? "We build and manage custom ecommerce stores focused on faster load times, better conversion and less technical overhead."
+              : "Wij bouwen en beheren maatwerk webshops gericht op snellere laadtijden, betere conversie en minder technische overhead."}
           </p>
           <a
             href={`${withLocalePath("/", locale)}${getLandingSectionHash(locale, "contact")}`}
@@ -33,17 +33,17 @@ const WebshopIntentSections = () => {
 
         <section id="webshop-bouwer-gezocht" className="rounded-2xl border border-border bg-background p-8 md:p-10">
           <p className="text-sm font-semibold uppercase tracking-wide text-accent mb-3">
-            {isEn ? "Execution partner" : "Uitvoerpartner"}
+            {isEn ? "Fixed partner" : "Vaste partner"}
           </p>
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-            {isEn ? "Looking for an ecommerce builder?" : "Webshop bouwer gezocht?"}
+            {isEn ? "Looking for a webshop builder that keeps improving after launch?" : "Een webshop bouwer gezocht die ook na livegang blijft doorbouwen?"}
           </h2>
           <div className="grid md:grid-cols-2 gap-4">
             {[
-              isEn ? "Clear scope and timeline before build starts" : "Duidelijke scope en planning voor start",
-              isEn ? "Custom frontend and checkout flows" : "Maatwerk frontend en checkout flows",
-              isEn ? "Technical ownership and monthly support" : "Technisch eigenaarschap en maandelijkse support",
-              isEn ? "Performance-first implementation from day one" : "Performance-first implementatie vanaf dag één",
+              isEn ? "Clear scope and timeline before we start" : "Duidelijke scope en planning voordat we starten",
+              isEn ? "Custom storefront and checkout flows built for conversion" : "Maatwerk storefront en checkout flows gebouwd voor conversie",
+              isEn ? "One team responsible for build, support and improvements" : "Een team verantwoordelijk voor bouw, support en verbeteringen",
+              isEn ? "Performance-first from day one" : "Performance-first vanaf dag een",
             ].map((item) => (
               <div key={item} className="flex items-start gap-3 rounded-xl border border-border p-4">
                 <Check className="mt-0.5 text-success" size={18} />
@@ -58,21 +58,21 @@ const WebshopIntentSections = () => {
             {isEn ? "Migration" : "Migratie"}
           </p>
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-            {isEn ? "WooCommerce too slow?" : "WooCommerce te traag?"}
+            {isEn ? "WooCommerce too slow?" : "Is WooCommerce te traag?"}
           </h2>
           <p className="text-muted-foreground mb-6">
             {isEn
-              ? "Move to an Edge-first setup with lower latency, fewer plugin bottlenecks, and cleaner maintenance."
-              : "Stap over naar een Edge-first setup met lagere latency, minder plugin-knelpunten en eenvoudiger onderhoud."}
+              ? "Move to a faster setup with fewer plugin bottlenecks, less maintenance drag and more room to scale."
+              : "Stap over naar een snellere setup met minder plugin-knelpunten, minder onderhoudsdruk en meer ruimte om te schalen."}
           </p>
           <div id="maatwerk-edge-webshop" className="rounded-xl bg-secondary/60 border border-border p-5">
             <h3 className="text-lg font-semibold text-foreground mb-2">
-              {isEn ? "Custom Edge ecommerce without Shopify commission" : "Maatwerk Edge webshop zonder Shopify commissie"}
+              {isEn ? "Custom webshop without platform drag" : "Maatwerk webshop zonder platform-ballast"}
             </h3>
             <p className="text-sm text-muted-foreground">
               {isEn
-                ? "Use this as sitelink anchor for professional and migration-focused campaigns."
-                : "Gebruik deze anchor als sitelink voor professionele en migratiegerichte campagnes."}
+                ? "Ideal for brands that want more speed and control without stacking more apps and monthly tooling."
+                : "Voor merken die meer snelheid en controle willen zonder steeds meer apps en maandelijkse tooling te stapelen."}
             </p>
           </div>
         </section>
