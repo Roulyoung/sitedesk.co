@@ -10,12 +10,24 @@ const PRODUCT_PAGESPEED_URL =
 
 type Props = {
   className?: string;
+  badgeLabel?: {
+    nl: string;
+    en: string;
+  };
+  title?: {
+    nl: string;
+    en: string;
+  };
 };
 
-const PagespeedProofSection = ({ className = "" }: Props) => {
+const PagespeedProofSection = ({ className = "", badgeLabel, title }: Props) => {
   const location = useLocation();
   const locale = getLocaleFromPath(location.pathname);
   const isEn = locale === "en";
+  const badgeText = isEn ? badgeLabel?.en || "Live proof" : badgeLabel?.nl || "Live bewijslast";
+  const titleText = isEn
+    ? title?.en || "Speed you can verify, not just trust"
+    : title?.nl || "Snelheid die je kunt bewijzen, niet alleen beloven";
 
   return (
     <section className={`container mx-auto ${className}`.trim()}>
@@ -24,11 +36,11 @@ const PagespeedProofSection = ({ className = "" }: Props) => {
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 rounded-full border border-accent/25 bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-accent">
               <Gauge className="h-4 w-4" />
-              {isEn ? "Live proof" : "Live bewijslast"}
+              {badgeText}
             </div>
             <div className="space-y-3">
               <h3 className="text-2xl font-bold text-foreground md:text-3xl">
-                {isEn ? "Speed you can verify, not just trust" : "Snelheid die je kunt bewijzen, niet alleen beloven"}
+                {titleText}
               </h3>
               <p className="max-w-3xl text-base leading-relaxed text-muted-foreground md:text-lg">
                 {isEn

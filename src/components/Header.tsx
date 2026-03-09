@@ -48,6 +48,7 @@ const Header = () => {
   const homeTo = withLocalePath("/", locale);
   const comparisonTo = `${homeTo}${getLandingSectionHash(locale, "comparison")}`;
   const sheetsTo = `${homeTo}${getLandingSectionHash(locale, "sheets")}`;
+  const scalableTo = `${homeTo}${getLandingSectionHash(locale, "scalable")}`;
   const calculatorTo = `${homeTo}${getLandingSectionHash(locale, "calculator")}`;
   const migrationRoutes = migrationPlatforms.map((platform) => ({
     key: platform.key,
@@ -56,7 +57,7 @@ const Header = () => {
   }));
   const demoTo = withLocalePath("/demo", locale);
   const blogTo = withLocalePath("/blog", locale);
-  const techActive = isActive(comparisonTo, "hash") || isActive(sheetsTo, "hash");
+  const techActive = isActive(comparisonTo, "hash") || isActive(sheetsTo, "hash") || isActive(scalableTo, "hash");
   const migrationActive = migrationRoutes.some((route) => isActive(route.to, "route"));
 
   const scrollToHash = (targetId: string) => {
@@ -130,6 +131,21 @@ const Header = () => {
             </button>
             <div className={`absolute left-0 top-full z-50 min-w-56 pt-2 ${isDesktopTechOpen ? "block" : "hidden"}`}>
               <div className="rounded-md border border-border bg-card p-2 shadow-lg">
+              <NavLink
+                to={scalableTo}
+                className={`block rounded px-3 py-2 text-sm transition-colors ${
+                  isActive(scalableTo, "hash")
+                    ? "text-foreground bg-accent/15"
+                    : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                }`}
+                onClick={(e) => {
+                  setIsMenuOpen(false);
+                  setIsDesktopTechOpen(false);
+                  handleNavClick(e, scalableTo, "hash");
+                }}
+              >
+                {t(locale, "nav.scalable")}
+              </NavLink>
               <NavLink
                 to={comparisonTo}
                 className={`block rounded px-3 py-2 text-sm transition-colors ${
@@ -299,6 +315,19 @@ const Header = () => {
               </button>
               {isMobileTechOpen && (
                 <div className="pl-4 border-l border-border/60 flex flex-col gap-2 mt-1">
+                  <NavLink
+                    to={scalableTo}
+                    className={`text-sm py-1 ${
+                      isActive(scalableTo, "hash") ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                    onClick={(e) => {
+                      setIsMenuOpen(false);
+                      setIsMobileTechOpen(false);
+                      handleNavClick(e, scalableTo, "hash");
+                    }}
+                  >
+                    {t(locale, "nav.scalable")}
+                  </NavLink>
                   <NavLink
                     to={comparisonTo}
                     className={`text-sm py-1 ${

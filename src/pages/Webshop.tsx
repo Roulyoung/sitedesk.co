@@ -10,7 +10,9 @@ import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
   CheckCircle2,
+  Globe2,
   MessageCircle,
+  ServerCog,
   ShieldCheck,
   Sparkles,
   Zap,
@@ -144,6 +146,7 @@ const Webshop = () => {
   const sectionIds = useMemo(
     () => ({
       tech: getLandingSectionId(locale, "tech"),
+      scalable: getLandingSectionId(locale, "scalable"),
       calculator: getLandingSectionId(locale, "calculator"),
       comparison: getLandingSectionId(locale, "comparison"),
       offer: getLandingSectionId(locale, "offer"),
@@ -250,6 +253,7 @@ const Webshop = () => {
   useEffect(() => {
     const ids = [
       sectionIds.tech,
+      sectionIds.scalable,
       sectionIds.calculator,
       sectionIds.comparison,
       sectionIds.offer,
@@ -530,7 +534,17 @@ const Webshop = () => {
           </div>
         </section>
 
-        <PagespeedProofSection className="-mt-10 md:-mt-14" />
+        <PagespeedProofSection
+          className="-mt-10 md:-mt-14"
+          badgeLabel={{
+            nl: "Live bewijslast: snelheid",
+            en: "Live proof: speed",
+          }}
+          title={{
+            nl: "Bekijk direct hoe snel een Sitedesk-shop echt laadt",
+            en: "See how fast a real Sitedesk shop actually loads",
+          }}
+        />
 
         {/* Techniek */}
         <section id={sectionIds.tech} className="container mx-auto scroll-mt-28">
@@ -584,6 +598,62 @@ const Webshop = () => {
               <div className="mt-4 p-4 rounded-xl bg-success/10 text-foreground text-sm">
                 {isEn ? "0ms feel: edge delivery + lean JS bundles. No plugins, no warm-up." : "0ms gevoel: Edge delivery + lean JS bundels. Geen plugins, geen warm-up."}
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section id={sectionIds.scalable} className="container mx-auto scroll-mt-28">
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary to-primary/80 p-8 md:p-10 text-primary-foreground shadow-xl">
+            <div className="pointer-events-none absolute -top-20 -left-16 h-64 w-64 rounded-full bg-emerald-300/15 blur-3xl" aria-hidden />
+            <div className="pointer-events-none absolute -top-24 -right-16 h-72 w-72 rounded-full bg-amber-300/10 blur-3xl" aria-hidden />
+            <div className="max-w-3xl">
+              <span className="inline-block text-primary-foreground/85 font-semibold text-sm uppercase tracking-wider">
+                {isEn ? "Built for scalability" : "Gebouwd voor schaalbaarheid"}
+              </span>
+              <h3 className="mt-3 text-3xl md:text-4xl font-bold text-primary-foreground">
+                {isEn ? "Scale hard without the usual platform bottlenecks" : "Schaal hard zonder de gebruikelijke platform-bottlenecks"}
+              </h3>
+            </div>
+            <div className="mt-8 grid gap-5 md:grid-cols-3">
+              <article className="rounded-2xl border border-primary-foreground/20 bg-primary-foreground/10 p-6">
+                <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-300/20 text-emerald-200">
+                  <ServerCog size={20} />
+                </div>
+                <h4 className="text-lg font-semibold text-primary-foreground">
+                  {isEn ? "Zero-Constraint Scaling" : "Zero-Constraint Schalen"}
+                </h4>
+                <p className="mt-2 text-sm leading-relaxed text-primary-foreground/85">
+                  {isEn
+                    ? "Our serverless architecture scales seamlessly with your explosive growth. Process well over 100,000 orders per month without any delay or database bottlenecks."
+                    : "Onze serverless architectuur schaalt naadloos mee met jouw explosieve groei. Verwerk moeiteloos meer dan 100.000 bestellingen per maand zonder enige vertraging of database-bottlenecks."}
+                </p>
+              </article>
+              <article className="rounded-2xl border border-primary-foreground/20 bg-primary-foreground/10 p-6">
+                <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-300/20 text-emerald-300">
+                  <ShieldCheck size={20} />
+                </div>
+                <h4 className="text-lg font-semibold text-primary-foreground">
+                  {isEn ? "Enterprise-Grade Security" : "Enterprise-Grade Security"}
+                </h4>
+                <p className="mt-2 text-sm leading-relaxed text-primary-foreground/85">
+                  {isEn
+                    ? "No outdated plugins that make your site vulnerable. We provide a closed, stable environment where security is the standard for every order flow."
+                    : "Geen verouderde plugins die je site kwetsbaar maken. Wij leveren een afgesloten, stabiele omgeving waar security de standaard is voor elke orderstroom."}
+                </p>
+              </article>
+              <article className="rounded-2xl border border-primary-foreground/20 bg-primary-foreground/10 p-6">
+                <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-amber-300/20 text-amber-300">
+                  <Globe2 size={20} />
+                </div>
+                <h4 className="text-lg font-semibold text-primary-foreground">
+                  {isEn ? "Global Edge Performance" : "Global Edge Performance"}
+                </h4>
+                <p className="mt-2 text-sm leading-relaxed text-primary-foreground/85">
+                  {isEn
+                    ? "Customers abroad experience the same millisecond speed as customers around the corner. Conversion does not stop at borders, even during peak load."
+                    : "Je klant in het buitenland ervaart dezelfde milliseconden-snelheid als je klant om de hoek. Conversie stopt niet bij de landsgrenzen, zelfs niet bij piekbelasting."}
+                </p>
+              </article>
             </div>
           </div>
         </section>
@@ -890,8 +960,6 @@ const Webshop = () => {
           </div>
         </section>
 
-        <PagespeedProofSection />
-
         {/* Concurrentievergelijking */}
         <section id={sectionIds.comparison} className="container mx-auto scroll-mt-28">
           <div className="text-center max-w-4xl mx-auto mb-10">
@@ -944,7 +1012,16 @@ const Webshop = () => {
           </div>
         </section>
 
-        <PagespeedProofSection />
+        <PagespeedProofSection
+          badgeLabel={{
+            nl: "Live bewijslast: benchmark",
+            en: "Live proof: benchmark",
+          }}
+          title={{
+            nl: "Na de vergelijking: toets onze snelheid live in PageSpeed",
+            en: "After the comparison: validate our speed live in PageSpeed",
+          }}
+        />
 
         {/* Benefits grid */}
         <section id="voordelen" className="container mx-auto">

@@ -6,6 +6,7 @@ type MessageKey =
   | "lang.de"
   | "nav.home"
   | "nav.tech"
+  | "nav.scalable"
   | "nav.calculator"
   | "nav.comparison"
   | "nav.offer"
@@ -41,6 +42,7 @@ const MESSAGES: Record<SupportedLocale, Record<MessageKey, string>> = {
     "lang.de": "DE",
     "nav.home": "Home",
     "nav.tech": "Techniek",
+    "nav.scalable": "Schaalbaarheid",
     "nav.calculator": "Calculator",
     "nav.comparison": "Vergelijking",
     "nav.offer": "Aanbod",
@@ -75,6 +77,7 @@ const MESSAGES: Record<SupportedLocale, Record<MessageKey, string>> = {
     "lang.de": "DE",
     "nav.home": "Home",
     "nav.tech": "Tech",
+    "nav.scalable": "Scalability",
     "nav.calculator": "Calculator",
     "nav.comparison": "Comparison",
     "nav.offer": "Offer",
@@ -109,6 +112,7 @@ const MESSAGES: Record<SupportedLocale, Record<MessageKey, string>> = {
     "lang.de": "DE",
     "nav.home": "Home",
     "nav.tech": "Technik",
+    "nav.scalable": "Skalierbarkeit",
     "nav.calculator": "Rechner",
     "nav.comparison": "Vergleich",
     "nav.offer": "Angebot",

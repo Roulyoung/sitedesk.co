@@ -164,6 +164,7 @@ export const getNonDefaultLocales = () => ACTIVE_NON_DEFAULT_LOCALES;
 
 export type LandingSectionKey =
   | "tech"
+  | "scalable"
   | "calculator"
   | "comparison"
   | "offer"
@@ -173,6 +174,7 @@ export type LandingSectionKey =
 const LANDING_SECTION_IDS: Record<SupportedLocale, Record<LandingSectionKey, string>> = {
   nl: {
     tech: "techniek",
+    scalable: "schaalbaar",
     calculator: "omzetverlies",
     comparison: "concurrentievergelijking",
     offer: "aanbod",
@@ -181,6 +183,7 @@ const LANDING_SECTION_IDS: Record<SupportedLocale, Record<LandingSectionKey, str
   },
   en: {
     tech: "technology",
+    scalable: "schaalbaar",
     calculator: "revenue-loss",
     comparison: "comparison",
     offer: "offer",
@@ -189,6 +192,7 @@ const LANDING_SECTION_IDS: Record<SupportedLocale, Record<LandingSectionKey, str
   },
   de: {
     tech: "technik",
+    scalable: "skalierbar",
     calculator: "umsatzverlust",
     comparison: "vergleich",
     offer: "angebot",
