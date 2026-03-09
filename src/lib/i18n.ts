@@ -183,7 +183,7 @@ const LANDING_SECTION_IDS: Record<SupportedLocale, Record<LandingSectionKey, str
   },
   en: {
     tech: "technology",
-    scalable: "schaalbaar",
+    scalable: "scalable",
     calculator: "revenue-loss",
     comparison: "comparison",
     offer: "offer",
