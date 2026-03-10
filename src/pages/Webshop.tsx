@@ -284,7 +284,7 @@ const Webshop = () => {
   const trackLead = () => {
     if (typeof window !== "undefined" && typeof window.gtag === "function") {
       window.gtag("event", "conversion", {
-        send_to: "AW-16878177204/contact_form_submit",
+        send_to: "AW-16878177204/84WcCP27oPUbELSXkvA-",
         value: 1.0,
         currency: "EUR",
       });
