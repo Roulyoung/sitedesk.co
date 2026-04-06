@@ -252,6 +252,14 @@ function getEmailReplyTo(env, site = resolveDefaultSiteContext(env)) {
   return String(site?.emailReplyTo || env.EMAIL_REPLY_TO || "").trim();
 }
 
+function getEmailDisableClickTracking(env, site = resolveDefaultSiteContext(env)) {
+  const siteValue = site?.emailDisableClickTracking;
+  if (siteValue !== undefined && siteValue !== null && String(siteValue).trim() !== "") {
+    return parseBooleanFlag(siteValue);
+  }
+  return parseBooleanFlag(env.EMAIL_DISABLE_CLICK_TRACKING || "");
+}
+
 function getTicketAttachmentMode(site) {
   const mode = String(site?.ticketAttachmentMode || "").trim().toLowerCase();
   if (mode === "none" || mode === "pdf" || mode === "png") return mode;
@@ -845,8 +853,7 @@ function randomInt(maxExclusive) {
 function generateOrderCodewordCandidate() {
   const adjective = ORDER_CODEWORD_ADJECTIVES[randomInt(ORDER_CODEWORD_ADJECTIVES.length)] || "gouden";
   const noun = ORDER_CODEWORD_NOUNS[randomInt(ORDER_CODEWORD_NOUNS.length)] || "lach";
-  const number = String(randomInt(1000)).padStart(3, "0");
-  return normalizeOrderCodeword(`${adjective}-${noun}-${number}`);
+  return normalizeOrderCodeword(`${adjective}-${noun}`);
 }
 
 async function ensureTicketOrderCodeword(db, siteKey, orderId, existingCodeword = "") {
@@ -970,6 +977,7 @@ function addTicketLinkSectionToEmailHtml(html, options = {}) {
 
   const expiryText = formatTicketLinkExpiry(options.expiresAtIso || "");
   const isEnglish = Boolean(options.isEnglish);
+  const disableClickTracking = Boolean(options.disableClickTracking);
   const ticketAttachmentMode = String(options.ticketAttachmentMode || "pdf").trim().toLowerCase();
   const ticketCodes = Array.isArray(options.ticketCodes) ? options.ticketCodes : [];
   const title = isEnglish ? "Your ticket link" : "Je ticketlink";
@@ -999,6 +1007,9 @@ function addTicketLinkSectionToEmailHtml(html, options = {}) {
           .join("")}</ul></div>`
       : "";
   const prefix = original || "<p>Je ticket is klaar.</p>";
+  if (disableClickTracking) {
+    return `${prefix}<hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0" /><div data-block="ticket-access-link"><p><strong>${escapeHtml(title)}:</strong></p><p style="margin:8px 0 10px 0"><strong>${escapeHtml(ctaLabel)}:</strong> ${escapeHtml(url)}</p><p style="margin:0 0 6px 0">${backupLine}</p><p style="margin:0;font-size:12px;color:#64748b">${escapeHtml(fallbackPrefix)}: ${escapeHtml(fallbackLabel)} - ${escapeHtml(url)}</p>${ticketCodesHtml}</div>`;
+  }
   return `${prefix}<hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0" /><div data-block="ticket-access-link"><p><strong>${escapeHtml(title)}:</strong></p><p style="margin:8px 0 10px 0"><a href="${escapeHtml(url)}" style="display:inline-block;padding:10px 16px;border-radius:10px;background:#fbbf24;color:#111827;text-decoration:none;font-weight:700">${escapeHtml(ctaLabel)}</a></p><p style="margin:0 0 6px 0">${backupLine}</p><p style="margin:0;font-size:12px;color:#64748b">${escapeHtml(fallbackPrefix)}: <a href="${escapeHtml(url)}">${escapeHtml(fallbackLabel)}</a></p>${ticketCodesHtml}</div>`;
 }
 
@@ -1765,6 +1776,14 @@ function parseJsonObject(raw) {
   }
 }
 
+function parseBooleanFlag(value) {
+  if (typeof value === "boolean") return value;
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  return ["1", "true", "yes", "ja", "on"].includes(normalized);
+}
+
 function buildLegacySiteConfig(env) {
   return {
     key: env.SITE_KEY || DEFAULT_SITE_KEY,
@@ -1785,6 +1804,7 @@ function buildLegacySiteConfig(env) {
     emailFromAddress: env.EMAIL_FROM_ADDRESS || "",
     emailFromName: env.EMAIL_FROM_NAME || "",
     emailReplyTo: env.EMAIL_REPLY_TO || "",
+    emailDisableClickTracking: parseBooleanFlag(env.EMAIL_DISABLE_CLICK_TRACKING || ""),
     brevoApiKeyName: "BREVO_API_KEY",
     mailchannelsApiKeyName: "MAILCHANNELS_API_KEY",
     hostnames: [],
@@ -1841,6 +1861,14 @@ function getConfiguredSites(env) {
       emailFromAddress: String(value.email_from_address || value.emailFromAddress || env.EMAIL_FROM_ADDRESS || "").trim(),
       emailFromName: String(value.email_from_name || value.emailFromName || env.EMAIL_FROM_NAME || "").trim(),
       emailReplyTo: String(value.email_reply_to || value.emailReplyTo || env.EMAIL_REPLY_TO || "").trim(),
+      emailDisableClickTracking:
+        value.email_disable_click_tracking === undefined && value.emailDisableClickTracking === undefined
+          ? buildLegacySiteConfig(env).emailDisableClickTracking
+          : parseBooleanFlag(
+              value.email_disable_click_tracking !== undefined
+                ? value.email_disable_click_tracking
+                : value.emailDisableClickTracking,
+            ),
       brevoApiKeyName:
         value.brevo_api_key_name || value.brevoApiKeyName || buildLegacySiteConfig(env).brevoApiKeyName,
       mailchannelsApiKeyName:
@@ -3013,6 +3041,7 @@ function escapeHtml(value) {
 function renderTicketEmailTemplate({ site, locale, context }) {
   const isEn = String(locale || "nl").toLowerCase() === "en";
   const siteKey = String(site?.key || "").trim().toLowerCase();
+  const disableClickTracking = parseBooleanFlag(site?.emailDisableClickTracking);
   const customerNameText = String(context.customerName || (isEn ? "there" : "daar")).trim() || (isEn ? "there" : "daar");
   const customerName = escapeHtml(customerNameText);
   const eventNamesRaw = Array.isArray(context.eventNames)
@@ -3063,7 +3092,9 @@ function renderTicketEmailTemplate({ site, locale, context }) {
       ? ` Codewoord: ${orderCodeword}.`
       : " Geen codewoord beschikbaar? Deel in dat geval de ticketlink direct met je gasten.";
     const eventPageHtml = eventPageUrl
-      ? `<p><strong>Eventpagina:</strong> <a href="${eventPageUrl}">${eventPageUrl}</a></p>`
+      ? disableClickTracking
+        ? `<p><strong>Eventpagina:</strong> ${eventPageUrl}</p>`
+        : `<p><strong>Eventpagina:</strong> <a href="${eventPageUrl}">${eventPageUrl}</a></p>`
       : "";
     const eventPageText = eventPageUrlText ? ` Eventpagina: ${eventPageUrlText}.` : "";
 
@@ -3078,8 +3109,11 @@ function renderTicketEmailTemplate({ site, locale, context }) {
         eventPageHtml +
         `<p>Heb er zin in. Zie je daar!</p>` +
         `<p>Op de knop hieronder vind je je tickets:</p>` +
-        `<p style="margin:12px 0 10px 0"><a data-ticket-main-cta href="${TICKET_ACCESS_URL_PLACEHOLDER}" style="display:inline-block;padding:12px 18px;border-radius:10px;background:#fbbf24;color:#111827;text-decoration:none;font-weight:700">Open je tickets</a></p>` +
-        `<p style="margin:0 0 14px 0;font-size:13px;color:#475569">Werkt de knop niet? Gebruik deze link: <a href="${TICKET_ACCESS_URL_PLACEHOLDER}">${TICKET_ACCESS_URL_PLACEHOLDER}</a></p>` +
+        (disableClickTracking
+          ? `<p style="margin:12px 0 10px 0"><strong>Open tickets:</strong><br/>${TICKET_ACCESS_URL_PLACEHOLDER}</p>` +
+            `<p style="margin:0 0 14px 0;font-size:13px;color:#475569">Werkt de knop niet? Gebruik deze link: ${TICKET_ACCESS_URL_PLACEHOLDER}</p>`
+          : `<p style="margin:12px 0 10px 0"><a data-ticket-main-cta href="${TICKET_ACCESS_URL_PLACEHOLDER}" style="display:inline-block;padding:12px 18px;border-radius:10px;background:#fbbf24;color:#111827;text-decoration:none;font-weight:700">Open je tickets</a></p>` +
+            `<p style="margin:0 0 14px 0;font-size:13px;color:#475569">Werkt de knop niet? Gebruik deze link: <a href="${TICKET_ACCESS_URL_PLACEHOLDER}">${TICKET_ACCESS_URL_PLACEHOLDER}</a></p>`) +
         `<p>Kom je niet tegelijk aan? Geef gasten die later komen simpelweg dit codewoord:</p>` +
         codewordHtml +
         `<p>Of deel het ticket per e-mail via de ticketpagina: klik op de ticketknop en scroll naar beneden.</p>` +
@@ -3215,6 +3249,7 @@ async function sendTicketEmailOutboxItem(env, item) {
 
   let bodyHtmlResolved = String(item.body_html_resolved || "").trim();
   const isEnglishTicketEmail = /your tickets/i.test(String(item.subject_resolved || ""));
+  const disableClickTracking = getEmailDisableClickTracking(env, site);
   const ticketAttachmentMode = getTicketAttachmentMode(site);
   let ticketAccessUrlForText = "";
   let ticketCodesForText = [];
@@ -3255,6 +3290,7 @@ async function sendTicketEmailOutboxItem(env, item) {
       ticketAccessUrl: deliveryAssets.ticketAccessUrl,
       expiresAtIso: deliveryAssets.expiresAtIso,
       isEnglish: isEnglishTicketEmail,
+      disableClickTracking,
       ticketAttachmentMode,
       ticketCodes: deliveryAssets.ticketCodes,
     });
@@ -3326,7 +3362,18 @@ async function sendTicketEmailOutboxItem(env, item) {
         : undefined,
       subject: item.subject_resolved,
       htmlContent: bodyHtmlResolved,
+      textContent: bodyTextResolved,
     };
+    if (disableClickTracking) {
+      brevoPayload.headers = {
+        "X-Mailin-Track": "0",
+        "X-Mailin-Track-Clicks": "0",
+      };
+      brevoPayload.tracking = {
+        opens: false,
+        clicks: false,
+      };
+    }
     if (attachments.length > 0) {
       brevoPayload.attachment = attachments.map((attachment) => ({
         name: attachment.name,
