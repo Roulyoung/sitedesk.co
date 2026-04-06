@@ -578,36 +578,64 @@ function getPreferredSiteHostname(site) {
   return nonWww || normalized[0];
 }
 
+function tryGetOriginFromUrl(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  try {
+    return new URL(raw).origin;
+  } catch {
+    return "";
+  }
+}
+
+function getSitePublicBaseOrigin(site) {
+  const candidates = [
+    site?.checkoutSuccessUrl,
+    site?.checkoutCancelUrl,
+    site?.publicBaseUrl,
+    site?.siteUrl,
+  ];
+  for (const candidate of candidates) {
+    const origin = tryGetOriginFromUrl(candidate);
+    if (origin) return origin;
+  }
+  return "";
+}
+
 function getTicketLinkBaseUrl(env, site = null) {
   const siteOverride = String(site?.ticket_link_base_url || site?.ticketLinkBaseUrl || "").trim();
   if (siteOverride) {
-    try {
-      const parsedSiteOverride = new URL(siteOverride);
-      return parsedSiteOverride.origin;
-    } catch {
-      // ignore malformed site override
-    }
+    const parsedSiteOverride = tryGetOriginFromUrl(siteOverride);
+    if (parsedSiteOverride) return parsedSiteOverride;
   }
 
-  const raw = String(env.TICKET_LINK_BASE_URL || env.PUBLIC_BASE_URL || "").trim();
-  if (raw) {
-    try {
-      const parsed = new URL(raw);
-      return parsed.origin;
-    } catch {
-      // ignore malformed env value
-    }
+  const sitePublicBaseOrigin = getSitePublicBaseOrigin(site);
+  if (sitePublicBaseOrigin) {
+    return sitePublicBaseOrigin;
   }
 
   const preferredHost = getPreferredSiteHostname(site);
   if (preferredHost) {
     return `https://${preferredHost}`;
   }
+
+  const raw = String(env.TICKET_LINK_BASE_URL || env.PUBLIC_BASE_URL || "").trim();
+  const parsedEnvBase = tryGetOriginFromUrl(raw);
+  if (parsedEnvBase) return parsedEnvBase;
+
   return FALLBACK_WORKER_PUBLIC_BASE_URL;
 }
 
 function buildTicketAccessUrl(env, token, site = null) {
   return `${getTicketLinkBaseUrl(env, site)}/t/${encodeURIComponent(String(token || "").trim())}`;
+}
+
+function buildEventPageUrl(env, site = null, eventSlugOrId = "") {
+  const raw = String(eventSlugOrId || "").trim();
+  if (!raw) return "";
+  const baseUrl = getTicketLinkBaseUrl(env, site);
+  if (!baseUrl) return "";
+  return `${baseUrl}/product/${encodeURIComponent(raw)}`;
 }
 
 async function signTicketAccessPayload(env, payloadEncoded) {
@@ -2860,6 +2888,7 @@ async function issueTicketsFromPaymentIntent(env, paymentIntent, site = resolveD
       firstCartLine?.name || "",
       firstCartLine ? eventCatalog.get(String(firstCartLine.id || "").trim()) || null : null,
     );
+    const firstEventSlug = String(firstCartLine?.slug || firstCartLine?.id || "").trim();
 
     await queueTicketOrderEmail(env, {
       site,
@@ -2876,6 +2905,8 @@ async function issueTicketsFromPaymentIntent(env, paymentIntent, site = resolveD
         eventNames: normalizedCart.map((item) => item.name),
         totalPaidCents,
         eventCount: normalizedCart.length,
+        eventSlug: firstEventSlug,
+        eventPageUrl: firstEventSlug ? buildEventPageUrl(env, site, firstEventSlug) : "",
         eventPlace: firstEventDetails.eventPlace,
         eventDate: firstEventDetails.eventDate,
         showStartTime: firstEventDetails.showStartTime,
@@ -2997,6 +3028,8 @@ function renderTicketEmailTemplate({ site, locale, context }) {
   const eventDate = escapeHtml(eventDateText);
   const showStartTime = escapeHtml(showStartTimeText);
   const doorsOpenTime = escapeHtml(doorsOpenTimeText);
+  const eventPageUrlText = String(context.eventPageUrl || "").trim();
+  const eventPageUrl = escapeHtml(eventPageUrlText);
   const orderCodeword = normalizeOrderCodeword(context.orderCodeword || "");
   const safeOrderCodeword = escapeHtml(orderCodeword || "");
   const fallbackCodewordHtml = orderCodeword
@@ -3013,6 +3046,8 @@ function renderTicketEmailTemplate({ site, locale, context }) {
   const whereWhenText = whereWhenTextParts.length > 0 ? ` ${whereWhenTextParts.join(" ")}` : "";
 
   if (!isEn && siteKey === "rolexbugatti") {
+    const locationHtml = eventPlace ? `<p><strong>Locatie:</strong> ${eventPlace}</p>` : "";
+    const locationText = eventPlaceText ? ` Locatie: ${eventPlaceText}.` : "";
     const scheduleHtml =
       showStartTime || doorsOpenTime
         ? `<p><strong>Show begint om:</strong> ${showStartTime || "-"}<br/><strong>Zaal open om:</strong> ${doorsOpenTime || "-"}</p>`
@@ -3027,6 +3062,10 @@ function renderTicketEmailTemplate({ site, locale, context }) {
     const codewordText = orderCodeword
       ? ` Codewoord: ${orderCodeword}.`
       : " Geen codewoord beschikbaar? Deel in dat geval de ticketlink direct met je gasten.";
+    const eventPageHtml = eventPageUrl
+      ? `<p><strong>Eventpagina:</strong> <a href="${eventPageUrl}">${eventPageUrl}</a></p>`
+      : "";
+    const eventPageText = eventPageUrlText ? ` Eventpagina: ${eventPageUrlText}.` : "";
 
     return {
       subject: "Je tickets voor Rolex Bugatti Live",
@@ -3034,7 +3073,9 @@ function renderTicketEmailTemplate({ site, locale, context }) {
         `<p>Hey ${customerName},</p>` +
         `<p>Leuk dat je naar de Rolex Bugatti Live show komt${whereWhenHtml}.</p>` +
         `<p><strong>Show:</strong> ${eventNames || "Rolex Bugatti Live"}</p>` +
+        locationHtml +
         scheduleHtml +
+        eventPageHtml +
         `<p>Heb er zin in. Zie je daar!</p>` +
         `<p>Op de knop hieronder vind je je tickets:</p>` +
         `<p style="margin:12px 0 10px 0"><a data-ticket-main-cta href="${TICKET_ACCESS_URL_PLACEHOLDER}" style="display:inline-block;padding:12px 18px;border-radius:10px;background:#fbbf24;color:#111827;text-decoration:none;font-weight:700">Open je tickets</a></p>` +
@@ -3047,7 +3088,9 @@ function renderTicketEmailTemplate({ site, locale, context }) {
       text:
         `Hey ${customerNameText}, leuk dat je naar de Rolex Bugatti Live show komt${whereWhenText}.` +
         ` Show: ${eventNamesRaw.join(", ") || "Rolex Bugatti Live"}.` +
+        locationText +
         scheduleText +
+        eventPageText +
         ` Heb er zin in. Zie je daar!` +
         ` Op de knop hieronder vind je je tickets: ${TICKET_ACCESS_URL_PLACEHOLDER}. Werkt de knop niet? Gebruik dezelfde link als fallback.` +
         ` Kom je niet tegelijk aan? Geef gasten die later komen simpelweg dit codewoord.${codewordText}` +
@@ -3436,7 +3479,7 @@ async function getTicketOrderEmailContext(env, siteKey, orderId) {
 
   const linesResult = await db
     .prepare(
-      `SELECT event_product_id, event_name
+      `SELECT event_product_id, event_slug, event_name
        FROM ticket_order_lines
        WHERE site_key = ?
          AND order_id = ?
@@ -3459,6 +3502,7 @@ async function getTicketOrderEmailContext(env, siteKey, orderId) {
     String(firstLine?.event_name || "").trim(),
     firstLine ? eventCatalog.get(String(firstLine.event_product_id || "").trim()) || null : null,
   );
+  const firstEventSlug = String(firstLine?.event_slug || firstLine?.event_product_id || "").trim();
 
   return {
     orderId: String(order.id || orderId),
@@ -3473,6 +3517,8 @@ async function getTicketOrderEmailContext(env, siteKey, orderId) {
       eventNames,
       totalPaidCents: Number(order.total_paid_cents || 0) || 0,
       eventCount: eventNames.length,
+      eventSlug: firstEventSlug,
+      eventPageUrl: firstEventSlug ? buildEventPageUrl(env, site, firstEventSlug) : "",
       eventPlace: firstEventDetails.eventPlace,
       eventDate: firstEventDetails.eventDate,
       showStartTime: firstEventDetails.showStartTime,
