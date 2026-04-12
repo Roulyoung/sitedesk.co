@@ -40,6 +40,9 @@ const TICKET_SHARE_MAX_RECIPIENTS_PER_REQUEST = 5;
 const TICKET_SHARE_MAX_RECIPIENTS_PER_24H = 20;
 const TICKET_SHARE_RATE_TTL_SECONDS = 24 * 60 * 60;
 const TICKET_ACCESS_URL_PLACEHOLDER = "__TICKET_ACCESS_URL__";
+const DONATION_RETURN_PATH_DEFAULT = "/doneren";
+const DONATION_ONE_TIME_MIN_EUR = 1;
+const DONATION_MONTHLY_MIN_EUR = 5;
 const ORDER_CODEWORD_ADJECTIVES = [
   "gouden",
   "vrolijke",
@@ -117,6 +120,10 @@ export default {
       return handleConfirmPayment(req, env, site, ctx);
     }
 
+    if (url.pathname === "/donations/create-session" && req.method === "POST") {
+      return handleCreateDonationSession(req, env, site);
+    }
+
     // Only allow POST /webhook
     if (url.pathname !== "/webhook" || req.method !== "POST") {
       return new Response("Not Found", { status: 404 });
@@ -160,6 +167,10 @@ export default {
     const eventSite = resolveSiteFromStripeObject(env, event.data?.object, matchedSite);
 
     if (event.type !== "checkout.session.completed" && event.type !== "payment_intent.succeeded") {
+      return new Response("OK", { status: 200 });
+    }
+
+    if (isDonationStripeObject(event.data?.object)) {
       return new Response("OK", { status: 200 });
     }
 
@@ -360,6 +371,62 @@ function calculateServiceFeeCents(cart) {
     : 0;
   if (ticketCount <= 0) return 0;
   return Math.ceil(ticketCount / 3) * 100;
+}
+
+function isDonationMetadata(metadata) {
+  if (!metadata || typeof metadata !== "object") return false;
+  const orderType = String(metadata.orderType || metadata.order_type || "").trim().toLowerCase();
+  if (orderType === "donation") return true;
+  const flow = String(metadata.flow || "").trim().toLowerCase();
+  return flow === "donation";
+}
+
+function isDonationStripeObject(stripeObject) {
+  if (!stripeObject || typeof stripeObject !== "object") return false;
+  return isDonationMetadata(stripeObject.metadata || null);
+}
+
+function isValidEmailAddress(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || "").trim());
+}
+
+function normalizeDonationCadence(value) {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  if (["monthly", "month", "subscription", "recurring"].includes(normalized)) {
+    return "monthly";
+  }
+  return "one_time";
+}
+
+function normalizeDonationAmountCents(value, cadence = "one_time") {
+  const raw = typeof value === "number" ? value : Number(String(value || "").replace(",", "."));
+  if (!Number.isFinite(raw)) return null;
+  const cents = Math.round(raw * 100);
+  const minCents = cadence === "monthly" ? DONATION_MONTHLY_MIN_EUR * 100 : DONATION_ONE_TIME_MIN_EUR * 100;
+  if (cents < minCents) return null;
+  return cents;
+}
+
+function sanitizeLocalReturnPath(value, fallback = DONATION_RETURN_PATH_DEFAULT) {
+  const raw = String(value || "").trim();
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return fallback;
+  try {
+    const parsed = new URL(`https://example.local${raw}`);
+    return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+  } catch {
+    return fallback;
+  }
+}
+
+function buildSiteReturnUrl(baseOrigin, returnPath, params = {}) {
+  const url = new URL(returnPath, baseOrigin);
+  for (const [key, value] of Object.entries(params || {})) {
+    if (value === undefined || value === null || String(value).trim() === "") continue;
+    url.searchParams.set(key, String(value));
+  }
+  return url.toString();
 }
 
 function getConfiguredStripePaymentMethodTypes(site, fallback = []) {
@@ -2768,7 +2835,12 @@ async function issueTicketsFromPaymentIntent(env, paymentIntent, site = resolveD
   const db = getTicketsDb(env);
   if (!db) return { ok: false, skipped: true, reason: "tickets_db_missing" };
 
-  const siteKey = String(paymentIntent?.metadata?.siteKey || paymentIntent?.metadata?.site_key || site?.key || DEFAULT_SITE_KEY).trim();
+  const metadata = paymentIntent?.metadata || {};
+  if (isDonationMetadata(metadata)) {
+    return { ok: true, skipped: true, reason: "donation_payment" };
+  }
+
+  const siteKey = String(metadata.siteKey || metadata.site_key || site?.key || DEFAULT_SITE_KEY).trim();
   const paymentIntentId = String(paymentIntent?.id || "").trim();
   if (!paymentIntentId) throw new Error("payment_intent_id ontbreekt voor ticket issuance");
 
@@ -2788,14 +2860,31 @@ async function issueTicketsFromPaymentIntent(env, paymentIntent, site = resolveD
     }
   }
 
+  const hasTicketHints = ["serviceFeeAmount", "ticketSubtotalAmount", "cartCount", "flow", "orderType"].some((key) => {
+    const raw = metadata?.[key];
+    if (raw === undefined || raw === null) return false;
+    return String(raw).trim() !== "";
+  });
   const checkoutContext = await getTicketCheckoutContext(env, paymentIntentId);
   if (!checkoutContext || !Array.isArray(checkoutContext.cart) || checkoutContext.cart.length === 0) {
-    throw new Error(`Geen checkoutcontext gevonden voor ${paymentIntentId}`);
+    if (hasTicketHints) {
+      throw new Error(`Geen checkoutcontext gevonden voor ${paymentIntentId}`);
+    }
+    return {
+      ok: false,
+      skipped: true,
+      reason: String(paymentIntent?.invoice || "").trim()
+        ? "invoice_without_ticket_context"
+        : "payment_without_ticket_context",
+    };
   }
 
   const normalizedCart = normalizeTicketCart(checkoutContext.cart);
   if (normalizedCart.length === 0) {
-    throw new Error(`Geen geldige ticketregels gevonden voor ${paymentIntentId}`);
+    if (hasTicketHints) {
+      throw new Error(`Geen geldige ticketregels gevonden voor ${paymentIntentId}`);
+    }
+    return { ok: false, skipped: true, reason: "payment_without_ticket_lines" };
   }
 
   const latestCharge = paymentIntent.latest_charge;
@@ -2803,12 +2892,12 @@ async function issueTicketsFromPaymentIntent(env, paymentIntent, site = resolveD
     latestCharge && typeof latestCharge === "object" && latestCharge.billing_details
       ? latestCharge.billing_details
       : null;
-  const customerName = String(billing?.name || paymentIntent.metadata?.customerName || "Gast").trim() || "Gast";
-  const customerEmail = String(billing?.email || checkoutContext.customerEmail || paymentIntent.metadata?.customerEmail || "").trim();
+  const customerName = String(billing?.name || metadata.customerName || "Gast").trim() || "Gast";
+  const customerEmail = String(billing?.email || checkoutContext.customerEmail || metadata.customerEmail || "").trim();
   const stripeChargeId =
     latestCharge && typeof latestCharge === "object" && latestCharge.id ? String(latestCharge.id).trim() : "";
   const ticketSubtotalCents = normalizedCart.reduce((sum, item) => sum + item.amountCents * item.quantity, 0);
-  const serviceFeeCents = Math.max(0, Number(paymentIntent.metadata?.serviceFeeAmount || 0) * 100) || calculateServiceFeeCents(normalizedCart);
+  const serviceFeeCents = Math.max(0, Number(metadata?.serviceFeeAmount || 0) * 100) || calculateServiceFeeCents(normalizedCart);
   const totalPaidCents = Math.max(
     0,
     Number(paymentIntent.amount_received || paymentIntent.amount || ticketSubtotalCents + serviceFeeCents) || 0,
@@ -3886,6 +3975,124 @@ async function handleGetProducts(env, req, site = resolveDefaultSiteContext(env)
   }
 }
 
+async function handleCreateDonationSession(req, env, site = resolveDefaultSiteContext(env)) {
+  try {
+    const body = await req.json().catch(() => ({}));
+    const cadence = normalizeDonationCadence(body?.cadence || body?.interval || body?.type);
+    const amountSource =
+      body?.amountEur ??
+      body?.amount ??
+      (Number.isFinite(Number(body?.amountCents)) ? Number(body.amountCents) / 100 : null);
+    const amountCents = normalizeDonationAmountCents(amountSource, cadence);
+    const minimumAmount = cadence === "monthly" ? DONATION_MONTHLY_MIN_EUR : DONATION_ONE_TIME_MIN_EUR;
+    if (!amountCents) {
+      return jsonResponse({ message: `Minimum donatie is EUR ${minimumAmount}` }, 400);
+    }
+
+    const email = String(body?.email || "").trim();
+    if (email && !isValidEmailAddress(email)) {
+      return jsonResponse({ message: "Ongeldig e-mailadres" }, 400);
+    }
+
+    const returnPath = sanitizeLocalReturnPath(body?.returnPath || body?.return_path, DONATION_RETURN_PATH_DEFAULT);
+    const baseOrigin = getTicketLinkBaseUrl(env, site);
+    const cadenceLabel = cadence === "monthly" ? "monthly" : "one_time";
+    const successUrl = buildSiteReturnUrl(baseOrigin, returnPath, {
+      donation: "success",
+      cadence: cadenceLabel,
+      amount: (amountCents / 100).toFixed(2),
+    });
+    const cancelUrl = buildSiteReturnUrl(baseOrigin, returnPath, {
+      donation: "cancel",
+      cadence: cadenceLabel,
+    });
+
+    const brandName = String(site?.brandName || site?.key || "Support").trim() || "Support";
+    const metadata = {
+      orderType: "donation",
+      flow: "donation",
+      donationCadence: cadenceLabel,
+      donationAmountCents: String(amountCents),
+      siteKey: site.key,
+    };
+
+    const lineItem = {
+      price_data: {
+        currency: "eur",
+        unit_amount: amountCents,
+        product_data: {
+          name: cadence === "monthly" ? `${brandName} maandelijkse steun` : `${brandName} donatie`,
+        },
+      },
+      quantity: 1,
+    };
+
+    if (cadence === "monthly") {
+      lineItem.price_data.recurring = { interval: "month" };
+    }
+
+    const sessionParams = {
+      mode: cadence === "monthly" ? "subscription" : "payment",
+      line_items: [lineItem],
+      metadata,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      allow_promotion_codes: false,
+    };
+
+    if (email) {
+      sessionParams.customer_email = email;
+    }
+    if (cadence === "monthly") {
+      sessionParams.subscription_data = { metadata };
+    } else {
+      sessionParams.payment_intent_data = { metadata };
+    }
+
+    const stripe = getStripeClient(env, site);
+    const configuredMethodTypes =
+      cadence === "monthly"
+        ? getConfiguredStripePaymentMethodTypes(site, ["card"])
+        : getConfiguredStripePaymentMethodTypes(site, ["card", "ideal"]);
+    const preferredMethodTypes = getPaymentMethodTypesWithoutWero(configuredMethodTypes);
+    if (preferredMethodTypes.length === 0) {
+      preferredMethodTypes.push(...(cadence === "monthly" ? ["card"] : ["card", "ideal"]));
+    }
+
+    let session;
+    try {
+      session = await stripe.checkout.sessions.create({
+        ...sessionParams,
+        ...(preferredMethodTypes.length > 0 ? { payment_method_types: preferredMethodTypes } : {}),
+      });
+    } catch (err) {
+      if (cadence === "monthly" && preferredMethodTypes.length > 1) {
+        session = await stripe.checkout.sessions.create({
+          ...sessionParams,
+          payment_method_types: ["card"],
+        });
+      } else {
+        throw err;
+      }
+    }
+
+    if (!session?.url) {
+      return jsonResponse({ message: "Stripe checkout kon niet worden gestart" }, 500);
+    }
+
+    return jsonResponse(
+      {
+        url: session.url,
+        cadence: cadenceLabel,
+        amountCents,
+      },
+      200,
+    );
+  } catch (err) {
+    return jsonResponse({ message: err instanceof Error ? err.message : String(err) }, 500);
+  }
+}
+
 async function handleCreateCheckoutSession(req, env, site = resolveDefaultSiteContext(env)) {
   try {
     const { cart } = await req.json();
@@ -4026,6 +4233,8 @@ async function handleCreatePaymentIntent(req, env, site = resolveDefaultSiteCont
       amount: totalCents,
       currency: "eur",
       metadata: {
+        orderType: "ticket",
+        flow: "ticketing",
         productId: cart
           .map((item) => item.id || item.name || "ticket")
           .join("|")
