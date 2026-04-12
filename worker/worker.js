@@ -43,6 +43,7 @@ const TICKET_ACCESS_URL_PLACEHOLDER = "__TICKET_ACCESS_URL__";
 const DONATION_RETURN_PATH_DEFAULT = "/doneren";
 const DONATION_ONE_TIME_MIN_EUR = 1;
 const DONATION_MONTHLY_MIN_EUR = 5;
+const MANAGEABLE_SUBSCRIPTION_STATUSES = new Set(["active", "trialing", "past_due", "unpaid", "incomplete"]);
 const ORDER_CODEWORD_ADJECTIVES = [
   "gouden",
   "vrolijke",
@@ -122,6 +123,10 @@ export default {
 
     if (url.pathname === "/donations/create-session" && req.method === "POST") {
       return handleCreateDonationSession(req, env, site);
+    }
+
+    if (url.pathname === "/donations/create-portal-session" && req.method === "POST") {
+      return handleCreateDonationPortalSession(req, env, site);
     }
 
     // Only allow POST /webhook
@@ -427,6 +432,30 @@ function buildSiteReturnUrl(baseOrigin, returnPath, params = {}) {
     url.searchParams.set(key, String(value));
   }
   return url.toString();
+}
+
+function hasManageableSubscriptionStatus(value) {
+  const status = String(value || "")
+    .trim()
+    .toLowerCase();
+  return MANAGEABLE_SUBSCRIPTION_STATUSES.has(status);
+}
+
+function isDonationSubscription(subscription, siteKey = "") {
+  if (!subscription || typeof subscription !== "object") return false;
+  if (!hasManageableSubscriptionStatus(subscription.status)) return false;
+
+  const metadata = subscription.metadata || {};
+  const orderType = String(metadata.orderType || metadata.order_type || "").trim().toLowerCase();
+  if (orderType === "donation") return true;
+
+  const flow = String(metadata.flow || "").trim().toLowerCase();
+  if (flow === "donation") return true;
+
+  const metadataSite = String(metadata.siteKey || metadata.site_key || "").trim();
+  if (siteKey && metadataSite && metadataSite === siteKey) return true;
+
+  return false;
 }
 
 function getConfiguredStripePaymentMethodTypes(site, fallback = []) {
@@ -4090,6 +4119,95 @@ async function handleCreateDonationSession(req, env, site = resolveDefaultSiteCo
     );
   } catch (err) {
     return jsonResponse({ message: err instanceof Error ? err.message : String(err) }, 500);
+  }
+}
+
+async function handleCreateDonationPortalSession(req, env, site = resolveDefaultSiteContext(env)) {
+  const supportEmail = String(site?.emailReplyTo || site?.emailFromAddress || env.SUPPORT_EMAIL || "").trim();
+  try {
+    const body = await req.json().catch(() => ({}));
+    const email = String(body?.email || "").trim().toLowerCase();
+    if (!isValidEmailAddress(email)) {
+      return jsonResponse({ code: "invalid_email", message: "Vul het e-mailadres van je donatie in", supportEmail }, 400);
+    }
+
+    const returnPath = sanitizeLocalReturnPath(body?.returnPath || body?.return_path, DONATION_RETURN_PATH_DEFAULT);
+    const baseOrigin = getTicketLinkBaseUrl(env, site);
+    const returnUrl = buildSiteReturnUrl(baseOrigin, returnPath, {
+      donationManage: "return",
+    });
+
+    const stripe = getStripeClient(env, site);
+    const customers = await stripe.customers.list({
+      email,
+      limit: 20,
+    });
+
+    if (!Array.isArray(customers?.data) || customers.data.length === 0) {
+      return jsonResponse(
+        { code: "donation_not_found", message: "Geen actieve maandelijkse donatie gevonden voor dit e-mailadres.", supportEmail },
+        404,
+      );
+    }
+
+    let selectedCustomerId = "";
+    for (const customer of customers.data) {
+      if (!customer || customer.deleted || !customer.id) continue;
+      const subscriptions = await stripe.subscriptions.list({
+        customer: customer.id,
+        status: "all",
+        limit: 100,
+      });
+      const subscriptionList = Array.isArray(subscriptions?.data) ? subscriptions.data : [];
+      if (subscriptionList.some((subscription) => isDonationSubscription(subscription, site.key))) {
+        selectedCustomerId = customer.id;
+        break;
+      }
+
+      // Backward-compatible fallback for recurring payments that predate donation metadata.
+      if (!selectedCustomerId && subscriptionList.some((subscription) => hasManageableSubscriptionStatus(subscription.status))) {
+        selectedCustomerId = customer.id;
+      }
+    }
+
+    if (!selectedCustomerId) {
+      return jsonResponse(
+        { code: "donation_not_found", message: "Geen actieve maandelijkse donatie gevonden voor dit e-mailadres.", supportEmail },
+        404,
+      );
+    }
+
+    const portalSession = await stripe.billingPortal.sessions.create({
+      customer: selectedCustomerId,
+      return_url: returnUrl,
+    });
+
+    if (!portalSession?.url) {
+      return jsonResponse({ message: "Kon Stripe beheerpagina niet starten.", supportEmail }, 500);
+    }
+
+    return jsonResponse(
+      {
+        url: portalSession.url,
+      },
+      200,
+    );
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    const normalized = message.toLowerCase();
+    const isPortalConfigIssue =
+      normalized.includes("billing portal") &&
+      (normalized.includes("configuration") || normalized.includes("no configuration"));
+    return jsonResponse(
+      {
+        code: "portal_error",
+        message: isPortalConfigIssue
+          ? "Stripe beheerpagina is tijdelijk niet beschikbaar. Probeer later opnieuw of mail support."
+          : "Beheerpagina openen mislukt. Probeer het opnieuw.",
+        supportEmail,
+      },
+      500,
+    );
   }
 }
 
